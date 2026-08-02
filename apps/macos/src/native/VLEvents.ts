@@ -25,3 +25,37 @@ export function onNavigate(handler: (route: AppRoute) => void): () => void {
   });
   return () => subscription.remove();
 }
+
+/** Fired when a registered global hotkey is pressed anywhere in macOS. */
+export function onHotkey(handler: (action: string) => void): () => void {
+  const subscription = emitter.addListener('vl:hotkey', (payload: unknown) => {
+    const action = (payload as { action?: unknown } | null)?.action;
+    if (typeof action === 'string') {
+      handler(action);
+    }
+  });
+  return () => subscription.remove();
+}
+
+/** Fired when permission state may have changed (the app became active). */
+export function onPermissionsChanged(
+  handler: (status: { accessibility: string; inputMonitoring: string }) => void,
+): () => void {
+  const subscription = emitter.addListener('vl:permissions', (payload: unknown) => {
+    const status = payload as {
+      accessibility?: unknown;
+      inputMonitoring?: unknown;
+    } | null;
+    if (
+      status !== null &&
+      typeof status?.accessibility === 'string' &&
+      typeof status.inputMonitoring === 'string'
+    ) {
+      handler({
+        accessibility: status.accessibility,
+        inputMonitoring: status.inputMonitoring,
+      });
+    }
+  });
+  return () => subscription.remove();
+}

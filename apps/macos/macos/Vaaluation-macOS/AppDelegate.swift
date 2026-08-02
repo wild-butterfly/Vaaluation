@@ -16,13 +16,47 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     LogStore.shared.append(level: "info", scope: "app", message: "Vaaluation launched")
 
+    // Global shortcuts come straight from persisted settings so they work
+    // before (and without) any React window existing.
+    HotkeyCenter.shared.onHotkey = { [weak self] action in
+      self?.handleHotkey(action: action)
+    }
+    let hotkeyErrors = HotkeyCenter.shared.applyFromSettings()
+    for (action, error) in hotkeyErrors {
+      LogStore.shared.append(
+        level: "warn",
+        scope: "hotkeys",
+        message: "Could not register \(action): \(error.message)"
+      )
+    }
+
     if !SettingsStore.shared.onboardingCompleted {
       showSettingsWindow(route: "onboarding")
     }
   }
 
   func applicationDidBecomeActive(_ notification: Notification) {
-    // Milestone 2 hook: permission state is re-checked here.
+    // Permission grants happen in System Settings; re-check whenever the user
+    // comes back to us and let the React side update its UI.
+    VLEventsModule.emitPermissions(PermissionService.statusDictionary())
+  }
+
+  private func handleHotkey(action: String) {
+    VLEventsModule.emitHotkey(action: action)
+    switch action {
+    case "priceCheck", "priceCheckPersistent":
+      // The capture→parse→overlay pipeline arrives in Milestones 3–4. Until
+      // then the shortcut proves itself end-to-end in the log.
+      LogStore.shared.append(
+        level: "info",
+        scope: "price-check",
+        message: "Price check requested (pipeline lands in Milestones 3–4)"
+      )
+    case "toggleOverlay":
+      showSettingsWindow(route: "settings")
+    default:
+      break
+    }
   }
 
   func applicationWillTerminate(_ notification: Notification) {

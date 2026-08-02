@@ -17,7 +17,7 @@ final class VLEventsModule: RCTEventEmitter {
   override static func requiresMainQueueSetup() -> Bool { false }
 
   override func supportedEvents() -> [String] {
-    ["vl:navigate"]
+    ["vl:navigate", "vl:hotkey", "vl:permissions"]
   }
 
   override func startObserving() {
@@ -38,5 +38,17 @@ final class VLEventsModule: RCTEventEmitter {
       return
     }
     instance.sendEvent(withName: "vl:navigate", body: ["route": route])
+  }
+
+  /// Fired when a registered global hotkey is pressed.
+  static func emitHotkey(action: String) {
+    guard let instance = shared, instance.hasListeners else { return }
+    instance.sendEvent(withName: "vl:hotkey", body: ["action": action])
+  }
+
+  /// Fired when permission state may have changed (app became active).
+  static func emitPermissions(_ status: [String: String]) {
+    guard let instance = shared, instance.hasListeners else { return }
+    instance.sendEvent(withName: "vl:permissions", body: status)
   }
 }

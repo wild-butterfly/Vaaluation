@@ -2,9 +2,12 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, radii, spacing, typography } from '@vaaluation/ui';
 import { useSettings } from '../state/SettingsContext';
+import { usePermissions } from '../hooks/usePermissions';
+import { requestAccessibility } from '../native/VLPermissions';
 
 export function OnboardingScreen({ onDone }: { onDone: () => void }) {
   const { update } = useSettings();
+  const { status } = usePermissions();
 
   const steps = [
     {
@@ -17,7 +20,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
     },
     {
       title: 'One permission, explained',
-      body: 'Sending that single keystroke requires the macOS Accessibility permission. Vaaluation will ask for it when the hotkey engine is enabled, and never requests Screen Recording or Input Monitoring.',
+      body: 'Sending that single keystroke requires the macOS Accessibility permission. Vaaluation never requests Screen Recording or Input Monitoring.',
     },
     {
       title: 'Private by design',
@@ -34,6 +37,32 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
           <Text style={styles.stepBody}>{step.body}</Text>
         </View>
       ))}
+
+      <View style={styles.step}>
+        <Text style={styles.stepTitle}>Accessibility permission</Text>
+        {status?.accessibility === 'granted' ? (
+          <Text style={styles.grantedText}>
+            Granted — Vaaluation is ready to send the item-copy keystroke.
+          </Text>
+        ) : (
+          <View>
+            <Text style={styles.stepBody}>
+              Grant it now, or later from Settings. macOS will show Vaaluation in System
+              Settings → Privacy &amp; Security → Accessibility; this screen updates
+              automatically once you return.
+            </Text>
+            <Pressable
+              style={styles.secondaryButton}
+              onPress={() => {
+                requestAccessibility().catch(() => {});
+              }}
+            >
+              <Text style={styles.secondaryButtonText}>Grant Accessibility…</Text>
+            </Pressable>
+          </View>
+        )}
+      </View>
+
       <Pressable
         style={styles.button}
         onPress={() => {
@@ -80,6 +109,24 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: typography.sizeBody,
     lineHeight: 19,
+  },
+  grantedText: {
+    color: colors.success,
+    fontSize: typography.sizeBody,
+  },
+  secondaryButton: {
+    marginTop: spacing.md,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.obsidian,
+    borderColor: colors.gold,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  secondaryButtonText: {
+    color: colors.textPrimary,
+    fontSize: typography.sizeBody,
   },
   button: {
     marginTop: spacing.md,

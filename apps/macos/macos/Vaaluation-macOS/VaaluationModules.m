@@ -32,3 +32,30 @@ RCT_EXTERN_METHOD(getLogFilePath : (RCTPromiseResolveBlock)resolve
 
 @interface RCT_EXTERN_MODULE (VLEvents, RCTEventEmitter)
 @end
+
+@interface RCT_EXTERN_MODULE (VLPermissions, NSObject)
+
+RCT_EXTERN_METHOD(getStatus : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(requestAccessibility : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(openSystemSettings : (NSString *)pane)
+
+@end
+
+@interface RCT_EXTERN_MODULE (VLHotkeys, NSObject)
+
+RCT_EXTERN_METHOD(applyFromSettings : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(getRegistrations : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(captureNextKeyCombo : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(cancelCapture)
+
+@end

@@ -1,9 +1,17 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import type { HotkeyAction, KeyCombo } from '@vaaluation/shared-types';
-import { colors, spacing, typography } from '@vaaluation/ui';
+import { colors, radii, spacing, typography } from '@vaaluation/ui';
 import { Section } from '../components/Section';
 import { useSettings } from '../state/SettingsContext';
+import { usePermissions } from '../hooks/usePermissions';
+import type { HotkeyErrors } from '../native/VLHotkeys';
+import {
+  applyHotkeysFromSettings,
+  cancelCapture,
+  captureNextKeyCombo,
+} from '../native/VLHotkeys';
+import { openSystemSettings, requestAccessibility } from '../native/VLPermissions';
 
 function formatCombo(combo: KeyCombo | null): string {
   if (combo === null) {
@@ -24,29 +32,135 @@ const HOTKEY_LABELS: Record<HotkeyAction, string> = {
   toggleOverlay: 'Show/hide overlay',
 };
 
+const HOTKEY_ACTIONS = Object.keys(HOTKEY_LABELS) as HotkeyAction[];
+
 export function SettingsScreen() {
   const { settings, update } = useSettings();
+  const { status } = usePermissions();
+  const [recording, setRecording] = useState<HotkeyAction | null>(null);
+  const [errors, setErrors] = useState<HotkeyErrors>({});
+
+  // Registrations follow persisted settings; refresh error state whenever
+  // the hotkey config changes.
+  useEffect(() => {
+    let cancelled = false;
+    applyHotkeysFromSettings()
+      .then((result) => {
+        if (!cancelled) {
+          setErrors(result);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [settings.hotkeys]);
+
+  useEffect(() => () => cancelCapture(), []);
+
+  const record = useCallback(
+    (action: HotkeyAction) => {
+      setRecording(action);
+      captureNextKeyCombo()
+        .then((combo) => {
+          setRecording(null);
+          if (combo !== null) {
+            update({ hotkeys: { ...settings.hotkeys, [action]: combo } });
+          }
+        })
+        .catch(() => setRecording(null));
+    },
+    [settings.hotkeys, update],
+  );
+
+  const disable = useCallback(
+    (action: HotkeyAction) => {
+      update({ hotkeys: { ...settings.hotkeys, [action]: null } });
+    },
+    [settings.hotkeys, update],
+  );
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Section title="Permissions">
+        <View style={styles.row}>
+          <View style={styles.labelBlock}>
+            <Text style={styles.label}>Accessibility</Text>
+            <Text style={styles.hint}>
+              Needed to send the single item-copy keystroke to Path of Exile.
+            </Text>
+          </View>
+          {status?.accessibility === 'granted' ? (
+            <Text style={styles.granted}>Granted</Text>
+          ) : (
+            <Pressable
+              style={styles.smallButton}
+              onPress={() => {
+                requestAccessibility().catch(() => {});
+                openSystemSettings('accessibility');
+              }}
+            >
+              <Text style={styles.smallButtonText}>Open System Settings</Text>
+            </Pressable>
+          )}
+        </View>
+        <View style={styles.row}>
+          <View style={styles.labelBlock}>
+            <Text style={styles.label}>Input Monitoring</Text>
+            <Text style={styles.hint}>
+              Not required — shortcuts use a public macOS API that needs no permission.
+            </Text>
+          </View>
+          <Text style={styles.notRequired}>Not required</Text>
+        </View>
+      </Section>
+
+      <Section title="Keyboard Shortcuts">
+        {HOTKEY_ACTIONS.map((action) => {
+          const error = errors[action];
+          return (
+            <View key={action} style={styles.hotkeyBlock}>
+              <View style={styles.row}>
+                <Text style={styles.label}>{HOTKEY_LABELS[action]}</Text>
+                <View style={styles.hotkeyControls}>
+                  <Text style={styles.combo}>
+                    {recording === action
+                      ? 'Press keys…'
+                      : formatCombo(settings.hotkeys[action])}
+                  </Text>
+                  <Pressable
+                    style={styles.smallButton}
+                    onPress={() => record(action)}
+                    disabled={recording !== null}
+                  >
+                    <Text style={styles.smallButtonText}>
+                      {recording === action ? 'Recording' : 'Record'}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.smallButton}
+                    onPress={() => disable(action)}
+                    disabled={settings.hotkeys[action] === null}
+                  >
+                    <Text style={styles.smallButtonText}>Disable</Text>
+                  </Pressable>
+                </View>
+              </View>
+              {error ? <Text style={styles.error}>{error.message}</Text> : null}
+            </View>
+          );
+        })}
+        <Text style={styles.hint}>
+          Shortcuts must include at least one modifier (⌃⌥⇧⌘). Press Escape while
+          recording to cancel.
+        </Text>
+      </Section>
+
       <Section title="League">
         <Text style={styles.value}>{settings.leagueId ?? 'Not selected yet'}</Text>
         <Text style={styles.hint}>
           League selection becomes available when trade integration lands (Milestone 5).
           The current challenge league will be the default.
-        </Text>
-      </Section>
-
-      <Section title="Keyboard Shortcuts">
-        {(Object.keys(HOTKEY_LABELS) as HotkeyAction[]).map((action) => (
-          <View key={action} style={styles.row}>
-            <Text style={styles.label}>{HOTKEY_LABELS[action]}</Text>
-            <Text style={styles.combo}>{formatCombo(settings.hotkeys[action])}</Text>
-          </View>
-        ))}
-        <Text style={styles.hint}>
-          Shortcut recording and conflict detection arrive with the global hotkey engine
-          (Milestone 2).
         </Text>
       </Section>
 
@@ -85,6 +199,14 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: spacing.lg,
   },
+  hotkeyBlock: {
+    marginBottom: spacing.xs,
+  },
+  hotkeyControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   label: {
     color: colors.textPrimary,
     fontSize: typography.sizeBody,
@@ -97,6 +219,33 @@ const styles = StyleSheet.create({
     color: colors.goldBright,
     fontSize: typography.sizeBody,
     fontVariant: ['tabular-nums'],
+    minWidth: 70,
+    textAlign: 'right',
+  },
+  smallButton: {
+    backgroundColor: colors.obsidian,
+    borderColor: colors.gold,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  smallButtonText: {
+    color: colors.textPrimary,
+    fontSize: typography.sizeCaption,
+  },
+  granted: {
+    color: colors.success,
+    fontSize: typography.sizeBody,
+  },
+  notRequired: {
+    color: colors.textSecondary,
+    fontSize: typography.sizeBody,
+  },
+  error: {
+    color: colors.danger,
+    fontSize: typography.sizeCaption,
+    marginTop: 2,
   },
   hint: {
     color: colors.textSecondary,

@@ -27,6 +27,11 @@ final class VLSettingsModule: NSObject {
       return
     }
     SettingsStore.shared.settingsJSON = json
+    // Hotkey registrations follow the persisted settings; re-sync natively so
+    // shortcuts work even when no React window is open.
+    DispatchQueue.main.async {
+      HotkeyCenter.shared.applyFromSettings()
+    }
     resolve(nil)
   }
 }

@@ -9,7 +9,11 @@
 /* Begin PBXBuildFile section */
 		0BCE573C1B63363AB6B1C149 /* VLSettingsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81368BF3CD40892875ED855C /* VLSettingsModule.swift */; };
 		0FBF239FF984C48FD6B937C9 /* VLLogModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A5E33321A8D06F525E929A /* VLLogModule.swift */; };
+		12697396A1209522102FC9E0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B303CF7C90B5BB28FD4D2C0E /* Cocoa.framework */; };
+		155D901B5C13FAC446258458 /* HotkeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC70A541D10377FE08621D35 /* HotkeyCenter.swift */; };
 		1690986E0D8870C8AAA56460 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D48C9124B0D9450BA3E79B /* SettingsStore.swift */; };
+		1B4A5AF583B6B11CF051E640 /* HotkeySettingsParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8CFA25EA0CD62211C41490B /* HotkeySettingsParsingTests.swift */; };
+		1BAE76ECE790331CC8E26A5A /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D48C9124B0D9450BA3E79B /* SettingsStore.swift */; };
 		44F66BE01C838CB17E5A008E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 05FB2875FA02863ABD5660CE /* PrivacyInfo.xcprivacy */; };
 		514201522437B4B40078DB4F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 514201512437B4B40078DB4F /* Assets.xcassets */; };
 		5AEDD58F321DBF22A2CB33AA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FBA26AFA2667DACACED3C1 /* AppDelegate.swift */; };
@@ -18,8 +22,16 @@
 		68C87FEB0C9C4FB4203E2BF9 /* LogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240305C6AA93FC8777D51691 /* LogStore.swift */; };
 		6C40D4035A68C6484EC25C23 /* ReactHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4516344722C65BA9DBE6E9 /* ReactHost.swift */; };
 		8EA37AF6622B0834EEBA37D6 /* VaaluationModules.m in Sources */ = {isa = PBXBuildFile; fileRef = D13F5198BA95668A2ECDFC55 /* VaaluationModules.m */; };
+		9A23B852E1686DDE0900DCEA /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */; };
+		A04FF082C06452BF534D1126 /* VLPermissionsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4366BFF47442E947BE623552 /* VLPermissionsModule.swift */; };
+		BB2C67662436BD82F484D9C8 /* LogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240305C6AA93FC8777D51691 /* LogStore.swift */; };
 		BFF2EE8519FE267E51C09757 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38529207DCF185CF25959008 /* main.swift */; };
+		CA2920A90CD53B2D08012B3E /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78BE21688D0EC2E322BB4C7 /* PermissionService.swift */; };
+		CD783F47466A13D0A29647B9 /* HotkeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC70A541D10377FE08621D35 /* HotkeyCenter.swift */; };
+		D30D99F41D40125C969CE038 /* VLHotkeysModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40204572A5C05583C813CC9A /* VLHotkeysModule.swift */; };
 		D4F677639FBA12578E379D39 /* libPods-Vaaluation-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7D9F64AC2C307672F54D7A /* libPods-Vaaluation-macOS.a */; };
+		DF9500C81B596470B049AE4F /* KeyComboTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E85FCB98F12D4B6CD340B6 /* KeyComboTests.swift */; };
+		EAA2B5A8B506FB95DA66F9B7 /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */; };
 		EDD950BFF6A7E14D7A28B71D /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDB5C62CC3EEDF2B5846057 /* SettingsWindowController.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,11 +40,15 @@
 		0D11812BCC4AD3C4C98B555C /* Vaaluation-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Vaaluation-Bridging-Header.h"; sourceTree = "<group>"; };
 		0E4516344722C65BA9DBE6E9 /* ReactHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReactHost.swift; sourceTree = "<group>"; };
 		240305C6AA93FC8777D51691 /* LogStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LogStore.swift; sourceTree = "<group>"; };
+		303936647C698B334F094289 /* VaaluationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VaaluationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		33D48C9124B0D9450BA3E79B /* SettingsStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		38529207DCF185CF25959008 /* main.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		3B80B8C60BF70F37758656B6 /* StatusItemController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusItemController.swift; sourceTree = "<group>"; };
 		3EB8B3851113F3B07B5DC880 /* Pods-Vaaluation-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vaaluation-macOS.release.xcconfig"; path = "Target Support Files/Pods-Vaaluation-macOS/Pods-Vaaluation-macOS.release.xcconfig"; sourceTree = "<group>"; };
+		40204572A5C05583C813CC9A /* VLHotkeysModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLHotkeysModule.swift; sourceTree = "<group>"; };
 		42FBA26AFA2667DACACED3C1 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4366BFF47442E947BE623552 /* VLPermissionsModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLPermissionsModule.swift; sourceTree = "<group>"; };
+		44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyCombo.swift; sourceTree = "<group>"; };
 		514201492437B4B30078DB4F /* Vaaluation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vaaluation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		514201512437B4B40078DB4F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		514201562437B4B40078DB4F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -41,9 +57,14 @@
 		6C38B0A1F206AF0D81CE5D7C /* VLEventsModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLEventsModule.swift; sourceTree = "<group>"; };
 		81368BF3CD40892875ED855C /* VLSettingsModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLSettingsModule.swift; sourceTree = "<group>"; };
 		8EDB5C62CC3EEDF2B5846057 /* SettingsWindowController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		A8CFA25EA0CD62211C41490B /* HotkeySettingsParsingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HotkeySettingsParsingTests.swift; sourceTree = "<group>"; };
+		B303CF7C90B5BB28FD4D2C0E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		B78BE21688D0EC2E322BB4C7 /* PermissionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
 		BBE393BB6DC5F7B7B1A22DD3 /* Pods-Vaaluation-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vaaluation-macOS.debug.xcconfig"; path = "Target Support Files/Pods-Vaaluation-macOS/Pods-Vaaluation-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		C1A5E33321A8D06F525E929A /* VLLogModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLLogModule.swift; sourceTree = "<group>"; };
 		D13F5198BA95668A2ECDFC55 /* VaaluationModules.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = VaaluationModules.m; sourceTree = "<group>"; };
+		D5E85FCB98F12D4B6CD340B6 /* KeyComboTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyComboTests.swift; sourceTree = "<group>"; };
+		DC70A541D10377FE08621D35 /* HotkeyCenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HotkeyCenter.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -56,6 +77,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B8C1CFC29ADAA0716D4755FB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				12697396A1209522102FC9E0 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -64,8 +93,19 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5D7D9F64AC2C307672F54D7A /* libPods-Vaaluation-macOS.a */,
+				626F363A7CFA7246A2E75154 /* OS X */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		35E9A9FAFD021687BEB451F3 /* VaaluationTests */ = {
+			isa = PBXGroup;
+			children = (
+				D5E85FCB98F12D4B6CD340B6 /* KeyComboTests.swift */,
+				A8CFA25EA0CD62211C41490B /* HotkeySettingsParsingTests.swift */,
+			);
+			name = VaaluationTests;
+			path = VaaluationTests;
 			sourceTree = "<group>";
 		};
 		5142014A2437B4B30078DB4F /* Vaaluation-macOS */ = {
@@ -87,8 +127,21 @@
 				D13F5198BA95668A2ECDFC55 /* VaaluationModules.m */,
 				0D11812BCC4AD3C4C98B555C /* Vaaluation-Bridging-Header.h */,
 				05FB2875FA02863ABD5660CE /* PrivacyInfo.xcprivacy */,
+				44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */,
+				DC70A541D10377FE08621D35 /* HotkeyCenter.swift */,
+				B78BE21688D0EC2E322BB4C7 /* PermissionService.swift */,
+				4366BFF47442E947BE623552 /* VLPermissionsModule.swift */,
+				40204572A5C05583C813CC9A /* VLHotkeysModule.swift */,
 			);
 			path = "Vaaluation-macOS";
+			sourceTree = "<group>";
+		};
+		626F363A7CFA7246A2E75154 /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				B303CF7C90B5BB28FD4D2C0E /* Cocoa.framework */,
+			);
+			name = "OS X";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -106,6 +159,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				A7F7D9444F12F259F68659DE /* Pods */,
+				35E9A9FAFD021687BEB451F3 /* VaaluationTests */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -115,6 +169,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				303936647C698B334F094289 /* VaaluationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -132,6 +187,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3CA586B795AE0406367BE433 /* VaaluationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5972B53FD8347D8B1F5E276A /* Build configuration list for PBXNativeTarget "VaaluationTests" */;
+			buildPhases = (
+				5E1BC9C97FD26CBF012005EB /* Sources */,
+				B8C1CFC29ADAA0716D4755FB /* Frameworks */,
+				74D607833480918B5800A089 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VaaluationTests;
+			productName = VaaluationTests;
+			productReference = 303936647C698B334F094289 /* VaaluationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		514201482437B4B30078DB4F /* Vaaluation-macOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5142015A2437B4B40078DB4F /* Build configuration list for PBXNativeTarget "Vaaluation-macOS" */;
@@ -184,6 +256,7 @@
 			projectRoot = "";
 			targets = (
 				514201482437B4B30078DB4F /* Vaaluation-macOS */,
+				3CA586B795AE0406367BE433 /* VaaluationTests */,
 			);
 		};
 /* End PBXProject section */
@@ -195,6 +268,13 @@
 			files = (
 				514201522437B4B40078DB4F /* Assets.xcassets in Resources */,
 				44F66BE01C838CB17E5A008E /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		74D607833480918B5800A089 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,12 +383,60 @@
 				0FBF239FF984C48FD6B937C9 /* VLLogModule.swift in Sources */,
 				608B357E591D44B2262B9B9D /* VLEventsModule.swift in Sources */,
 				8EA37AF6622B0834EEBA37D6 /* VaaluationModules.m in Sources */,
+				9A23B852E1686DDE0900DCEA /* KeyCombo.swift in Sources */,
+				CD783F47466A13D0A29647B9 /* HotkeyCenter.swift in Sources */,
+				CA2920A90CD53B2D08012B3E /* PermissionService.swift in Sources */,
+				A04FF082C06452BF534D1126 /* VLPermissionsModule.swift in Sources */,
+				D30D99F41D40125C969CE038 /* VLHotkeysModule.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5E1BC9C97FD26CBF012005EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF9500C81B596470B049AE4F /* KeyComboTests.swift in Sources */,
+				1B4A5AF583B6B11CF051E640 /* HotkeySettingsParsingTests.swift in Sources */,
+				EAA2B5A8B506FB95DA66F9B7 /* KeyCombo.swift in Sources */,
+				155D901B5C13FAC446258458 /* HotkeyCenter.swift in Sources */,
+				BB2C67662436BD82F484D9C8 /* LogStore.swift in Sources */,
+				1BAE76ECE790331CC8E26A5A /* SettingsStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		253E213A6CA9181EEEFA8282 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vaaluation.tests;
+				PRODUCT_MODULE_NAME = VaaluationTests;
+				PRODUCT_NAME = VaaluationTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		3118B6817D080D70BD5B061A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vaaluation.tests;
+				PRODUCT_MODULE_NAME = VaaluationTests;
+				PRODUCT_NAME = VaaluationTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
 		5142015B2437B4B40078DB4F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BBE393BB6DC5F7B7B1A22DD3 /* Pods-Vaaluation-macOS.debug.xcconfig */;
@@ -491,6 +619,15 @@
 			buildConfigurations = (
 				5142015B2437B4B40078DB4F /* Debug */,
 				5142015C2437B4B40078DB4F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5972B53FD8347D8B1F5E276A /* Build configuration list for PBXNativeTarget "VaaluationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3118B6817D080D70BD5B061A /* Release */,
+				253E213A6CA9181EEEFA8282 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
