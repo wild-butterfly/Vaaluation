@@ -1,0 +1,12 @@
+{
+  "name": "@vaaluation/shared-types",
+  "version": "0.1.0",
+  "description": "Shared domain types for Vaaluation.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
