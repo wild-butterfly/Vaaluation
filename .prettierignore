@@ -1,0 +1,9 @@
+node_modules/
+apps/macos/macos/Pods/
+apps/macos/macos/*.xcworkspace/
+apps/macos/macos/*.xcodeproj/
+coverage/
+dist/
+build/
+*.lock
+package-lock.json
