@@ -6,6 +6,7 @@ import {
   parseLogLine,
   parseTradeWhisper,
   sanitizeMessage,
+  thanksCommand,
   tradeCommand,
   whisperCommand,
 } from '../src';
@@ -149,6 +150,21 @@ describe('chat commands — one action each', () => {
     expect(hostile).not.toBeNull();
     if (hostile === null) return;
     expect(inviteCommand(hostile).text).toBe('/invite BadName');
+  });
+
+  it('sends a thank-you as one whisper and nothing else', () => {
+    const command = thanksCommand(request, 'Thanks, have a nice day!');
+    expect(command.kind).toBe('whisper');
+    expect(command.text).toBe('@Alice Thanks, have a nice day!');
+    // A thanks must never carry a second command along with it.
+    expect(command.text.includes('/kick')).toBe(false);
+    expect(command.text.split('\n')).toHaveLength(1);
+  });
+
+  it('keeps a custom thanks message to a single command', () => {
+    const command = thanksCommand(request, 'thanks\n/kick Alice');
+    expect(command.text).toBe('@Alice thanks /kick Alice');
+    expect(command.text.split('\n')).toHaveLength(1);
   });
 
   it('summarizes requests for display', () => {

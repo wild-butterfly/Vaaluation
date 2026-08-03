@@ -47,13 +47,14 @@ export function whisperCommand(request: TradeRequest, message: string): ChatComm
   };
 }
 
-/** Short replies offered as one-tap whispers. */
-export const QUICK_REPLIES: readonly string[] = [
-  'Hi, I am ready to trade. Sending an invite now.',
-  'Hi, one moment please.',
-  'Sorry, that one is already sold.',
-  'Thanks!',
-];
+/**
+ * Sends a thank-you and nothing else. Kept as its own command so the button
+ * that uses it stays a single game action — it must never be combined with
+ * kicking or clearing the request.
+ */
+export function thanksCommand(request: TradeRequest, message: string): ChatCommand {
+  return whisperCommand(request, message);
+}
 
 /**
  * Human-readable summary of a request, used for the list row and for

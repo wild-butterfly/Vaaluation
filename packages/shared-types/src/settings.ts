@@ -35,6 +35,10 @@ export interface AppSettings {
    * contains private conversation, so reading it is the user's choice.
    */
   readonly tradeWhispersEnabled: boolean;
+  /** Canned whispers offered on a trade request. Each send is one command. */
+  readonly quickReplies: readonly string[];
+  /** Sent by the one-press Thanks button. */
+  readonly thanksMessage: string;
   readonly hotkeys: HotkeyConfig;
   /** Whether the overlay may be dragged to a new position. */
   readonly overlayUnlocked: boolean;
@@ -54,6 +58,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
   leagueId: null,
   copyModifiers: 'control-option',
   tradeWhispersEnabled: false,
+  quickReplies: [
+    'Hi, I am ready to trade. Sending an invite now.',
+    'Hi, one moment please.',
+    'Sorry, that one is already sold.',
+  ],
+  thanksMessage: 'Thanks, have a nice day!',
   hotkeys: {
     priceCheck: {
       keyCode: KEY_CODE_D,

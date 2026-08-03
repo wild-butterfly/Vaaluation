@@ -2,11 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { TradeRequest } from '@vaaluation/trade-whispers';
 import {
-  QUICK_REPLIES,
   describeRequest,
   hideoutCommand,
   inviteCommand,
   kickCommand,
+  thanksCommand,
   tradeCommand,
   whisperCommand,
 } from '@vaaluation/trade-whispers';
@@ -103,6 +103,8 @@ export function TradeScreen() {
                     setReplyFor(replyFor === entry.id ? null : entry.id)
                   }
                   onCommand={run}
+                  quickReplies={settings.quickReplies}
+                  thanksMessage={settings.thanksMessage}
                   onDone={() => markDone(entry.id)}
                   onDismiss={() => dismiss(entry.id)}
                 />
@@ -122,6 +124,8 @@ export function TradeScreen() {
                     setReplyFor(replyFor === entry.id ? null : entry.id)
                   }
                   onCommand={run}
+                  quickReplies={settings.quickReplies}
+                  thanksMessage={settings.thanksMessage}
                   onDone={() => markDone(entry.id)}
                   onDismiss={() => dismiss(entry.id)}
                 />
@@ -149,6 +153,8 @@ function RequestRow({
   showReply,
   onToggleReply,
   onCommand,
+  quickReplies,
+  thanksMessage,
   onDone,
   onDismiss,
 }: {
@@ -157,6 +163,8 @@ function RequestRow({
   showReply: boolean;
   onToggleReply: () => void;
   onCommand: (command: { text: string }) => void;
+  quickReplies: readonly string[];
+  thanksMessage: string;
   onDone: () => void;
   onDismiss: () => void;
 }) {
@@ -190,6 +198,12 @@ function RequestRow({
         <Pressable style={styles.action} onPress={() => onCommand(kickCommand(request))}>
           <Text style={styles.actionText}>Kick</Text>
         </Pressable>
+        <Pressable
+          style={styles.action}
+          onPress={() => onCommand(thanksCommand(request, thanksMessage))}
+        >
+          <Text style={styles.actionText}>Thanks</Text>
+        </Pressable>
         <Pressable style={styles.action} onPress={onToggleReply}>
           <Text style={styles.actionText}>Reply</Text>
         </Pressable>
@@ -200,7 +214,7 @@ function RequestRow({
 
       {showReply ? (
         <View style={styles.replies}>
-          {QUICK_REPLIES.map((reply) => (
+          {quickReplies.map((reply) => (
             <Pressable
               key={reply}
               style={styles.reply}

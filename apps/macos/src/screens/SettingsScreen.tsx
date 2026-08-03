@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import type { CopyModifiers, HotkeyAction, KeyCombo } from '@vaaluation/shared-types';
 import { colors, radii, spacing, typography } from '@vaaluation/ui';
 import { Section } from '../components/Section';
@@ -165,6 +173,58 @@ export function SettingsScreen() {
         </Text>
       </Section>
 
+      <Section title="Trade Replies">
+        <Text style={styles.hint}>
+          Sent only when you press the matching button, one message per press.
+        </Text>
+
+        <Text style={styles.fieldLabel}>Thanks button</Text>
+        <TextInput
+          style={styles.textField}
+          value={settings.thanksMessage}
+          onChangeText={(value) => update({ thanksMessage: value })}
+          placeholder="Thanks, have a nice day!"
+          placeholderTextColor={colors.textDisabled}
+        />
+
+        <Text style={styles.fieldLabel}>Quick replies</Text>
+        {settings.quickReplies.map((reply, index) => (
+          <View key={index} style={styles.replyEditRow}>
+            <TextInput
+              style={[styles.textField, styles.replyField]}
+              value={reply}
+              onChangeText={(value) =>
+                update({
+                  quickReplies: settings.quickReplies.map((existing, position) =>
+                    position === index ? value : existing,
+                  ),
+                })
+              }
+            />
+            <Pressable
+              style={styles.smallButton}
+              onPress={() =>
+                update({
+                  quickReplies: settings.quickReplies.filter(
+                    (_, position) => position !== index,
+                  ),
+                })
+              }
+            >
+              <Text style={styles.smallButtonText}>Remove</Text>
+            </Pressable>
+          </View>
+        ))}
+        <Pressable
+          style={styles.smallButton}
+          onPress={() =>
+            update({ quickReplies: [...settings.quickReplies, 'New reply'] })
+          }
+        >
+          <Text style={styles.smallButtonText}>Add reply</Text>
+        </Pressable>
+      </Section>
+
       <Section title="Item Copy">
         <Text style={styles.hint}>
           Path of Exile copies the advanced item description on Ctrl + Highlight + C.
@@ -288,6 +348,31 @@ const styles = StyleSheet.create({
   smallButtonActive: {
     backgroundColor: colors.vaalRed,
     borderColor: colors.vaalRedBright,
+  },
+  fieldLabel: {
+    color: colors.textSecondary,
+    fontSize: typography.sizeCaption,
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
+  },
+  textField: {
+    backgroundColor: colors.obsidian,
+    borderColor: colors.gold,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radii.sm,
+    color: colors.textPrimary,
+    fontSize: typography.sizeBody,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+  },
+  replyEditRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  replyField: {
+    flex: 1,
   },
   leagueList: {
     flexDirection: 'row',

@@ -1,12 +1,12 @@
 export { parseLogLine, parseTradeWhisper, requestFromMessage } from './parse';
 export type { ParsedLine } from './parse';
 export {
-  QUICK_REPLIES,
   describeRequest,
   hideoutCommand,
   inviteCommand,
   kickCommand,
   sanitizeMessage,
+  thanksCommand,
   tradeCommand,
   whisperCommand,
 } from './commands';
