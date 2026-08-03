@@ -29,6 +29,7 @@ export function TradeOverlay({
   error,
   quickReplies,
   thanksMessage,
+  onEnable,
   onDone,
   onDismiss,
 }: {
@@ -37,6 +38,7 @@ export function TradeOverlay({
   error: string | null;
   quickReplies: readonly string[];
   thanksMessage: string;
+  onEnable: () => void;
   onDone: (id: string) => void;
   onDismiss: (id: string) => void;
 }) {
@@ -54,9 +56,14 @@ export function TradeOverlay({
     return (
       <View style={styles.empty}>
         <Text style={styles.emptyText}>
-          Trade whispers are off. Turn them on in Settings → Trades to see incoming buy
-          requests here.
+          Vaaluation can list incoming buy requests here by watching Path of Exile's chat
+          log. It reads from this moment onward, keeps only messages matching the game's
+          trade-whisper wording, and discards all other chat. Nothing is uploaded. No
+          change is needed in the game's own options.
         </Text>
+        <Pressable style={styles.enable} onPress={onEnable}>
+          <Text style={styles.enableText}>Watch for trade whispers</Text>
+        </Pressable>
       </View>
     );
   }
@@ -275,6 +282,21 @@ const styles = StyleSheet.create({
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: 3,
+  },
+  enable: {
+    marginTop: spacing.md,
+    alignSelf: 'flex-start',
+    backgroundColor: glass.accent,
+    borderColor: glass.accentBorder,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
+  },
+  enableText: {
+    color: colors.textPrimary,
+    fontSize: typography.sizeCaption,
+    fontWeight: '600',
   },
   hideoutText: {
     color: colors.textPrimary,

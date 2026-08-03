@@ -10,7 +10,7 @@ import { TradeOverlay } from './TradeOverlay';
 type Tab = 'price' | 'trades';
 
 function Shell() {
-  const { settings } = useSettings();
+  const { settings, update } = useSettings();
   const [tab, setTab] = useState<Tab>('price');
   const [seenCount, setSeenCount] = useState(0);
 
@@ -63,6 +63,7 @@ function Shell() {
             error={trades.error}
             quickReplies={settings.quickReplies}
             thanksMessage={settings.thanksMessage}
+            onEnable={() => update({ tradeWhispersEnabled: true })}
             onDone={trades.markDone}
             onDismiss={trades.dismiss}
           />
