@@ -52,9 +52,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
           LogStore.shared.append(
             level: "info",
             scope: "price-check",
-            message: "Item copied from game (\(text.count) chars); overlay lands in Milestone 4"
+            message: "Item copied from game (\(text.count) chars)"
           )
           VLEventsModule.emitItemCopied(text: text, persistent: persistent)
+          // The window must come forward over the game, otherwise a
+          // successful check appears to do nothing at all.
+          self.showSettingsWindow(route: "price-check", aboveGame: true)
         case .failure(let error):
           LogStore.shared.append(
             level: "warn",
@@ -64,21 +67,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
       }
     case "toggleOverlay":
-      showSettingsWindow(route: "settings")
+      toggleWindow()
     default:
       break
     }
+  }
+
+  /// Shift+Space hides the window if it is already frontmost, so the same
+  /// shortcut gets you back to the game.
+  private func toggleWindow() {
+    if let window = settingsWindowController?.window, window.isVisible {
+      window.orderOut(nil)
+      return
+    }
+    showSettingsWindow(route: "price-check", aboveGame: true)
   }
 
   func applicationWillTerminate(_ notification: Notification) {
     LogStore.shared.append(level: "info", scope: "app", message: "Vaaluation terminating")
   }
 
-  private func showSettingsWindow(route: String) {
+  /// - Parameter aboveGame: when true the window floats over Path of Exile
+  ///   (including Windowed Fullscreen) instead of behaving like an ordinary
+  ///   window that the game can cover.
+  private func showSettingsWindow(route: String, aboveGame: Bool = false) {
     guard let host = reactHost else { return }
     if settingsWindowController == nil {
       settingsWindowController = SettingsWindowController(reactHost: host, initialRoute: route)
     }
+    settingsWindowController?.setFloatingAboveGame(aboveGame)
     settingsWindowController?.show(route: route)
     NSApp.activate(ignoringOtherApps: true)
   }
