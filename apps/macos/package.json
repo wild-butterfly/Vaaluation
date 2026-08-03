@@ -6,7 +6,9 @@
     "start": "react-native start",
     "macos": "react-native run-macos",
     "test": "jest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "app": "open \"$(xcodebuild -workspace macos/Vaaluation.xcworkspace -scheme Vaaluation-macOS -configuration Debug -showBuildSettings 2>/dev/null | awk -F' = ' '/ BUILT_PRODUCTS_DIR/{print $2; exit}')/Vaaluation.app\"",
+    "build:macos": "xcodebuild -workspace macos/Vaaluation.xcworkspace -scheme Vaaluation-macOS -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build"
   },
   "dependencies": {
     "react": "19.1.4",
