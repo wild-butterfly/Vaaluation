@@ -122,7 +122,8 @@ export function PriceCheckScreen() {
     setState({ status: 'searching' });
     try {
       const client = getTradeClient();
-      const query = buildQuery(item, filters);
+      const baseTypes = await client.getBaseTypeIndex();
+      const query = buildQuery(item, filters, { baseTypes });
       const search = await client.search(league, query);
       const results = await client.fetchListings(search.result.slice(0, 10), search.id);
       const listings = toPricedListings(results);

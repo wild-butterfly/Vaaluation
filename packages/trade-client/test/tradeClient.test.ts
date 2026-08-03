@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parseItemText } from '@vaaluation/item-parser';
 import {
+  BaseTypeIndex,
+  parseItemCatalog,
   RateLimitPolicy,
   StatIndex,
   TradeClient,
@@ -367,5 +369,70 @@ describe('pricing', () => {
       listing(20, 'e'),
     ]);
     expect(warnings).toEqual([]);
+  });
+});
+
+describe('base type resolution', () => {
+  const index = new BaseTypeIndex(parseItemCatalog(fixture('items-response.json')));
+
+  it('loads base types from the official catalog', () => {
+    expect(index.size).toBeGreaterThan(0);
+    expect(index.isKnown('Greater Mana Flask')).toBe(true);
+    expect(index.isKnown('Nitrate Greater Mana Flask')).toBe(false);
+  });
+
+  it('strips affixes from a magic item name', () => {
+    // The exact case that returned HTTP 400 "Unknown item base type".
+    expect(index.resolve('Nitrate Greater Mana Flask')).toBe('Greater Mana Flask');
+  });
+
+  it('prefers the longest matching base type', () => {
+    // "Mana Flask" is also a real base; the longer one must win.
+    expect(index.resolve('Chemist’s Greater Mana Flask of Heat')).toBe(
+      'Greater Mana Flask',
+    );
+  });
+
+  it('passes through an exact base type unchanged', () => {
+    expect(index.resolve('Leather Belt')).toBe('Leather Belt');
+  });
+
+  it('returns null when nothing matches', () => {
+    expect(index.resolve('Completely Invented Item')).toBeNull();
+  });
+
+  it('builds a query with the resolved base type', () => {
+    const raw = readFileSync(
+      join(__dirname, '..', '..', 'item-parser', 'test', 'fixtures', 'magic-flask.txt'),
+      'utf8',
+    );
+    const parsed = parseItemText(raw);
+    if (!parsed.ok) throw new Error('fixture failed to parse');
+    const query = buildQuery(parsed.item, [], { baseTypes: index });
+    expect(query.query.type).toBe('Silver Flask');
+  });
+
+  it('fails with a clear message instead of sending an unknown base type', () => {
+    const parsed = parseItemText(
+      'Item Class: Rings\nRarity: Magic\nMade Up Widget of Nonsense\n--------\nItem Level: 5',
+    );
+    if (!parsed.ok) throw new Error('fixture failed to parse');
+    expect(() => buildQuery(parsed.item, [], { baseTypes: index })).toThrow(
+      /not a base type/,
+    );
+  });
+
+  it('surfaces the API error message on a rejected search', async () => {
+    const { fetch } = stubFetch(
+      { error: { code: 2, message: 'Unknown item base type' } },
+      { status: 400 },
+    );
+    const client = new TradeClient({ fetch, userAgent: UA });
+    await expect(
+      client.search('Standard', {
+        query: { status: { option: 'online' }, stats: [] },
+        sort: { price: 'asc' },
+      }),
+    ).rejects.toThrow(/Unknown item base type/);
   });
 });

@@ -2,6 +2,7 @@ import type { Modifier, ParsedItem } from '@vaaluation/shared-types';
 import type { StatFilter, TradeQuery } from './types';
 import { TradeError } from './types';
 import type { StatIndex } from './stats';
+import type { BaseTypeIndex } from './baseTypes';
 
 /**
  * Builds a trade query from a parsed item.
@@ -79,7 +80,28 @@ export function buildFilters(item: ParsedItem, stats: StatIndex): SelectableFilt
 }
 
 export interface QueryOptions {
-  readonly onlineOnly: boolean;
+  readonly onlineOnly?: boolean;
+  /**
+   * Catalog of searchable base types. Magic items carry affixes in their name
+   * ("Nitrate Greater Mana Flask"), which the API rejects, so the base is
+   * resolved through this index when available.
+   */
+  readonly baseTypes?: BaseTypeIndex | undefined;
+}
+
+/**
+ * Picks the value to send as `type`. Falls back to the parsed base type when
+ * no catalog is loaded, and throws when the catalog is loaded but recognizes
+ * nothing — better a clear message than an HTTP 400 from the API.
+ */
+function resolveType(rawType: string, baseTypes: BaseTypeIndex | undefined): string {
+  if (baseTypes === undefined) return rawType;
+  const resolved = baseTypes.resolve(rawType);
+  if (resolved !== null) return resolved;
+  throw new TradeError(
+    'not_searchable',
+    `"${rawType}" is not a base type the trade site recognizes.`,
+  );
 }
 
 /**
@@ -90,8 +112,10 @@ export interface QueryOptions {
 export function buildQuery(
   item: ParsedItem,
   filters: readonly SelectableFilter[],
-  options: QueryOptions = { onlineOnly: true },
+  options: QueryOptions = {},
 ): TradeQuery {
+  const baseTypes = options.baseTypes;
+  const onlineOnly = options.onlineOnly ?? true;
   const stats: StatFilter[] = filters
     .filter((filter) => filter.selected)
     .map((filter) => {
@@ -104,7 +128,7 @@ export function buildQuery(
     });
 
   const base = {
-    status: { option: options.onlineOnly ? ('online' as const) : ('any' as const) },
+    status: { option: onlineOnly ? ('online' as const) : ('any' as const) },
     stats: [{ type: 'and' as const, filters: stats }],
   };
 
@@ -117,7 +141,10 @@ export function buildQuery(
       return { query: { ...base, type: item.name }, sort: { price: 'asc' } };
 
     case 'map':
-      return { query: { ...base, type: item.baseType }, sort: { price: 'asc' } };
+      return {
+        query: { ...base, type: resolveType(item.baseType, baseTypes) },
+        sort: { price: 'asc' },
+      };
 
     case 'equipment': {
       if (item.rarity === 'unique') {
@@ -126,12 +153,15 @@ export function buildQuery(
           query: {
             ...base,
             ...(item.identified ? { name: item.name } : {}),
-            type: item.baseType,
+            type: resolveType(item.baseType, baseTypes),
           },
           sort: { price: 'asc' },
         };
       }
-      return { query: { ...base, type: item.baseType }, sort: { price: 'asc' } };
+      return {
+        query: { ...base, type: resolveType(item.baseType, baseTypes) },
+        sort: { price: 'asc' },
+      };
     }
 
     default: {

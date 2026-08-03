@@ -9,6 +9,7 @@ import {
 } from './validate';
 import { RateLimitPolicy } from './rateLimit';
 import { StatIndex } from './stats';
+import { BaseTypeIndex, parseItemCatalog } from './baseTypes';
 
 const BASE = 'https://www.pathofexile.com/api/trade';
 
@@ -49,6 +50,7 @@ export class TradeClient {
   private readonly fetchPolicy: RateLimitPolicy;
   private readonly cache = new Map<string, CacheEntry>();
   private statIndex: StatIndex | null = null;
+  private baseTypeIndex: BaseTypeIndex | null = null;
   private readonly now: () => number;
   private readonly cacheTtlMs: number;
 
@@ -119,9 +121,19 @@ export class TradeClient {
     }
 
     if (!response.ok) {
+      // GGG returns a descriptive body; surfacing it beats a bare status code.
+      let detail = '';
+      try {
+        const parsed: unknown = JSON.parse(await response.text());
+        const message = (parsed as { error?: { message?: unknown } } | null)?.error
+          ?.message;
+        if (typeof message === 'string') detail = ` ${message}.`;
+      } catch {
+        // Body was not JSON; the status alone will have to do.
+      }
       throw new TradeError(
         'http_error',
-        `The trade API returned HTTP ${response.status}.`,
+        `The trade API rejected the search (HTTP ${response.status}).${detail}`,
       );
     }
 
@@ -150,6 +162,14 @@ export class TradeClient {
     const body = await this.request(`${BASE}/data/stats`, undefined, this.searchPolicy);
     this.statIndex = new StatIndex(parseStatGroups(body));
     return this.statIndex;
+  }
+
+  /** Loads and caches the catalog of searchable item base types. */
+  async getBaseTypeIndex(): Promise<BaseTypeIndex> {
+    if (this.baseTypeIndex !== null) return this.baseTypeIndex;
+    const body = await this.request(`${BASE}/data/items`, undefined, this.searchPolicy);
+    this.baseTypeIndex = new BaseTypeIndex(parseItemCatalog(body));
+    return this.baseTypeIndex;
   }
 
   async search(league: string, query: TradeQuery): Promise<SearchResponse> {

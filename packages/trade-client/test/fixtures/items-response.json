@@ -1,0 +1,756 @@
+{
+  "result": [
+    {
+      "id": "accessory",
+      "label": "Accessories",
+      "entries": [
+        {
+          "type": "Leather Belt"
+        },
+        {
+          "type": "Amethyst Ring"
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Bear's Girdle Leather Belt",
+          "name": "Bear's Girdle",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Amethyst Ring",
+          "text": "Blackflame Amethyst Ring",
+          "name": "Blackflame",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Amethyst Ring",
+          "text": "Circle of Nostalgia Amethyst Ring",
+          "name": "Circle of Nostalgia",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Amethyst Ring",
+          "text": "Coiling Whisper Amethyst Ring",
+          "name": "Coiling Whisper",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Cyclopean Coil Leather Belt",
+          "name": "Cyclopean Coil",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Amethyst Ring",
+          "text": "Death Rush Amethyst Ring",
+          "name": "Death Rush",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Gluttony Leather Belt",
+          "name": "Gluttony",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Headhunter Leather Belt",
+          "name": "Headhunter",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Hyperboreus Leather Belt",
+          "name": "Hyperboreus",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Immortal Flesh Leather Belt",
+          "name": "Immortal Flesh",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Leash of Oblation Leather Belt",
+          "name": "Leash of Oblation",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Amethyst Ring",
+          "text": "Ming's Heart Amethyst Ring",
+          "name": "Ming's Heart",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Amethyst Ring",
+          "text": "Original Sin Amethyst Ring",
+          "name": "Original Sin",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Pyroshock Clasp Leather Belt",
+          "name": "Pyroshock Clasp",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Replica Headhunter Leather Belt",
+          "name": "Replica Headhunter",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Screams of the Desiccated Leather Belt",
+          "name": "Screams of the Desiccated",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Umbilicus Immortalis Leather Belt",
+          "name": "Umbilicus Immortalis",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Belt",
+          "text": "Wurm's Molt Leather Belt",
+          "name": "Wurm's Molt",
+          "flags": {
+            "unique": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "armour",
+      "label": "Armour",
+      "entries": [
+        {
+          "type": "Astral Plate"
+        },
+        {
+          "type": "Chainmail Tunic"
+        },
+        {
+          "type": "Titan Greaves"
+        },
+        {
+          "type": "Bone Helmet"
+        },
+        {
+          "type": "Leather Cap"
+        },
+        {
+          "type": "Bone Helmet",
+          "text": "Ancient Skull Bone Helmet",
+          "name": "Ancient Skull",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Astral Plate",
+          "text": "Blunderbore Astral Plate",
+          "name": "Blunderbore",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Astral Plate",
+          "text": "Death's Oath Astral Plate",
+          "name": "Death's Oath",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Titan Greaves",
+          "text": "Doryani's Delusion Titan Greaves (Legacy)",
+          "name": "Doryani's Delusion",
+          "disc": "legacy",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Leather Cap",
+          "text": "Goldrim Leather Cap",
+          "name": "Goldrim",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Titan Greaves",
+          "text": "Kaom's Roots Titan Greaves",
+          "name": "Kaom's Roots",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Bone Helmet",
+          "text": "Maw of Mischief Bone Helmet",
+          "name": "Maw of Mischief",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Titan Greaves",
+          "text": "Replica Red Trail Titan Greaves",
+          "name": "Replica Red Trail",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Titan Greaves",
+          "text": "The Infinite Pursuit Titan Greaves",
+          "name": "The Infinite Pursuit",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Titan Greaves",
+          "text": "The Red Trail Titan Greaves",
+          "name": "The Red Trail",
+          "flags": {
+            "unique": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "flask",
+      "label": "Flasks",
+      "entries": [
+        {
+          "type": "Greater Mana Flask"
+        },
+        {
+          "type": "Silver Flask"
+        },
+        {
+          "type": "Silver Flask",
+          "text": "Cinderswallow Urn Silver Flask",
+          "name": "Cinderswallow Urn",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Greater Mana Flask",
+          "text": "Doedre's Elixir Greater Mana Flask",
+          "name": "Doedre's Elixir",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Silver Flask",
+          "text": "Kiara's Determination Silver Flask",
+          "name": "Kiara's Determination",
+          "flags": {
+            "unique": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "jewel",
+      "label": "Jewels",
+      "entries": [
+        {
+          "type": "Cobalt Jewel"
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Anatomical Knowledge Cobalt Jewel",
+          "name": "Anatomical Knowledge",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Apex Mode Cobalt Jewel",
+          "name": "Apex Mode",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "To Dust Cobalt Jewel (Legacy)",
+          "name": "To Dust",
+          "disc": "legacy",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Assassin's Haste Cobalt Jewel",
+          "name": "Assassin's Haste",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Brittle Barrier Cobalt Jewel",
+          "name": "Brittle Barrier",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Brute Force Solution Cobalt Jewel",
+          "name": "Brute Force Solution",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Fortified Legion Cobalt Jewel",
+          "name": "Fortified Legion",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Clear Mind Cobalt Jewel",
+          "name": "Clear Mind",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Combat Focus Cobalt Jewel",
+          "name": "Combat Focus",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Conqueror's Potency Cobalt Jewel",
+          "name": "Conqueror's Potency",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Corrupted Energy Cobalt Jewel",
+          "name": "Corrupted Energy",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Dead Reckoning Cobalt Jewel",
+          "name": "Dead Reckoning",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Eldritch Knowledge Cobalt Jewel",
+          "name": "Eldritch Knowledge",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Emperor's Wit Cobalt Jewel",
+          "name": "Emperor's Wit",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Endless Misery Cobalt Jewel",
+          "name": "Endless Misery",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Energy From Within Cobalt Jewel",
+          "name": "Energy From Within",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Fertile Mind Cobalt Jewel",
+          "name": "Fertile Mind",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Fevered Mind Cobalt Jewel",
+          "name": "Fevered Mind",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "First Snow Cobalt Jewel",
+          "name": "First Snow",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Forbidden Flesh Cobalt Jewel",
+          "name": "Forbidden Flesh",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Fortress Covenant Cobalt Jewel",
+          "name": "Fortress Covenant",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "From Dust Cobalt Jewel",
+          "name": "From Dust",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Frozen Trail Cobalt Jewel",
+          "name": "Frozen Trail",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Grand Spectrum Cobalt Jewel",
+          "name": "Grand Spectrum",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Hazardous Research Cobalt Jewel",
+          "name": "Hazardous Research",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Healthy Mind Cobalt Jewel",
+          "name": "Healthy Mind",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Inevitability Cobalt Jewel",
+          "name": "Inevitability",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Malicious Intent Cobalt Jewel",
+          "name": "Malicious Intent",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Melding of the Flesh Cobalt Jewel",
+          "name": "Melding of the Flesh",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Mutated Growth Cobalt Jewel",
+          "name": "Mutated Growth",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Nadir Mode Cobalt Jewel",
+          "name": "Nadir Mode",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Powerlessness Cobalt Jewel",
+          "name": "Powerlessness",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Primordial Harmony Cobalt Jewel",
+          "name": "Primordial Harmony",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Rational Doctrine Cobalt Jewel",
+          "name": "Rational Doctrine",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Reckless Defence Cobalt Jewel",
+          "name": "Reckless Defence",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Replica Powerlessness Cobalt Jewel",
+          "name": "Replica Powerlessness",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Replica Reckless Defence Cobalt Jewel",
+          "name": "Replica Reckless Defence",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Replica Unstable Payload Cobalt Jewel",
+          "name": "Replica Unstable Payload",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Rolling Flames Cobalt Jewel",
+          "name": "Rolling Flames",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Soul's Wick Cobalt Jewel",
+          "name": "Soul's Wick",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Spirited Response Cobalt Jewel",
+          "name": "Spirited Response",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Spreading Rot Cobalt Jewel",
+          "name": "Spreading Rot",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Survival Secrets Cobalt Jewel",
+          "name": "Survival Secrets",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Tempered Mind Cobalt Jewel",
+          "name": "Tempered Mind",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "The Balance of Terror Cobalt Jewel",
+          "name": "The Balance of Terror",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "The Blue Dream Cobalt Jewel",
+          "name": "The Blue Dream",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "The Blue Nightmare Cobalt Jewel",
+          "name": "The Blue Nightmare",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "The Long Winter Cobalt Jewel",
+          "name": "The Long Winter",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "To Dust Cobalt Jewel",
+          "name": "To Dust",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Transcendent Mind Cobalt Jewel",
+          "name": "Transcendent Mind",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Unending Hunger Cobalt Jewel",
+          "name": "Unending Hunger",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Unstable Payload Cobalt Jewel",
+          "name": "Unstable Payload",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Vaal Sentencing Cobalt Jewel",
+          "name": "Vaal Sentencing",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Violent Dead Cobalt Jewel",
+          "name": "Violent Dead",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Winter's Bounty Cobalt Jewel",
+          "name": "Winter's Bounty",
+          "flags": {
+            "unique": true
+          }
+        },
+        {
+          "type": "Cobalt Jewel",
+          "text": "Witchbane Cobalt Jewel",
+          "name": "Witchbane",
+          "flags": {
+            "unique": true
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -127,7 +127,13 @@ export function PriceCheckOverlay() {
     setState({ status: 'searching' });
     try {
       const client = getTradeClient();
-      const search = await client.search(league, buildQuery(item, filters));
+      // Magic items carry affixes in their name, so the searchable base type
+      // comes from the official catalog rather than the parsed name.
+      const baseTypes = await client.getBaseTypeIndex();
+      const search = await client.search(
+        league,
+        buildQuery(item, filters, { baseTypes }),
+      );
       const results = await client.fetchListings(search.result.slice(0, 10), search.id);
       const listings = toPricedListings(results);
       setState({
