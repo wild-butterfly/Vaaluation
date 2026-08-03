@@ -3,11 +3,11 @@ import Foundation
 
 /// Finds the running Path of Exile process using supported APIs only.
 enum GameLocator {
-  /// Known bundle identifiers for the macOS Path of Exile 1 client
-  /// (standalone and Steam).
+  /// Bundle identifiers for the macOS Path of Exile 1 client. `com.GGG.PathOfExile`
+  /// is the identifier shipped by both the Steam and standalone builds; compared
+  /// case-insensitively because the casing is not guaranteed stable.
   private static let bundleIdentifiers: Set<String> = [
-    "com.grindinggeargames.pathofexile",
-    "com.grindinggear.pathofexile",
+    "com.ggg.pathofexile"
   ]
 
   private static let processNames: Set<String> = [

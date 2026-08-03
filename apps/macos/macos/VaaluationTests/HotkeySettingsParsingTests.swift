@@ -27,11 +27,21 @@ final class HotkeySettingsParsingTests: XCTestCase {
     XCTAssertNil(hotkeys["toggleOverlay"], "null means the shortcut is disabled")
   }
 
-  func testMissingOrMalformedJSON() {
-    XCTAssertTrue(HotkeyCenter.hotkeysFromSettingsJSON(nil).isEmpty)
-    XCTAssertTrue(HotkeyCenter.hotkeysFromSettingsJSON("{broken").isEmpty)
-    XCTAssertTrue(HotkeyCenter.hotkeysFromSettingsJSON("{}").isEmpty)
-    XCTAssertTrue(HotkeyCenter.hotkeysFromSettingsJSON("{\"hotkeys\": 3}").isEmpty)
+  /// A fresh install has no persisted settings; shortcuts must still work.
+  func testMissingOrMalformedJSONFallsBackToDefaults() {
+    for json in [nil, "{broken", "{}", "{\"hotkeys\": 3}"] as [String?] {
+      let hotkeys = HotkeyCenter.hotkeysFromSettingsJSON(json)
+      XCTAssertEqual(hotkeys["priceCheck"]?.displayString, "⌃D")
+      XCTAssertEqual(hotkeys["priceCheckPersistent"]?.displayString, "⌃⌥D")
+      XCTAssertEqual(hotkeys["toggleOverlay"]?.displayString, "⇧Space")
+    }
+  }
+
+  /// Once settings exist they win outright — a disabled shortcut must not be
+  /// resurrected by the defaults.
+  func testExplicitNullIsNotOverriddenByDefaults() {
+    let json = "{\"hotkeys\": {\"priceCheck\": null}}"
+    XCTAssertNil(HotkeyCenter.hotkeysFromSettingsJSON(json)["priceCheck"])
   }
 
   func testIgnoresEntriesWithoutKeyCode() {

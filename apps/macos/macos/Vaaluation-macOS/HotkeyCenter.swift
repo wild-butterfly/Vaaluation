@@ -172,7 +172,30 @@ final class HotkeyCenter {
     return errors
   }
 
+  /// Built-in shortcuts used until the user has saved settings of their own.
+  /// Mirrors DEFAULT_SETTINGS in @vaaluation/shared-types.
+  static let defaultHotkeys: [String: KeyCombo] = [
+    "priceCheck": KeyCombo(
+      keyCode: 2, characters: "D",
+      control: true, option: false, shift: false, command: false
+    ),
+    "priceCheckPersistent": KeyCombo(
+      keyCode: 2, characters: "D",
+      control: true, option: true, shift: false, command: false
+    ),
+    "toggleOverlay": KeyCombo(
+      keyCode: 49, characters: "Space",
+      control: false, option: false, shift: true, command: false
+    ),
+  ]
+
   /// Pure parsing of the settings JSON → hotkey combos ("null" = disabled).
+  ///
+  /// A missing or unreadable settings blob means the user has never saved
+  /// settings, so the defaults apply — otherwise shortcuts would stay dead on
+  /// a fresh install until something happened to persist them. Once a blob
+  /// exists it is honored exactly, including explicit nulls for disabled
+  /// shortcuts.
   static func hotkeysFromSettingsJSON(_ json: String?) -> [String: KeyCombo] {
     guard
       let json,
@@ -180,7 +203,7 @@ final class HotkeyCenter {
       let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
       let hotkeys = object["hotkeys"] as? [String: Any]
     else {
-      return [:]
+      return defaultHotkeys
     }
     var result: [String: KeyCombo] = [:]
     for (action, value) in hotkeys {
