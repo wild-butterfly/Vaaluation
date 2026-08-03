@@ -14,6 +14,8 @@
 		1690986E0D8870C8AAA56460 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D48C9124B0D9450BA3E79B /* SettingsStore.swift */; };
 		1B4A5AF583B6B11CF051E640 /* HotkeySettingsParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8CFA25EA0CD62211C41490B /* HotkeySettingsParsingTests.swift */; };
 		1BAE76ECE790331CC8E26A5A /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D48C9124B0D9450BA3E79B /* SettingsStore.swift */; };
+		1CF6CF38A6DFAF00B13D3AB5 /* OverlayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A702284B8144EC0176DA0DFD /* OverlayWindowController.swift */; };
+		2B441AAAE31406CA5025D7C9 /* OverlayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9540FB40722B840FA36ECE3 /* OverlayPanel.swift */; };
 		44F66BE01C838CB17E5A008E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 05FB2875FA02863ABD5660CE /* PrivacyInfo.xcprivacy */; };
 		514201522437B4B40078DB4F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 514201512437B4B40078DB4F /* Assets.xcassets */; };
 		5AEDD58F321DBF22A2CB33AA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FBA26AFA2667DACACED3C1 /* AppDelegate.swift */; };
@@ -62,7 +64,9 @@
 		73428FDC40AC06D37FC3368D /* VLClipboardModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLClipboardModule.swift; sourceTree = "<group>"; };
 		81368BF3CD40892875ED855C /* VLSettingsModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLSettingsModule.swift; sourceTree = "<group>"; };
 		8EDB5C62CC3EEDF2B5846057 /* SettingsWindowController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		A702284B8144EC0176DA0DFD /* OverlayWindowController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OverlayWindowController.swift; sourceTree = "<group>"; };
 		A8CFA25EA0CD62211C41490B /* HotkeySettingsParsingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HotkeySettingsParsingTests.swift; sourceTree = "<group>"; };
+		A9540FB40722B840FA36ECE3 /* OverlayPanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OverlayPanel.swift; sourceTree = "<group>"; };
 		B303CF7C90B5BB28FD4D2C0E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		B78BE21688D0EC2E322BB4C7 /* PermissionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
 		BBE393BB6DC5F7B7B1A22DD3 /* Pods-Vaaluation-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vaaluation-macOS.debug.xcconfig"; path = "Target Support Files/Pods-Vaaluation-macOS/Pods-Vaaluation-macOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -141,6 +145,8 @@
 				BCD08045DBEB408FB2B9E64F /* GameLocator.swift */,
 				6D8A5663990062C021E2A7A8 /* ClipboardService.swift */,
 				73428FDC40AC06D37FC3368D /* VLClipboardModule.swift */,
+				A9540FB40722B840FA36ECE3 /* OverlayPanel.swift */,
+				A702284B8144EC0176DA0DFD /* OverlayWindowController.swift */,
 			);
 			path = "Vaaluation-macOS";
 			sourceTree = "<group>";
@@ -400,6 +406,8 @@
 				A6FEFDFF1DA5FDFE181EE153 /* GameLocator.swift in Sources */,
 				B70227B36192B6CCFF27F03D /* ClipboardService.swift in Sources */,
 				A013EE07ECDAB6A5790299CD /* VLClipboardModule.swift in Sources */,
+				2B441AAAE31406CA5025D7C9 /* OverlayPanel.swift in Sources */,
+				1CF6CF38A6DFAF00B13D3AB5 /* OverlayWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

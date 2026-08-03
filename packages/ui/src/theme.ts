@@ -28,6 +28,27 @@ export const colors = {
   offline: '#6B635B',
 } as const;
 
+/**
+ * Overlay palette. The panel sits on a live blur of the game, so surfaces are
+ * translucent and borders are hairline — the depth comes from the blur, not
+ * from heavy chrome. Text stays fully opaque for readability over any scene.
+ */
+export const glass = {
+  /** Overall panel tint laid over the system blur. */
+  surface: 'rgba(18, 15, 18, 0.62)',
+  /** Slightly denser band for headers and footers. */
+  surfaceStrong: 'rgba(14, 11, 14, 0.78)',
+  /** Raised row / input fill. */
+  fill: 'rgba(255, 255, 255, 0.06)',
+  fillHover: 'rgba(255, 255, 255, 0.10)',
+  /** Hairline separators and edges. */
+  hairline: 'rgba(255, 255, 255, 0.10)',
+  border: 'rgba(201, 179, 126, 0.28)',
+  /** Accent wash for the primary action. */
+  accent: 'rgba(163, 30, 44, 0.85)',
+  accentBorder: 'rgba(201, 58, 71, 0.75)',
+} as const;
+
 export const spacing = {
   xs: 4,
   sm: 8,

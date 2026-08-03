@@ -17,7 +17,7 @@ final class VLEventsModule: RCTEventEmitter {
   override static func requiresMainQueueSetup() -> Bool { false }
 
   override func supportedEvents() -> [String] {
-    ["vl:navigate", "vl:hotkey", "vl:permissions", "vl:item-copied"]
+    ["vl:navigate", "vl:hotkey", "vl:permissions", "vl:item-copied", "vl:overlay"]
   }
 
   override func startObserving() {
@@ -53,6 +53,12 @@ final class VLEventsModule: RCTEventEmitter {
       withName: "vl:item-copied",
       body: ["text": text, "persistent": persistent]
     )
+  }
+
+  /// Fired when the overlay is shown, hidden or pinned.
+  static func emitOverlayState(visible: Bool, pinned: Bool) {
+    guard let instance = shared, instance.hasListeners else { return }
+    instance.sendEvent(withName: "vl:overlay", body: ["visible": visible, "pinned": pinned])
   }
 
   /// Fired when permission state may have changed (app became active).

@@ -4,6 +4,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   private var reactHost: ReactHost?
   private var statusItemController: StatusItemController?
   private var settingsWindowController: SettingsWindowController?
+  private var overlayController: OverlayWindowController?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
     // Menu-bar app: no Dock icon, no app switcher entry (LSUIElement is also
@@ -55,9 +56,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             message: "Item copied from game (\(text.count) chars)"
           )
           VLEventsModule.emitItemCopied(text: text, persistent: persistent)
-          // The window must come forward over the game, otherwise a
-          // successful check appears to do nothing at all.
-          self.showSettingsWindow(route: "price-check", aboveGame: true)
+          self.showOverlay(pinned: persistent)
         case .failure(let error):
           LogStore.shared.append(
             level: "warn",
@@ -67,20 +66,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
       }
     case "toggleOverlay":
-      toggleWindow()
+      overlay().toggle(pinned: false)
     default:
       break
     }
   }
 
-  /// Shift+Space hides the window if it is already frontmost, so the same
-  /// shortcut gets you back to the game.
-  private func toggleWindow() {
-    if let window = settingsWindowController?.window, window.isVisible {
-      window.orderOut(nil)
-      return
+  private func overlay() -> OverlayWindowController {
+    if overlayController == nil, let host = reactHost {
+      overlayController = OverlayWindowController(reactHost: host)
     }
-    showSettingsWindow(route: "price-check", aboveGame: true)
+    return overlayController!
+  }
+
+  private func showOverlay(pinned: Bool) {
+    overlay().show(pinned: pinned)
   }
 
   func applicationWillTerminate(_ notification: Notification) {
