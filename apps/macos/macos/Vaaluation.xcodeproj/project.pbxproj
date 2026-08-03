@@ -23,7 +23,10 @@
 		6C40D4035A68C6484EC25C23 /* ReactHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4516344722C65BA9DBE6E9 /* ReactHost.swift */; };
 		8EA37AF6622B0834EEBA37D6 /* VaaluationModules.m in Sources */ = {isa = PBXBuildFile; fileRef = D13F5198BA95668A2ECDFC55 /* VaaluationModules.m */; };
 		9A23B852E1686DDE0900DCEA /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */; };
+		A013EE07ECDAB6A5790299CD /* VLClipboardModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73428FDC40AC06D37FC3368D /* VLClipboardModule.swift */; };
 		A04FF082C06452BF534D1126 /* VLPermissionsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4366BFF47442E947BE623552 /* VLPermissionsModule.swift */; };
+		A6FEFDFF1DA5FDFE181EE153 /* GameLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD08045DBEB408FB2B9E64F /* GameLocator.swift */; };
+		B70227B36192B6CCFF27F03D /* ClipboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8A5663990062C021E2A7A8 /* ClipboardService.swift */; };
 		BB2C67662436BD82F484D9C8 /* LogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240305C6AA93FC8777D51691 /* LogStore.swift */; };
 		BFF2EE8519FE267E51C09757 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38529207DCF185CF25959008 /* main.swift */; };
 		CA2920A90CD53B2D08012B3E /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78BE21688D0EC2E322BB4C7 /* PermissionService.swift */; };
@@ -55,12 +58,15 @@
 		514201592437B4B40078DB4F /* Vaaluation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Vaaluation.entitlements; sourceTree = "<group>"; };
 		5D7D9F64AC2C307672F54D7A /* libPods-Vaaluation-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Vaaluation-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C38B0A1F206AF0D81CE5D7C /* VLEventsModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLEventsModule.swift; sourceTree = "<group>"; };
+		6D8A5663990062C021E2A7A8 /* ClipboardService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClipboardService.swift; sourceTree = "<group>"; };
+		73428FDC40AC06D37FC3368D /* VLClipboardModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLClipboardModule.swift; sourceTree = "<group>"; };
 		81368BF3CD40892875ED855C /* VLSettingsModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLSettingsModule.swift; sourceTree = "<group>"; };
 		8EDB5C62CC3EEDF2B5846057 /* SettingsWindowController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		A8CFA25EA0CD62211C41490B /* HotkeySettingsParsingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HotkeySettingsParsingTests.swift; sourceTree = "<group>"; };
 		B303CF7C90B5BB28FD4D2C0E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		B78BE21688D0EC2E322BB4C7 /* PermissionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
 		BBE393BB6DC5F7B7B1A22DD3 /* Pods-Vaaluation-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vaaluation-macOS.debug.xcconfig"; path = "Target Support Files/Pods-Vaaluation-macOS/Pods-Vaaluation-macOS.debug.xcconfig"; sourceTree = "<group>"; };
+		BCD08045DBEB408FB2B9E64F /* GameLocator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameLocator.swift; sourceTree = "<group>"; };
 		C1A5E33321A8D06F525E929A /* VLLogModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLLogModule.swift; sourceTree = "<group>"; };
 		D13F5198BA95668A2ECDFC55 /* VaaluationModules.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = VaaluationModules.m; sourceTree = "<group>"; };
 		D5E85FCB98F12D4B6CD340B6 /* KeyComboTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyComboTests.swift; sourceTree = "<group>"; };
@@ -132,6 +138,9 @@
 				B78BE21688D0EC2E322BB4C7 /* PermissionService.swift */,
 				4366BFF47442E947BE623552 /* VLPermissionsModule.swift */,
 				40204572A5C05583C813CC9A /* VLHotkeysModule.swift */,
+				BCD08045DBEB408FB2B9E64F /* GameLocator.swift */,
+				6D8A5663990062C021E2A7A8 /* ClipboardService.swift */,
+				73428FDC40AC06D37FC3368D /* VLClipboardModule.swift */,
 			);
 			path = "Vaaluation-macOS";
 			sourceTree = "<group>";
@@ -388,6 +397,9 @@
 				CA2920A90CD53B2D08012B3E /* PermissionService.swift in Sources */,
 				A04FF082C06452BF534D1126 /* VLPermissionsModule.swift in Sources */,
 				D30D99F41D40125C969CE038 /* VLHotkeysModule.swift in Sources */,
+				A6FEFDFF1DA5FDFE181EE153 /* GameLocator.swift in Sources */,
+				B70227B36192B6CCFF27F03D /* ClipboardService.swift in Sources */,
+				A013EE07ECDAB6A5790299CD /* VLClipboardModule.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

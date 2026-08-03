@@ -1,0 +1,15 @@
+Item Class: Skill Gems
+Rarity: Gem
+Vaal Grace
+--------
+Vaal, Aura, Spell, AoE, Duration
+Level: 20 (Max)
+Quality: +20% (augmented)
+--------
+Requirements:
+Level: 72
+Dex: 155
+--------
+Casts an aura that grants evasion to you and your allies.
+--------
+Corrupted

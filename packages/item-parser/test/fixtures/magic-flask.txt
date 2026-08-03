@@ -1,0 +1,19 @@
+Item Class: Utility Flasks
+Rarity: Magic
+Experimenter's Silver Flask of the Dove
+--------
+Quality: +20% (augmented)
+Lasts 7.00 Seconds
+Consumes 30 of 60 Charges on use
+Currently has 60 Charges
+Onslaught
+--------
+Requirements:
+Level: 22
+--------
+Item Level: 45
+--------
+38% increased Duration
+Grants Immunity to Bleeding for 6 seconds if used while Bleeding
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.

@@ -1,0 +1,21 @@
+Item Class: Belts
+Rarity: Unique
+Headhunter
+Leather Belt
+--------
+Requirements:
+Level: 40
+--------
+Item Level: 85
+--------
++31 to maximum Life (implicit)
+--------
++55 to Strength
++50 to Dexterity
++52 to maximum Life
+20% increased Damage with Hits against Rare monsters
+When you Kill a Rare monster, you gain its Modifiers for 60 seconds
+--------
+"A man who begins his day by donning the head
+of a fallen leader will fear nothing the world
+can throw at him."

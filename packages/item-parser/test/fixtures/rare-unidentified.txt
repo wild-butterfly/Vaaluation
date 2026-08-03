@@ -1,0 +1,17 @@
+Item Class: Body Armours
+Rarity: Rare
+Astral Plate
+--------
+Armour: 711
+--------
+Requirements:
+Level: 68
+Str: 180
+--------
+Sockets: B-B-R R-R
+--------
+Item Level: 86
+--------
++8% to all Elemental Resistances (implicit)
+--------
+Unidentified

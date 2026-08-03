@@ -1,0 +1,12 @@
+Item Class: Jewels
+Rarity: Rare
+Entropy Splinter
+Cobalt Jewel
+--------
+Item Level: 85
+--------
+7% increased maximum Life
+12% increased Spell Damage
+8% increased Cast Speed
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

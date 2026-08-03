@@ -1,0 +1,13 @@
+Item Class: Boots
+Rarity: Normal
+Titan Greaves
+--------
+Armour: 240
+--------
+Requirements:
+Level: 68
+Str: 120
+--------
+Sockets: R-R-R B
+--------
+Item Level: 80

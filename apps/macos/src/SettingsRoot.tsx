@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, spacing, typography } from '@vaaluation/ui';
 import type { AppRoute } from './native/VLEvents';
-import { isAppRoute, onNavigate } from './native/VLEvents';
+import { isAppRoute, onItemCopied, onNavigate } from './native/VLEvents';
 import { SettingsProvider, useSettings } from './state/SettingsContext';
 import { AboutScreen } from './screens/AboutScreen';
 import { LogsScreen } from './screens/LogsScreen';
@@ -22,6 +22,9 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
   const { settings, loaded } = useSettings();
 
   useEffect(() => onNavigate(setRoute), []);
+  // Until the overlay ships (Milestone 4), a successful in-game price check
+  // shows its parsed result on the Test Parsing screen.
+  useEffect(() => onItemCopied(() => setRoute('test-parsing')), []);
 
   if (!loaded) {
     return <View style={styles.root} />;

@@ -45,13 +45,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     VLEventsModule.emitHotkey(action: action)
     switch action {
     case "priceCheck", "priceCheckPersistent":
-      // The capture→parse→overlay pipeline arrives in Milestones 3–4. Until
-      // then the shortcut proves itself end-to-end in the log.
-      LogStore.shared.append(
-        level: "info",
-        scope: "price-check",
-        message: "Price check requested (pipeline lands in Milestones 3–4)"
-      )
+      let persistent = action == "priceCheckPersistent"
+      ClipboardService.shared.triggerGameCopyAndRead(timeoutMs: 600) { result in
+        switch result {
+        case .success(let text):
+          LogStore.shared.append(
+            level: "info",
+            scope: "price-check",
+            message: "Item copied from game (\(text.count) chars); overlay lands in Milestone 4"
+          )
+          VLEventsModule.emitItemCopied(text: text, persistent: persistent)
+        case .failure(let error):
+          LogStore.shared.append(
+            level: "warn",
+            scope: "price-check",
+            message: error.message
+          )
+        }
+      }
     case "toggleOverlay":
       showSettingsWindow(route: "settings")
     default:

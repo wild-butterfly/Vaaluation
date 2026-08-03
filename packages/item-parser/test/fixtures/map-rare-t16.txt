@@ -1,0 +1,20 @@
+Item Class: Maps
+Rarity: Rare
+Whispering Refuge
+Cemetery Map
+--------
+Map Tier: 16
+Item Quantity: +75% (augmented)
+Item Rarity: +36% (augmented)
+Monster Pack Size: +23% (augmented)
+--------
+Item Level: 83
+--------
+Area is influenced by The Shaper (implicit)
+--------
+Area has patches of Consecrated Ground
+Monsters deal 90% extra Physical Damage as Fire
+Players are Cursed with Vulnerability
+Monsters have 70% chance to Avoid Elemental Ailments
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.

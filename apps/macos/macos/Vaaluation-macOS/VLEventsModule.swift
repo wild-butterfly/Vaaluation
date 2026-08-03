@@ -17,7 +17,7 @@ final class VLEventsModule: RCTEventEmitter {
   override static func requiresMainQueueSetup() -> Bool { false }
 
   override func supportedEvents() -> [String] {
-    ["vl:navigate", "vl:hotkey", "vl:permissions"]
+    ["vl:navigate", "vl:hotkey", "vl:permissions", "vl:item-copied"]
   }
 
   override func startObserving() {
@@ -44,6 +44,15 @@ final class VLEventsModule: RCTEventEmitter {
   static func emitHotkey(action: String) {
     guard let instance = shared, instance.hasListeners else { return }
     instance.sendEvent(withName: "vl:hotkey", body: ["action": action])
+  }
+
+  /// Fired after a price-check hotkey successfully captured item text.
+  static func emitItemCopied(text: String, persistent: Bool) {
+    guard let instance = shared, instance.hasListeners else { return }
+    instance.sendEvent(
+      withName: "vl:item-copied",
+      body: ["text": text, "persistent": persistent]
+    )
   }
 
   /// Fired when permission state may have changed (app became active).

@@ -1,0 +1,25 @@
+Item Class: Helmets
+Rarity: Rare
+Ghoul Crown
+Bone Helmet
+--------
+Requirements:
+Level: 73
+Str: 76
+Int: 76
+--------
+Sockets: B-B-B-R
+--------
+Item Level: 87
+--------
+Minions deal 32% increased Damage (implicit)
+--------
++68 to maximum Life (fractured)
++42 to Intelligence
+Minions have 12% increased maximum Life
++29% to Cold Resistance
+Nearby Enemies take 9% increased Physical Damage (enchant)
+--------
+Hunter Item
+--------
+Fractured Item

@@ -14,7 +14,8 @@
     "react-native-safe-area-context": "^5.5.2",
     "react-native-macos": "^0.81.0",
     "@vaaluation/shared-types": "*",
-    "@vaaluation/ui": "*"
+    "@vaaluation/ui": "*",
+    "@vaaluation/item-parser": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

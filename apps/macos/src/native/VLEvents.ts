@@ -37,6 +37,19 @@ export function onHotkey(handler: (action: string) => void): () => void {
   return () => subscription.remove();
 }
 
+/** Fired after a price-check hotkey successfully captured item text. */
+export function onItemCopied(
+  handler: (payload: { text: string; persistent: boolean }) => void,
+): () => void {
+  const subscription = emitter.addListener('vl:item-copied', (payload: unknown) => {
+    const data = payload as { text?: unknown; persistent?: unknown } | null;
+    if (data !== null && typeof data?.text === 'string') {
+      handler({ text: data.text, persistent: data.persistent === true });
+    }
+  });
+  return () => subscription.remove();
+}
+
 /** Fired when permission state may have changed (the app became active). */
 export function onPermissionsChanged(
   handler: (status: { accessibility: string; inputMonitoring: string }) => void,

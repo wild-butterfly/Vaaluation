@@ -1,0 +1,15 @@
+{
+  "name": "@vaaluation/item-parser",
+  "version": "0.1.0",
+  "description": "Parser for Path of Exile copied-item text.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vaaluation/shared-types": "*"
+  }
+}

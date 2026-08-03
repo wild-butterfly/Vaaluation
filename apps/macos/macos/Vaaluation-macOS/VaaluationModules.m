@@ -59,3 +59,17 @@ RCT_EXTERN_METHOD(captureNextKeyCombo : (RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(cancelCapture)
 
 @end
+
+@interface RCT_EXTERN_MODULE (VLClipboard, NSObject)
+
+RCT_EXTERN_METHOD(readText : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(isGameRunning : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(triggerGameCopyAndRead : (nonnull NSNumber *)timeoutMs
+                  resolver : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+@end
