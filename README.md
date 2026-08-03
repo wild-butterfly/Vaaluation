@@ -19,6 +19,8 @@ value ranges, seller status, and a one-click jump to the full trade search.
 - Trade search against the currently selected league with rate-limit-aware backoff
 - Compact overlay positioned relative to the game window, Retina and
   multi-monitor aware
+- Optional trade-whisper list with one-command-per-click invite, trade, kick
+  and quick replies
 - Open the exact search on the official trade website at any time
 
 ## Requirements
@@ -95,8 +97,9 @@ npm run typecheck && npm run lint && npm test
 4. ✅ Clipboard integration & item parser
 5. ✅ League selection
 6. ✅ Trade search & price-check interface
-7. Game-window detection & compact overlay
-8. Signed, notarized universal releases
+7. ✅ Compact in-game overlay
+8. ✅ Trade whisper management
+9. Signed, notarized universal releases
 
 ## Support the project
 

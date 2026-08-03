@@ -62,7 +62,7 @@ export class BaseTypeIndex {
     if (this.exact.has(trimmed)) return trimmed;
 
     const words = trimmed.split(/\s+/);
-    for (const { words: length, types } of this.byLength) {
+    for (const { words: length } of this.byLength) {
       if (length > words.length) continue;
       // Slide a window of this length across the name.
       for (let start = 0; start + length <= words.length; start += 1) {

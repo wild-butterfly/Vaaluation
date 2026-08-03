@@ -9,10 +9,12 @@ import { LogsScreen } from './screens/LogsScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
 import { PriceCheckScreen } from './screens/PriceCheckScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { TradeScreen } from './screens/TradeScreen';
 import { TestParsingScreen } from './screens/TestParsingScreen';
 
 const NAV_ITEMS: ReadonlyArray<{ route: AppRoute; label: string }> = [
   { route: 'price-check', label: 'Price Check' },
+  { route: 'trade', label: 'Trades' },
   { route: 'settings', label: 'Settings' },
   { route: 'test-parsing', label: 'Test Parsing' },
   { route: 'logs', label: 'Logs' },
@@ -59,6 +61,7 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
       </View>
       <View style={styles.main}>
         {route === 'price-check' ? <PriceCheckScreen /> : null}
+        {route === 'trade' ? <TradeScreen /> : null}
         {route === 'settings' ? <SettingsScreen /> : null}
         {route === 'test-parsing' ? <TestParsingScreen /> : null}
         {route === 'logs' ? <LogsScreen /> : null}

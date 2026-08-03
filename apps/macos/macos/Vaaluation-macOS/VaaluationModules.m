@@ -60,6 +60,22 @@ RCT_EXTERN_METHOD(cancelCapture)
 
 @end
 
+@interface RCT_EXTERN_MODULE (VLTrade, NSObject)
+
+RCT_EXTERN_METHOD(startWatching : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(stopWatching)
+
+RCT_EXTERN_METHOD(isWatching : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(sendChatCommand : (NSString *)command
+                  resolver : (RCTPromiseResolveBlock)resolve
+                  rejecter : (RCTPromiseRejectBlock)reject)
+
+@end
+
 @interface RCT_EXTERN_MODULE (VLClipboard, NSObject)
 
 RCT_EXTERN_METHOD(readText : (RCTPromiseResolveBlock)resolve

@@ -30,6 +30,26 @@ required by Grinding Gear Games' developer policy.
 - Clipboard contents are never stored, never logged (unless you explicitly
   enable debug logging, which is local-only), and never uploaded.
 
+## Trade whispers (optional, off by default)
+
+The Trades feature watches the Path of Exile client log for incoming trade
+whispers. It is **disabled until you turn it on**, because that log also
+contains your private conversations.
+
+When enabled:
+
+- Reading begins at the **end** of the log. Existing chat history is never read.
+- Only lines matching the game's own trade-whisper wording are kept. Every
+  other line — personal whispers, guild, party, global chat — is discarded
+  immediately and is never stored, logged, or displayed.
+- Recognized requests live in memory only, and are lost when you quit.
+- Nothing from the log is ever uploaded.
+
+Chat commands (invite, trade, kick, whisper, hideout) are sent only when you
+press the corresponding button, and each press sends exactly one command —
+the same one you would have typed. Vaaluation never sends a command on its
+own, never chains commands together, and never replies automatically.
+
 ## Local data
 
 Settings (league, shortcuts, overlay position) are stored locally in
@@ -45,9 +65,9 @@ macOS Keychain.
 
 ## macOS permissions
 
-| Permission    | Purpose                                                                           |
-| ------------- | --------------------------------------------------------------------------------- |
-| Accessibility | Send the single item-copy keystroke to Path of Exile when you press the shortcut. |
+| Permission    | Purpose                                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Accessibility | Send the single item-copy keystroke when you press the price-check shortcut, and send a single chat command when you press a trade button. |
 
 Vaaluation does not request Screen Recording, Input Monitoring, camera,
 microphone, location, or contacts access.

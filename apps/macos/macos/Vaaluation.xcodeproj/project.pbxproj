@@ -15,6 +15,7 @@
 		1B4A5AF583B6B11CF051E640 /* HotkeySettingsParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8CFA25EA0CD62211C41490B /* HotkeySettingsParsingTests.swift */; };
 		1BAE76ECE790331CC8E26A5A /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D48C9124B0D9450BA3E79B /* SettingsStore.swift */; };
 		1CF6CF38A6DFAF00B13D3AB5 /* OverlayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A702284B8144EC0176DA0DFD /* OverlayWindowController.swift */; };
+		23B1BAC620311EB7F1A8DDCA /* GameLogWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3C8A5737C772C499E27447 /* GameLogWatcher.swift */; };
 		2B441AAAE31406CA5025D7C9 /* OverlayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9540FB40722B840FA36ECE3 /* OverlayPanel.swift */; };
 		44F66BE01C838CB17E5A008E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 05FB2875FA02863ABD5660CE /* PrivacyInfo.xcprivacy */; };
 		514201522437B4B40078DB4F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 514201512437B4B40078DB4F /* Assets.xcassets */; };
@@ -24,10 +25,12 @@
 		68C87FEB0C9C4FB4203E2BF9 /* LogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240305C6AA93FC8777D51691 /* LogStore.swift */; };
 		6C40D4035A68C6484EC25C23 /* ReactHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4516344722C65BA9DBE6E9 /* ReactHost.swift */; };
 		8EA37AF6622B0834EEBA37D6 /* VaaluationModules.m in Sources */ = {isa = PBXBuildFile; fileRef = D13F5198BA95668A2ECDFC55 /* VaaluationModules.m */; };
+		92E695D35201919BFA6CA00B /* ChatSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5B24F0A09AE81DEA0E4569 /* ChatSender.swift */; };
 		9A23B852E1686DDE0900DCEA /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */; };
 		A013EE07ECDAB6A5790299CD /* VLClipboardModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73428FDC40AC06D37FC3368D /* VLClipboardModule.swift */; };
 		A04FF082C06452BF534D1126 /* VLPermissionsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4366BFF47442E947BE623552 /* VLPermissionsModule.swift */; };
 		A6FEFDFF1DA5FDFE181EE153 /* GameLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD08045DBEB408FB2B9E64F /* GameLocator.swift */; };
+		B550BF618DC5430BEDF6B9CC /* VLTradeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3ECACCC8206E31AE00BA4E /* VLTradeModule.swift */; };
 		B70227B36192B6CCFF27F03D /* ClipboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8A5663990062C021E2A7A8 /* ClipboardService.swift */; };
 		BB2C67662436BD82F484D9C8 /* LogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240305C6AA93FC8777D51691 /* LogStore.swift */; };
 		BFF2EE8519FE267E51C09757 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38529207DCF185CF25959008 /* main.swift */; };
@@ -44,7 +47,9 @@
 		05FB2875FA02863ABD5660CE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = ../PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0D11812BCC4AD3C4C98B555C /* Vaaluation-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Vaaluation-Bridging-Header.h"; sourceTree = "<group>"; };
 		0E4516344722C65BA9DBE6E9 /* ReactHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReactHost.swift; sourceTree = "<group>"; };
+		1B5B24F0A09AE81DEA0E4569 /* ChatSender.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatSender.swift; sourceTree = "<group>"; };
 		240305C6AA93FC8777D51691 /* LogStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LogStore.swift; sourceTree = "<group>"; };
+		2C3ECACCC8206E31AE00BA4E /* VLTradeModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLTradeModule.swift; sourceTree = "<group>"; };
 		303936647C698B334F094289 /* VaaluationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VaaluationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		33D48C9124B0D9450BA3E79B /* SettingsStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		38529207DCF185CF25959008 /* main.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -54,6 +59,7 @@
 		42FBA26AFA2667DACACED3C1 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4366BFF47442E947BE623552 /* VLPermissionsModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLPermissionsModule.swift; sourceTree = "<group>"; };
 		44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyCombo.swift; sourceTree = "<group>"; };
+		4E3C8A5737C772C499E27447 /* GameLogWatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameLogWatcher.swift; sourceTree = "<group>"; };
 		514201492437B4B30078DB4F /* Vaaluation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vaaluation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		514201512437B4B40078DB4F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		514201562437B4B40078DB4F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -147,6 +153,9 @@
 				73428FDC40AC06D37FC3368D /* VLClipboardModule.swift */,
 				A9540FB40722B840FA36ECE3 /* OverlayPanel.swift */,
 				A702284B8144EC0176DA0DFD /* OverlayWindowController.swift */,
+				4E3C8A5737C772C499E27447 /* GameLogWatcher.swift */,
+				1B5B24F0A09AE81DEA0E4569 /* ChatSender.swift */,
+				2C3ECACCC8206E31AE00BA4E /* VLTradeModule.swift */,
 			);
 			path = "Vaaluation-macOS";
 			sourceTree = "<group>";
@@ -408,6 +417,9 @@
 				A013EE07ECDAB6A5790299CD /* VLClipboardModule.swift in Sources */,
 				2B441AAAE31406CA5025D7C9 /* OverlayPanel.swift in Sources */,
 				1CF6CF38A6DFAF00B13D3AB5 /* OverlayWindowController.swift in Sources */,
+				23B1BAC620311EB7F1A8DDCA /* GameLogWatcher.swift in Sources */,
+				92E695D35201919BFA6CA00B /* ChatSender.swift in Sources */,
+				B550BF618DC5430BEDF6B9CC /* VLTradeModule.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

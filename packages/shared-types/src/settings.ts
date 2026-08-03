@@ -30,6 +30,11 @@ export interface AppSettings {
   /** Trade league id, e.g. "Standard". Null until leagues are first fetched. */
   readonly leagueId: string | null;
   readonly copyModifiers: CopyModifiers;
+  /**
+   * Watch the client log for trade whispers. Off by default: the log also
+   * contains private conversation, so reading it is the user's choice.
+   */
+  readonly tradeWhispersEnabled: boolean;
   readonly hotkeys: HotkeyConfig;
   /** Whether the overlay may be dragged to a new position. */
   readonly overlayUnlocked: boolean;
@@ -48,6 +53,7 @@ export const KEY_CODE_SPACE = 49;
 export const DEFAULT_SETTINGS: AppSettings = {
   leagueId: null,
   copyModifiers: 'control-option',
+  tradeWhispersEnabled: false,
   hotkeys: {
     priceCheck: {
       keyCode: KEY_CODE_D,

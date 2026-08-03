@@ -17,7 +17,8 @@
     "react-native-macos": "^0.81.0",
     "@vaaluation/shared-types": "*",
     "@vaaluation/ui": "*",
-    "@vaaluation/item-parser": "*"
+    "@vaaluation/item-parser": "*",
+    "@vaaluation/trade-whispers": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

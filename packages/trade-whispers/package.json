@@ -1,0 +1,12 @@
+{
+  "name": "@vaaluation/trade-whispers",
+  "version": "0.1.0",
+  "description": "Parses Path of Exile trade whispers from the client log.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

@@ -17,7 +17,7 @@ final class VLEventsModule: RCTEventEmitter {
   override static func requiresMainQueueSetup() -> Bool { false }
 
   override func supportedEvents() -> [String] {
-    ["vl:navigate", "vl:hotkey", "vl:permissions", "vl:item-copied", "vl:overlay"]
+    ["vl:navigate", "vl:hotkey", "vl:permissions", "vl:item-copied", "vl:overlay", "vl:log-lines"]
   }
 
   override func startObserving() {
@@ -59,6 +59,13 @@ final class VLEventsModule: RCTEventEmitter {
   static func emitOverlayState(visible: Bool, pinned: Bool) {
     guard let instance = shared, instance.hasListeners else { return }
     instance.sendEvent(withName: "vl:overlay", body: ["visible": visible, "pinned": pinned])
+  }
+
+  /// Raw client-log lines. JS keeps only recognized trade whispers and
+  /// discards everything else, so ordinary chat never leaves native memory.
+  static func emitLogLines(_ lines: [String]) {
+    guard let instance = shared, instance.hasListeners else { return }
+    instance.sendEvent(withName: "vl:log-lines", body: ["lines": lines])
   }
 
   /// Fired when permission state may have changed (app became active).
