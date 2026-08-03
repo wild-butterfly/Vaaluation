@@ -29,6 +29,26 @@ cd apps/macos && npx react-native run-macos
 Or open `apps/macos/macos/Vaaluation.xcworkspace` in Xcode and run the
 `Vaaluation-macOS` scheme.
 
+## Running it like a normal app
+
+The commands above run a **Debug** build: it lives in Xcode's build folder and
+needs Metro running in a terminal. To get a standalone app in `/Applications`
+that needs neither:
+
+```bash
+npm run app:install
+```
+
+This builds Release (bundling the JavaScript into the app), signs it ad-hoc for
+local use, and installs it. Note that Vaaluation is a menu-bar app — no Dock
+icon, no window on launch; look for the scales icon in the menu bar.
+
+The resulting app is **not notarized** and is for your own machine only.
+Distributable builds need Developer ID signing and notarization.
+
+Because installing replaces the app and changes its signature, macOS treats it
+as a new program: re-grant Accessibility in System Settings afterwards.
+
 ## Repository layout
 
 See [ARCHITECTURE.md](ARCHITECTURE.md). The short version: TypeScript domain

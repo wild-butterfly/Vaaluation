@@ -2,7 +2,7 @@
   "name": "vaaluation-monorepo",
   "private": true,
   "version": "0.1.0",
-  "description": "Vaaluation — an open-source item price-check overlay for Path of Exile on macOS.",
+  "description": "Vaaluation \u2014 an open-source item price-check overlay for Path of Exile on macOS.",
   "license": "MIT",
   "workspaces": [
     "apps/*",
@@ -13,7 +13,8 @@
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "app:install": "bash scripts/build-local-app.sh"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
