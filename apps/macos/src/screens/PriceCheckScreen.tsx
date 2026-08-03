@@ -25,6 +25,7 @@ import {
   tradeSearchUrl,
 } from '@vaaluation/trade-client';
 import { colors, radii, spacing, typography } from '@vaaluation/ui';
+import { useTheme } from '@vaaluation/ui';
 import { useSettings } from '../state/SettingsContext';
 import { useLeagues, defaultLeagueId } from '../hooks/useLeagues';
 import { getTradeClient } from '../services/trade';
@@ -68,6 +69,7 @@ function itemTitle(item: ParsedItem): string {
 }
 
 export function PriceCheckScreen() {
+  const theme = useTheme();
   const { settings, update } = useSettings();
   const { leagues } = useLeagues();
   const [text, setText] = useState('');
@@ -202,7 +204,9 @@ export function PriceCheckScreen() {
             </Pressable>
           </View>
           {text.trim() !== '' && !parsed.ok ? (
-            <Text style={styles.warning}>{parsed.message}</Text>
+            <Text style={[styles.warning, { color: theme.accentText }]}>
+              {parsed.message}
+            </Text>
           ) : null}
         </View>
       ) : (
@@ -271,7 +275,9 @@ export function PriceCheckScreen() {
 
           {state.status === 'error' ? (
             <View style={styles.card}>
-              <Text style={styles.warning}>{state.message}</Text>
+              <Text style={[styles.warning, { color: theme.accentText }]}>
+                {state.message}
+              </Text>
               <Pressable
                 style={styles.button}
                 onPress={() => {
@@ -303,7 +309,7 @@ export function PriceCheckScreen() {
               </Text>
 
               {state.warnings.map((warning, index) => (
-                <Text key={index} style={styles.warning}>
+                <Text key={index} style={[styles.warning, { color: theme.accentText }]}>
                   {warning.message}
                 </Text>
               ))}

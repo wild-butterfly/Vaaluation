@@ -133,6 +133,8 @@ export const semantic = {
   downSoft: 'rgba(192,90,90,0.12)',
   downBorder: 'rgba(192,90,90,0.35)',
   neutral: '#4d5057',
+  /** Log severity only — deliberately not accent-derived. */
+  warn: '#d9b25f',
 } as const;
 
 export const radii = {

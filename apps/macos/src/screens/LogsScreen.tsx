@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { LogEntry } from '@vaaluation/shared-types';
-import { colors, radii, spacing, typography } from '@vaaluation/ui';
+import { colors, radii, semantic, spacing, typography } from '@vaaluation/ui';
 import { clearLogs, getLogFilePath, getRecentLogs } from '../native/VLLog';
 
 const LEVEL_COLORS: Record<LogEntry['level'], string> = {
   debug: colors.textSecondary,
   info: colors.textPrimary,
-  warn: colors.warning,
+  warn: semantic.warn,
   error: colors.danger,
 };
 

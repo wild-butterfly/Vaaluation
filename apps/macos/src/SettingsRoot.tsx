@@ -232,19 +232,19 @@ function makeStyles(theme: Theme) {
       borderColor: semantic.upBorder,
     },
     statusCardOff: {
-      backgroundColor: 'rgba(217,178,95,0.07)',
-      borderColor: 'rgba(217,178,95,0.18)',
+      backgroundColor: alpha(theme.accent, 0.07),
+      borderColor: alpha(theme.accent, 0.18),
     },
     statusHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
     dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: semantic.up },
-    dotOff: { backgroundColor: '#d9b25f' },
+    dotOff: { backgroundColor: theme.accent },
     statusTitle: {
       fontFamily: fonts.sans,
       fontSize: scale.caption,
       fontWeight: '600',
       color: semantic.upText,
     },
-    statusTitleOff: { color: '#d9b25f' },
+    statusTitleOff: { color: theme.accentText },
     statusMeta: {
       fontFamily: fonts.mono,
       fontSize: scale.label,

@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { parseItemText } from '@vaaluation/item-parser';
 import type { ParsedItem } from '@vaaluation/shared-types';
 import { colors, radii, spacing, typography } from '@vaaluation/ui';
+import { useTheme } from '@vaaluation/ui';
 import { Section } from '../components/Section';
 import { readClipboardText } from '../native/VLClipboard';
 import { onItemCopied } from '../native/VLEvents';
@@ -124,6 +125,7 @@ function ParsedItemView({ item }: { item: ParsedItem }) {
 }
 
 export function TestParsingScreen() {
+  const theme = useTheme();
   const [text, setText] = useState('');
   const result = useMemo(() => parseItemText(text), [text]);
 
@@ -170,7 +172,9 @@ export function TestParsingScreen() {
         ) : result.ok ? (
           <ParsedItemView item={result.item} />
         ) : (
-          <Text style={styles.warning}>{result.message}</Text>
+          <Text style={[styles.warning, { color: theme.accentText }]}>
+            {result.message}
+          </Text>
         )}
       </Section>
     </ScrollView>
