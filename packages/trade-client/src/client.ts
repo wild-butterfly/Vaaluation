@@ -15,6 +15,16 @@ import { parseExchangeResponse, summarizeRates } from './exchange';
 
 const BASE = 'https://www.pathofexile.com/api/trade';
 
+/** Longest a batch caller will block waiting for rate-limit capacity. */
+const MAX_WAIT_MS = 30_000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Exchange rates are cached longer than searches; they move slowly. */
+const EXCHANGE_CACHE_MS = 5 * 60_000;
+
 /** Injected so tests and the mock development mode use the same seam. */
 export type FetchLike = (
   url: string,
@@ -65,10 +75,10 @@ export class TradeClient {
     this.exchangePolicy = new RateLimitPolicy(this.now);
   }
 
-  private cached<T>(key: string): T | null {
+  private cached<T>(key: string, ttlMs = this.cacheTtlMs): T | null {
     const entry = this.cache.get(key);
     if (entry === undefined) return null;
-    if (this.now() - entry.at > this.cacheTtlMs) {
+    if (this.now() - entry.at > ttlMs) {
       this.cache.delete(key);
       return null;
     }
@@ -83,14 +93,24 @@ export class TradeClient {
     url: string,
     init: { method?: string; body?: string } | undefined,
     policy: RateLimitPolicy,
+    options: { waitForCapacity?: boolean } = {},
   ): Promise<unknown> {
-    const waitMs = policy.retryAfterMs();
+    let waitMs = policy.retryAfterMs();
     if (waitMs > 0) {
-      throw new TradeError(
-        'rate_limited',
-        `Rate limited by the trade API. Try again in ${Math.ceil(waitMs / 1000)}s.`,
-        waitMs,
-      );
+      // Batch callers (the currency table) would rather wait out the window
+      // than fail half their rows, so they opt into blocking. Interactive
+      // callers still get an immediate, typed error.
+      if (options.waitForCapacity === true && waitMs <= MAX_WAIT_MS) {
+        await sleep(waitMs + 100);
+        waitMs = policy.retryAfterMs();
+      }
+      if (waitMs > 0) {
+        throw new TradeError(
+          'rate_limited',
+          `Rate limited by the trade API. Try again in ${Math.ceil(waitMs / 1000)}s.`,
+          waitMs,
+        );
+      }
     }
 
     let response;
@@ -196,9 +216,16 @@ export class TradeClient {
    * Bulk-exchange offers for one currency pair. Uses its own rate-limit
    * policy: the endpoint is metered separately from item search.
    */
-  async exchange(league: string, give: string, want: string): Promise<ExchangeOffer[]> {
+  async exchange(
+    league: string,
+    give: string,
+    want: string,
+    options: { waitForCapacity?: boolean } = {},
+  ): Promise<ExchangeOffer[]> {
     const key = `exchange:${league}:${give}:${want}`;
-    const hit = this.cached<ExchangeOffer[]>(key);
+    // Rates move slowly, so exchange results are held far longer than a
+    // search: re-opening the page should not re-spend the request budget.
+    const hit = this.cached<ExchangeOffer[]>(key, EXCHANGE_CACHE_MS);
     if (hit !== null) return hit;
 
     const body = JSON.stringify({
@@ -210,6 +237,7 @@ export class TradeClient {
       `${BASE}/exchange/${encodeURIComponent(league)}`,
       { method: 'POST', body },
       this.exchangePolicy,
+      options,
     );
     const offers = parseExchangeResponse(response);
     this.store(key, offers);
@@ -221,8 +249,10 @@ export class TradeClient {
     league: string,
     give: string,
     want = 'chaos',
+    options: { waitForCapacity?: boolean } = {},
   ): Promise<CurrencyRate | null> {
-    return summarizeRates(await this.exchange(league, give, want), give, want);
+    const offers = await this.exchange(league, give, want, options);
+    return summarizeRates(offers, give, want);
   }
 
   /**

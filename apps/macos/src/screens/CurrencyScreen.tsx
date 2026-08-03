@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import type { CurrencyRate } from '@vaaluation/trade-client';
-import { TRACKED_CURRENCIES } from '@vaaluation/trade-client';
+import { DENOMINATIONS, TRACKED_CURRENCIES, convertRate } from '@vaaluation/trade-client';
 import {
   alpha,
   borders,
@@ -32,14 +32,6 @@ interface RateRow {
   readonly error: string | null;
 }
 
-/** Spacing between exchange calls, comfortably inside the observed policy. */
-const REQUEST_SPACING_MS = 1100;
-const MAX_BACKOFF_MS = 15_000;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 function formatRate(value: number): string {
   if (value >= 1000) return Math.round(value).toLocaleString();
   if (value >= 10) return value.toFixed(0);
@@ -54,9 +46,28 @@ export function CurrencyScreen() {
   const { leagues } = useLeagues();
   const league = settings.leagueId ?? defaultLeagueId(leagues);
 
+  const [denomination, setDenomination] = useState('chaos');
   const [rows, setRows] = useState<RateRow[]>(
-    TRACKED_CURRENCIES.map((entry) => ({ ...entry, rate: null, error: null })),
+    TRACKED_CURRENCIES.filter((entry) => entry.id !== 'chaos').map((entry) => ({
+      ...entry,
+      rate: null,
+      error: null,
+    })),
   );
+
+  /** Chaos-denominated measurements, kept so denominations can be derived. */
+  const chaosRates = useRef<Map<string, CurrencyRate | null>>(new Map());
+
+  // Pricing a currency in itself is meaningless, so it drops out of the list.
+  const shown = useMemo(() => {
+    const divisor = chaosRates.current.get(denomination) ?? null;
+    return rows
+      .filter((row) => row.id !== denomination)
+      .map((row) => ({
+        ...row,
+        rate: row.rate === null ? null : convertRate(row.rate, divisor, denomination),
+      }));
+  }, [rows, denomination]);
   const [loading, setLoading] = useState(false);
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
 
@@ -65,39 +76,33 @@ export function CurrencyScreen() {
     setLoading(true);
     const client = getTradeClient();
 
-    // The exchange endpoint is metered per IP, and eight back-to-back
-    // requests trip it. Each call is spaced out, and a rate-limited response
-    // is retried once after the delay the API itself asks for.
-    for (const [index, entry] of TRACKED_CURRENCIES.entries()) {
-      if (index > 0) await sleep(REQUEST_SPACING_MS);
+    setRows(TRACKED_CURRENCIES.map((entry) => ({ ...entry, rate: null, error: null })));
 
-      let attempt = 0;
-      for (;;) {
-        try {
-          const rate = await client.currencyRate(league, entry.id, 'chaos');
-          setRows((current) =>
-            current.map((row) =>
-              row.id === entry.id ? { ...row, rate, error: null } : row,
-            ),
-          );
-          break;
-        } catch (cause: unknown) {
-          const retryAfterMs = (cause as { retryAfterMs?: number } | null)?.retryAfterMs;
-          if (retryAfterMs !== undefined && attempt === 0) {
-            attempt += 1;
-            await sleep(Math.min(retryAfterMs + 250, MAX_BACKOFF_MS));
-            continue;
-          }
-          const message = cause instanceof Error ? cause.message : 'Failed';
-          setRows((current) =>
-            current.map((row) =>
-              row.id === entry.id ? { ...row, error: message } : row,
-            ),
-          );
-          break;
-        }
+    // Everything is measured against chaos exactly once. Other denominations
+    // are derived from those numbers, so switching costs no requests against
+    // a tightly metered endpoint and thin pairs still resolve.
+    // The client paces itself from the API's own headers (5 per 15s here),
+    // waiting rather than failing a row; a parallel burst is what trips it.
+    const measured = new Map<string, CurrencyRate | null>();
+    for (const entry of TRACKED_CURRENCIES) {
+      try {
+        const rate = await client.currencyRate(league, entry.id, 'chaos', {
+          waitForCapacity: true,
+        });
+        measured.set(entry.id, rate);
+        setRows((current) =>
+          current.map((row) =>
+            row.id === entry.id ? { ...row, rate, error: null } : row,
+          ),
+        );
+      } catch (cause: unknown) {
+        const message = cause instanceof Error ? cause.message : 'Failed';
+        setRows((current) =>
+          current.map((row) => (row.id === entry.id ? { ...row, error: message } : row)),
+        );
       }
     }
+    chaosRates.current = measured;
     setUpdatedAt(new Date());
     setLoading(false);
   }, [league, loading]);
@@ -121,6 +126,23 @@ export function CurrencyScreen() {
             {updatedAt !== null ? ` · updated ${updatedAt.toLocaleTimeString()}` : ''}
           </Text>
         </View>
+        <View style={styles.denominations}>
+          {DENOMINATIONS.map((entry) => {
+            const active = denomination === entry.id;
+            return (
+              <Pressable
+                key={entry.id}
+                style={[styles.denom, active && styles.denomActive]}
+                onPress={() => setDenomination(entry.id)}
+                disabled={loading}
+              >
+                <Text style={[styles.denomText, active && styles.denomTextActive]}>
+                  {entry.short}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
         <Pressable
           style={styles.button}
           onPress={() => void refresh()}
@@ -135,20 +157,20 @@ export function CurrencyScreen() {
       </View>
 
       <Text style={styles.disclaimer}>
-        Median asking rate across the cheapest live bulk offers, in Chaos Orbs. The trade
-        site publishes what sellers ask, not what items sold for, so treat these as the
-        going rate rather than a settled price.
+        Median asking rate across the cheapest live bulk offers, in the currency you pick.
+        The trade site publishes what sellers ask, not what items sold for, so treat these
+        as the going rate rather than a settled price.
       </Text>
 
       <View style={styles.card}>
-        {rows.map((row, index) => (
+        {shown.map((row, index) => (
           <View key={row.id} style={[styles.row, index > 0 && styles.rowDivided]}>
             <Text style={styles.currency}>{row.label}</Text>
             {row.rate !== null ? (
               <View style={styles.rateBlock}>
                 <Text style={styles.rate}>
                   {formatRate(row.rate.median)}
-                  <Text style={styles.rateUnit}> chaos</Text>
+                  <Text style={styles.rateUnit}> {denomination}</Text>
                 </Text>
                 <Text style={styles.spread}>
                   {formatRate(row.rate.low)}–{formatRate(row.rate.high)} · n=
@@ -244,6 +266,28 @@ function makeStyles(theme: Theme) {
       maxWidth: 220,
       textAlign: 'right',
     },
+    denominations: {
+      flexDirection: 'row',
+      gap: 3,
+      marginRight: spacing.md,
+    },
+    denom: {
+      borderRadius: radii.keycap,
+      borderWidth: 1,
+      borderColor: borders.strong,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: 5,
+    },
+    denomActive: {
+      backgroundColor: alpha(theme.accent, 0.14),
+      borderColor: alpha(theme.accent, 0.4),
+    },
+    denomText: {
+      fontFamily: fonts.sans,
+      fontSize: scale.small,
+      color: palette.muted,
+    },
+    denomTextActive: { color: theme.accentText, fontWeight: '600' },
     button: {
       backgroundColor: alpha(theme.accent, 0.14),
       borderColor: borders.standard,

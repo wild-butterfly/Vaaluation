@@ -9,6 +9,7 @@ import {
   offerRate,
   summarizeRates,
   distribution,
+  convertRate,
   RateLimitPolicy,
   StatIndex,
   TradeClient,
@@ -574,5 +575,46 @@ describe('price distribution', () => {
 
   it('returns nothing when there is nothing priced', () => {
     expect(distribution([])).toBeNull();
+  });
+});
+
+describe('denomination conversion', () => {
+  const rate = (give: string, median: number, n = 20) => ({
+    give,
+    want: 'chaos',
+    median,
+    low: median * 0.9,
+    high: median * 1.1,
+    sampleSize: n,
+  });
+
+  it('returns chaos rates untouched', () => {
+    const divine = rate('divine', 200);
+    expect(convertRate(divine, null, 'chaos')).toBe(divine);
+  });
+
+  it('re-expresses a rate in another currency', () => {
+    // 200 chaos per divine, 10 chaos per exalted → 20 exalted per divine.
+    const converted = convertRate(rate('divine', 200), rate('exalted', 10), 'exalted');
+    expect(converted).toMatchObject({ give: 'divine', want: 'exalted', median: 20 });
+    expect(converted?.low).toBeCloseTo(18);
+    expect(converted?.high).toBeCloseTo(22);
+  });
+
+  it('reports the weaker sample size of the two measurements', () => {
+    const converted = convertRate(
+      rate('divine', 200, 30),
+      rate('exalted', 10, 7),
+      'exalted',
+    );
+    expect(converted?.sampleSize).toBe(7);
+  });
+
+  it('cannot convert without a denominator rate', () => {
+    expect(convertRate(rate('divine', 200), null, 'exalted')).toBeNull();
+  });
+
+  it('refuses to divide by a zero rate', () => {
+    expect(convertRate(rate('divine', 200), rate('exalted', 0), 'exalted')).toBeNull();
   });
 });

@@ -118,6 +118,21 @@ export function parseExchangeResponse(body: unknown): ExchangeOffer[] {
  * think about them. Deliberately short: each entry costs one request, and the
  * endpoint is rate limited.
  */
+export interface CurrencyDef {
+  readonly id: string;
+  readonly label: string;
+  /** Short form used in the denomination picker. */
+  readonly short: string;
+}
+
+/** Currencies a rate can be quoted in. */
+export const DENOMINATIONS: readonly CurrencyDef[] = [
+  { id: 'chaos', label: 'Chaos Orb', short: 'Chaos' },
+  { id: 'divine', label: 'Divine Orb', short: 'Divine' },
+  { id: 'exalted', label: 'Exalted Orb', short: 'Exalted' },
+  { id: 'alch', label: 'Orb of Alchemy', short: 'Alch' },
+];
+
 export const TRACKED_CURRENCIES: ReadonlyArray<{ id: string; label: string }> = [
   { id: 'divine', label: 'Divine Orb' },
   { id: 'exalted', label: 'Exalted Orb' },
@@ -128,3 +143,32 @@ export const TRACKED_CURRENCIES: ReadonlyArray<{ id: string; label: string }> = 
   { id: 'vaal', label: 'Vaal Orb' },
   { id: 'fusing', label: 'Orb of Fusing' },
 ];
+
+/**
+ * Re-expresses chaos-denominated rates in another currency.
+ *
+ * Deriving beats querying the pair directly for two reasons: switching
+ * denomination costs no additional requests against a tightly metered
+ * endpoint, and thin pairs (divine↔exalted has few direct bulk offers) would
+ * otherwise show nothing at all. The tradeoff is that error in the
+ * denominator's own rate propagates, so the sample size shown stays that of
+ * the weaker of the two measurements.
+ */
+export function convertRate(
+  rate: CurrencyRate,
+  denominatorChaosRate: CurrencyRate | null,
+  denomination: string,
+): CurrencyRate | null {
+  if (denomination === 'chaos') return rate;
+  if (denominatorChaosRate === null || denominatorChaosRate.median <= 0) return null;
+
+  const divisor = denominatorChaosRate.median;
+  return {
+    give: rate.give,
+    want: denomination,
+    median: rate.median / divisor,
+    low: rate.low / divisor,
+    high: rate.high / divisor,
+    sampleSize: Math.min(rate.sampleSize, denominatorChaosRate.sampleSize),
+  };
+}
