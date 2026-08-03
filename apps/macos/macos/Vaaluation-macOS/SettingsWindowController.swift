@@ -11,7 +11,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
       defer: false
     )
     window.title = "Vaaluation"
-    window.minSize = NSSize(width: 640, height: 480)
+    window.minSize = NSSize(width: 720, height: 520)
+    // Match the overlay: content runs under a transparent titlebar so the
+    // blur reaches the top edge instead of stopping at a grey bar.
+    window.titlebarAppearsTransparent = true
+    window.titleVisibility = .hidden
+    window.styleMask.insert(.fullSizeContentView)
+    window.isMovableByWindowBackground = true
+    window.appearance = NSAppearance(named: .darkAqua)
     window.isReleasedWhenClosed = false
     window.center()
     window.setFrameAutosaveName("VaaluationSettingsWindow")
@@ -20,7 +27,18 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
       moduleName: "VaaluationSettings",
       initialProps: ["initialRoute": initialRoute]
     )
-    window.contentView = rootView
+    rootView.wantsLayer = true
+    rootView.layer?.backgroundColor = NSColor.clear.cgColor
+
+    let effect = NSVisualEffectView(frame: window.contentLayoutRect)
+    effect.material = .underWindowBackground
+    effect.blendingMode = .behindWindow
+    effect.state = .active
+    effect.autoresizingMask = [.width, .height]
+    rootView.frame = effect.bounds
+    rootView.autoresizingMask = [.width, .height]
+    effect.addSubview(rootView)
+    window.contentView = effect
 
     super.init(window: window)
     window.delegate = self

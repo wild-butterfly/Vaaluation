@@ -5,6 +5,9 @@ interface VLTradeNative {
   stopWatching(): void;
   isWatching(): Promise<boolean>;
   sendChatCommand(command: string): Promise<void>;
+  loadHistory(): Promise<string | null>;
+  saveHistory(json: string): Promise<void>;
+  clearHistory(): Promise<void>;
 }
 
 const native = NativeModules.VLTrade as VLTradeNative;
@@ -29,6 +32,19 @@ export function isWatchingLog(): Promise<boolean> {
  */
 export function sendChatCommand(command: string): Promise<void> {
   return native.sendChatCommand(command);
+}
+
+/** Trade history, persisted locally and never uploaded. */
+export function loadTradeHistory(): Promise<string | null> {
+  return native.loadHistory();
+}
+
+export function saveTradeHistory(json: string): Promise<void> {
+  return native.saveHistory(json);
+}
+
+export function clearTradeHistory(): Promise<void> {
+  return native.clearHistory();
 }
 
 /** Raw appended log lines. Callers must discard anything not a trade whisper. */

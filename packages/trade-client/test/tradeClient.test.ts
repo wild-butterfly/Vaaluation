@@ -5,6 +5,9 @@ import { parseItemText } from '@vaaluation/item-parser';
 import {
   BaseTypeIndex,
   parseItemCatalog,
+  parseExchangeResponse,
+  offerRate,
+  summarizeRates,
   RateLimitPolicy,
   StatIndex,
   TradeClient,
@@ -434,5 +437,91 @@ describe('base type resolution', () => {
         sort: { price: 'asc' },
       }),
     ).rejects.toThrow(/Unknown item base type/);
+  });
+});
+
+describe('currency exchange', () => {
+  const offers = parseExchangeResponse(fixture('exchange-response.json'));
+
+  it('reads offers from the real exchange response', () => {
+    expect(offers.length).toBeGreaterThan(0);
+    const first = offers[0];
+    expect(first?.giveCurrency).toBe('divine');
+    expect(first?.wantCurrency).toBe('chaos');
+    expect(first?.wantAmount).toBeGreaterThan(0);
+  });
+
+  it('computes the rate as want per single unit given', () => {
+    expect(
+      offerRate({
+        wantCurrency: 'chaos',
+        wantAmount: 175,
+        giveCurrency: 'divine',
+        giveAmount: 1,
+        stock: 3,
+        accountName: 'x',
+        online: true,
+      }),
+    ).toBe(175);
+
+    // A bundle price must normalize to one unit.
+    expect(
+      offerRate({
+        wantCurrency: 'chaos',
+        wantAmount: 350,
+        giveCurrency: 'divine',
+        giveAmount: 2,
+        stock: 1,
+        accountName: 'x',
+        online: true,
+      }),
+    ).toBe(175);
+  });
+
+  it('refuses to divide by a zero quantity', () => {
+    expect(
+      offerRate({
+        wantCurrency: 'chaos',
+        wantAmount: 10,
+        giveCurrency: 'divine',
+        giveAmount: 0,
+        stock: 0,
+        accountName: 'x',
+        online: true,
+      }),
+    ).toBeNull();
+  });
+
+  it('summarizes with a median that resists outliers', () => {
+    const make = (want: number, give = 1) => ({
+      wantCurrency: 'chaos',
+      wantAmount: want,
+      giveCurrency: 'divine',
+      giveAmount: give,
+      stock: 1,
+      accountName: 'x',
+      online: true,
+    });
+    const summary = summarizeRates(
+      [make(170), make(175), make(180), make(1)],
+      'divine',
+      'chaos',
+    );
+    expect(summary).toMatchObject({ give: 'divine', want: 'chaos', sampleSize: 4 });
+    expect(summary?.median).toBe(172.5);
+    expect(summary?.low).toBe(1);
+    expect(summary?.high).toBe(180);
+  });
+
+  it('returns no rate when there is nothing to summarize', () => {
+    expect(summarizeRates([], 'divine', 'chaos')).toBeNull();
+  });
+
+  it('summarizes the real fixture into a plausible rate', () => {
+    const summary = summarizeRates(offers, 'divine', 'chaos');
+    expect(summary).not.toBeNull();
+    expect(summary?.median).toBeGreaterThan(0);
+    expect(summary?.low).toBeLessThanOrEqual(summary?.median ?? 0);
+    expect(summary?.high).toBeGreaterThanOrEqual(summary?.median ?? 0);
   });
 });

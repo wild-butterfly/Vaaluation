@@ -10,6 +10,8 @@ import {
 import { RateLimitPolicy } from './rateLimit';
 import { StatIndex } from './stats';
 import { BaseTypeIndex, parseItemCatalog } from './baseTypes';
+import type { CurrencyRate, ExchangeOffer } from './exchange';
+import { parseExchangeResponse, summarizeRates } from './exchange';
 
 const BASE = 'https://www.pathofexile.com/api/trade';
 
@@ -48,6 +50,7 @@ interface CacheEntry {
 export class TradeClient {
   private readonly searchPolicy: RateLimitPolicy;
   private readonly fetchPolicy: RateLimitPolicy;
+  private readonly exchangePolicy: RateLimitPolicy;
   private readonly cache = new Map<string, CacheEntry>();
   private statIndex: StatIndex | null = null;
   private baseTypeIndex: BaseTypeIndex | null = null;
@@ -59,6 +62,7 @@ export class TradeClient {
     this.cacheTtlMs = options.cacheTtlMs ?? 60_000;
     this.searchPolicy = new RateLimitPolicy(this.now);
     this.fetchPolicy = new RateLimitPolicy(this.now);
+    this.exchangePolicy = new RateLimitPolicy(this.now);
   }
 
   private cached<T>(key: string): T | null {
@@ -186,6 +190,39 @@ export class TradeClient {
     const parsed = parseSearchResponse(response);
     this.store(key, parsed);
     return parsed;
+  }
+
+  /**
+   * Bulk-exchange offers for one currency pair. Uses its own rate-limit
+   * policy: the endpoint is metered separately from item search.
+   */
+  async exchange(league: string, give: string, want: string): Promise<ExchangeOffer[]> {
+    const key = `exchange:${league}:${give}:${want}`;
+    const hit = this.cached<ExchangeOffer[]>(key);
+    if (hit !== null) return hit;
+
+    const body = JSON.stringify({
+      query: { status: { option: 'online' }, have: [want], want: [give] },
+      sort: { have: 'asc' },
+      engine: 'new',
+    });
+    const response = await this.request(
+      `${BASE}/exchange/${encodeURIComponent(league)}`,
+      { method: 'POST', body },
+      this.exchangePolicy,
+    );
+    const offers = parseExchangeResponse(response);
+    this.store(key, offers);
+    return offers;
+  }
+
+  /** Median asking rate for one unit of `give`, priced in `want`. */
+  async currencyRate(
+    league: string,
+    give: string,
+    want = 'chaos',
+  ): Promise<CurrencyRate | null> {
+    return summarizeRates(await this.exchange(league, give, want), give, want);
   }
 
   /**

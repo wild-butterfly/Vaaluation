@@ -1,12 +1,22 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
 
 export type AppRoute =
-  'onboarding' | 'price-check' | 'trade' | 'settings' | 'test-parsing' | 'logs' | 'about';
+  | 'onboarding'
+  | 'price-check'
+  | 'trade'
+  | 'currency'
+  | 'history'
+  | 'settings'
+  | 'test-parsing'
+  | 'logs'
+  | 'about';
 
 const VALID_ROUTES: readonly AppRoute[] = [
   'onboarding',
   'price-check',
   'trade',
+  'currency',
+  'history',
   'settings',
   'test-parsing',
   'logs',

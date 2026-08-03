@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing, typography } from '@vaaluation/ui';
+import { colors, glass, spacing, typography } from '@vaaluation/ui';
 import type { AppRoute } from './native/VLEvents';
 import { isAppRoute, onItemCopied, onNavigate } from './native/VLEvents';
 import { SettingsProvider, useSettings } from './state/SettingsContext';
@@ -10,11 +10,15 @@ import { OnboardingScreen } from './screens/OnboardingScreen';
 import { PriceCheckScreen } from './screens/PriceCheckScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { TradeScreen } from './screens/TradeScreen';
+import { CurrencyScreen } from './screens/CurrencyScreen';
+import { HistoryScreen } from './screens/HistoryScreen';
 import { TestParsingScreen } from './screens/TestParsingScreen';
 
 const NAV_ITEMS: ReadonlyArray<{ route: AppRoute; label: string }> = [
   { route: 'price-check', label: 'Price Check' },
   { route: 'trade', label: 'Trades' },
+  { route: 'currency', label: 'Currency' },
+  { route: 'history', label: 'History' },
   { route: 'settings', label: 'Settings' },
   { route: 'test-parsing', label: 'Test Parsing' },
   { route: 'logs', label: 'Logs' },
@@ -62,6 +66,8 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
       <View style={styles.main}>
         {route === 'price-check' ? <PriceCheckScreen /> : null}
         {route === 'trade' ? <TradeScreen /> : null}
+        {route === 'currency' ? <CurrencyScreen /> : null}
+        {route === 'history' ? <HistoryScreen /> : null}
         {route === 'settings' ? <SettingsScreen /> : null}
         {route === 'test-parsing' ? <TestParsingScreen /> : null}
         {route === 'logs' ? <LogsScreen /> : null}
@@ -86,13 +92,14 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: colors.obsidian,
+    backgroundColor: 'transparent',
   },
   sidebar: {
-    width: 160,
-    borderRightColor: colors.gold,
+    width: 168,
+    backgroundColor: glass.surfaceStrong,
+    borderRightColor: glass.hairline,
     borderRightWidth: StyleSheet.hairlineWidth,
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.xl,
     paddingHorizontal: spacing.sm,
   },
   navItem: {
@@ -102,7 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   navItemActive: {
-    backgroundColor: colors.vaalRed,
+    backgroundColor: glass.accent,
   },
   navLabel: {
     color: colors.textSecondary,
@@ -114,5 +121,6 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
+    backgroundColor: glass.surface,
   },
 });
