@@ -1,0 +1,16 @@
+{
+  "name": "@vaaluation/trade-client",
+  "version": "0.1.0",
+  "description": "Client for the official Path of Exile trade search endpoints.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vaaluation/shared-types": "*",
+    "@vaaluation/item-parser": "*"
+  }
+}

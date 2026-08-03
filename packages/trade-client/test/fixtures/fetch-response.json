@@ -1,0 +1,200 @@
+{
+  "result": [
+    {
+      "id": "2fd6f393767726c9060ddee3ff1af6becfed99d987c8c8d4f2076a81725e1ef7",
+      "listing": {
+        "method": "psapi",
+        "indexed": "2026-07-26T13:39:12Z",
+        "price": {
+          "type": "~price",
+          "amount": 1,
+          "currency": "chaos"
+        },
+        "account": {
+          "name": "ExampleSeller#0000",
+          "online": {
+            "league": "Allflame",
+            "status": "afk"
+          },
+          "lastCharacterName": "ExampleCharacter",
+          "language": "pt_BR",
+          "realm": "pc"
+        },
+        "whisper": "@ExampleCharacter Hi, I would like to buy your item"
+      },
+      "item": {
+        "verified": true,
+        "w": 2,
+        "h": 2,
+        "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQXJtb3Vycy9IZWxtZXRzL0hlbG1ldERleFVuaXF1ZTIiLCJ3IjoyLCJoIjoyLCJzY2FsZSI6MX1d/7f4908ef2f/HelmetDexUnique2.png",
+        "league": "Allflame",
+        "id": "2fd6f393767726c9060ddee3ff1af6becfed99d987c8c8d4f2076a81725e1ef7",
+        "sockets": [
+          {
+            "group": 0,
+            "attr": "S",
+            "sColour": "R"
+          }
+        ],
+        "name": "",
+        "typeLine": "Leather Cap",
+        "baseType": "Leather Cap",
+        "rarity": "Unique",
+        "ilvl": 70,
+        "identified": false,
+        "properties": [
+          {
+            "name": "Evasion Rating",
+            "values": [["21", 0]],
+            "displayMode": 0,
+            "type": 17
+          }
+        ],
+        "frameType": 3,
+        "frameTypeId": "Unique",
+        "extended": {
+          "base_defence_percentile": 25,
+          "ev": 25,
+          "ev_aug": true,
+          "hashes": {},
+          "text": "SXRlbSBDbGFzczogSGVsbWV0cw0KUmFyaXR5OiBVbmlxdWUNCkxlYXRoZXIgQ2FwDQotLS0tLS0tLQ0KRXZhc2lvbiBSYXRpbmc6IDIxDQotLS0tLS0tLQ0KU29ja2V0czogUiANCi0tLS0tLS0tDQpJdGVtIExldmVsOiA3MA0KLS0tLS0tLS0NClVuaWRlbnRpZmllZA0K"
+        }
+      }
+    },
+    {
+      "id": "71de062b7d3dd7fbce04364eae6dd5060a1702a64d1ad7424835d4f1307e2e6c",
+      "listing": {
+        "method": "psapi",
+        "indexed": "2026-08-01T07:37:25Z",
+        "price": {
+          "type": "~price",
+          "amount": 1,
+          "currency": "chaos"
+        },
+        "account": {
+          "name": "ExampleSeller#0000",
+          "online": {
+            "league": "Allflame"
+          },
+          "lastCharacterName": "ExampleCharacter",
+          "language": "ko_KR",
+          "realm": "pc"
+        },
+        "whisper": "@ExampleCharacter Hi, I would like to buy your item"
+      },
+      "item": {
+        "verified": true,
+        "w": 2,
+        "h": 2,
+        "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQXJtb3Vycy9IZWxtZXRzL0hlbG1ldERleFVuaXF1ZTIiLCJ3IjoyLCJoIjoyLCJzY2FsZSI6MX1d/7f4908ef2f/HelmetDexUnique2.png",
+        "league": "Allflame",
+        "id": "71de062b7d3dd7fbce04364eae6dd5060a1702a64d1ad7424835d4f1307e2e6c",
+        "sockets": [
+          {
+            "group": 0,
+            "attr": "G",
+            "sColour": "W"
+          },
+          {
+            "group": 1,
+            "attr": "G",
+            "sColour": "W"
+          }
+        ],
+        "name": "Goldrim",
+        "typeLine": "Leather Cap",
+        "baseType": "Leather Cap",
+        "rarity": "Unique",
+        "ilvl": 75,
+        "identified": true,
+        "properties": [
+          {
+            "name": "Evasion Rating",
+            "values": [["64", 1]],
+            "displayMode": 0,
+            "type": 17
+          }
+        ],
+        "explicitMods": [
+          {
+            "description": "+42 to Evasion Rating",
+            "domain": "explicit",
+            "hash": "stat.explicit.stat_53045048",
+            "mods": [
+              {
+                "magnitudes": [
+                  {
+                    "min": "30",
+                    "max": "50"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "10% increased Rarity of Items found",
+            "domain": "explicit",
+            "hash": "stat.explicit.stat_3917489142",
+            "mods": [
+              {
+                "magnitudes": [
+                  {
+                    "min": "10",
+                    "max": "10"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "+30% to all Elemental Resistances",
+            "domain": "explicit",
+            "hash": "stat.explicit.stat_2901986750",
+            "mods": [
+              {
+                "magnitudes": [
+                  {
+                    "min": "30",
+                    "max": "40"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Reflects 4 Physical Damage to Melee Attackers",
+            "domain": "explicit",
+            "hash": "stat.explicit.stat_3767873853",
+            "mods": [
+              {
+                "magnitudes": [
+                  {
+                    "min": "4",
+                    "max": "4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "flavourText": ["No metal slips as easily through the fingers as gold."],
+        "frameType": 3,
+        "frameTypeId": "Unique",
+        "extended": {
+          "base_defence_percentile": 38,
+          "ev": 77,
+          "ev_aug": true,
+          "hashes": {
+            "explicit": [
+              ["explicit.stat_53045048", [0]],
+              ["explicit.stat_3917489142", [3]],
+              ["explicit.stat_2901986750", [1]],
+              ["explicit.stat_3767873853", [2]]
+            ]
+          },
+          "text": "SXRlbSBDbGFzczogSGVsbWV0cw0KUmFyaXR5OiBVbmlxdWUNCkdvbGRyaW0NCkxlYXRoZXIgQ2FwDQotLS0tLS0tLQ0KRXZhc2lvbiBSYXRpbmc6IDY0IChhdWdtZW50ZWQpDQotLS0tLS0tLQ0KU29ja2V0czogVyBXIA0KLS0tLS0tLS0NCkl0ZW0gTGV2ZWw6IDc1DQotLS0tLS0tLQ0KKzQyIHRvIEV2YXNpb24gUmF0aW5nDQoxMCUgaW5jcmVhc2VkIFJhcml0eSBvZiBJdGVtcyBmb3VuZA0KKzMwJSB0byBhbGwgRWxlbWVudGFsIFJlc2lzdGFuY2VzDQpSZWZsZWN0cyA0IFBoeXNpY2FsIERhbWFnZSB0byBNZWxlZSBBdHRhY2tlcnMNCi0tLS0tLS0tDQpObyBtZXRhbCBzbGlwcyBhcyBlYXNpbHkgdGhyb3VnaCB0aGUgZmluZ2VycyBhcyBnb2xkLg0K"
+        }
+      }
+    }
+  ]
+}

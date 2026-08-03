@@ -90,12 +90,12 @@ npm run typecheck && npm run lint && npm test
 ## Roadmap
 
 1. ✅ Menu-bar application shell
-2. Permissions service & onboarding
-3. Global hotkeys
-4. Clipboard integration & item parser
-5. Game-window detection & overlay
-6. League selection
-7. Trade search & price-check UI
+2. ✅ Permissions service & onboarding
+3. ✅ Global hotkeys
+4. ✅ Clipboard integration & item parser
+5. ✅ League selection
+6. ✅ Trade search & price-check interface
+7. Game-window detection & compact overlay
 8. Signed, notarized universal releases
 
 ## Support the project

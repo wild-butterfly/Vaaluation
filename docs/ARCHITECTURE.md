@@ -16,8 +16,8 @@ vaaluation/
       macos/          Xcode project + Swift AppKit shell & native modules
   packages/
     shared-types/     Domain types shared across packages (strict TS)
-    item-parser/      Pure-TS Path of Exile item text parser        (Milestone 3)
-    trade-client/     Trade query builder, rate limiter, cache      (Milestone 5)
+    item-parser/      Pure-TS Path of Exile item text parser
+    trade-client/     Trade query builder, rate limiter, cache, validation
     ui/               Theme tokens & shared presentational components
   native/             Reserved for Swift packages extracted from the app shell
   docs/
@@ -80,8 +80,15 @@ These are architectural constraints, not just policy:
   server actions. Searches require an explicit user action.
 - No game memory access, no injection, no file modification, no HTML scraping.
 - The trade website API (`www.pathofexile.com/api/trade/*`) is undocumented;
-  all responses are schema-validated at the boundary in `trade-client` so
-  upstream changes fail loudly and safely.
+  every response is validated at the boundary in `trade-client/src/validate.ts`
+  so upstream changes fail loudly instead of producing wrong prices. Validation
+  is hand-written rather than schema-library based to keep the package
+  dependency-free.
+- Rate limiting is driven entirely by GGG's `X-Rate-Limit-*` response headers
+  (`trade-client/src/rateLimit.ts`). No limit is hard-coded, because GGG
+  documents them as dynamic.
+- Every request carries a descriptive `User-Agent` naming the project, as the
+  developer policy requires.
 
 ## Testing strategy
 

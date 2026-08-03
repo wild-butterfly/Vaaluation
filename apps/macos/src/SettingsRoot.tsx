@@ -7,10 +7,12 @@ import { SettingsProvider, useSettings } from './state/SettingsContext';
 import { AboutScreen } from './screens/AboutScreen';
 import { LogsScreen } from './screens/LogsScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
+import { PriceCheckScreen } from './screens/PriceCheckScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { TestParsingScreen } from './screens/TestParsingScreen';
 
 const NAV_ITEMS: ReadonlyArray<{ route: AppRoute; label: string }> = [
+  { route: 'price-check', label: 'Price Check' },
   { route: 'settings', label: 'Settings' },
   { route: 'test-parsing', label: 'Test Parsing' },
   { route: 'logs', label: 'Logs' },
@@ -22,9 +24,8 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
   const { settings, loaded } = useSettings();
 
   useEffect(() => onNavigate(setRoute), []);
-  // Until the overlay ships (Milestone 4), a successful in-game price check
-  // shows its parsed result on the Test Parsing screen.
-  useEffect(() => onItemCopied(() => setRoute('test-parsing')), []);
+  // A successful in-game price check jumps straight to the price results.
+  useEffect(() => onItemCopied(() => setRoute('price-check')), []);
 
   if (!loaded) {
     return <View style={styles.root} />;
@@ -33,7 +34,7 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
   if (route === 'onboarding' || !settings.onboardingCompleted) {
     return (
       <View style={styles.root}>
-        <OnboardingScreen onDone={() => setRoute('settings')} />
+        <OnboardingScreen onDone={() => setRoute('price-check')} />
       </View>
     );
   }
@@ -57,6 +58,7 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
         })}
       </View>
       <View style={styles.main}>
+        {route === 'price-check' ? <PriceCheckScreen /> : null}
         {route === 'settings' ? <SettingsScreen /> : null}
         {route === 'test-parsing' ? <TestParsingScreen /> : null}
         {route === 'logs' ? <LogsScreen /> : null}

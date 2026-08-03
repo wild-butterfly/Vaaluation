@@ -5,6 +5,7 @@ import { colors, radii, spacing, typography } from '@vaaluation/ui';
 import { Section } from '../components/Section';
 import { useSettings } from '../state/SettingsContext';
 import { usePermissions } from '../hooks/usePermissions';
+import { useLeagues } from '../hooks/useLeagues';
 import type { HotkeyErrors } from '../native/VLHotkeys';
 import {
   applyHotkeysFromSettings,
@@ -44,6 +45,7 @@ const COPY_MODIFIER_OPTIONS: ReadonlyArray<{ value: CopyModifiers; label: string
 export function SettingsScreen() {
   const { settings, update } = useSettings();
   const { status } = usePermissions();
+  const leagues = useLeagues();
   const [recording, setRecording] = useState<HotkeyAction | null>(null);
   const [errors, setErrors] = useState<HotkeyErrors>({});
 
@@ -186,10 +188,34 @@ export function SettingsScreen() {
       </Section>
 
       <Section title="League">
-        <Text style={styles.value}>{settings.leagueId ?? 'Not selected yet'}</Text>
+        {leagues.loading && leagues.leagues.length === 0 ? (
+          <Text style={styles.hint}>Loading leagues…</Text>
+        ) : leagues.error !== null ? (
+          <View>
+            <Text style={styles.error}>{leagues.error}</Text>
+            <Pressable style={styles.smallButton} onPress={leagues.reload}>
+              <Text style={styles.smallButtonText}>Retry</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={styles.leagueList}>
+            {leagues.leagues.map((entry) => {
+              const active = settings.leagueId === entry.id;
+              return (
+                <Pressable
+                  key={entry.id}
+                  style={[styles.smallButton, active && styles.smallButtonActive]}
+                  onPress={() => update({ leagueId: entry.id })}
+                >
+                  <Text style={styles.smallButtonText}>{entry.text}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
         <Text style={styles.hint}>
-          League selection becomes available when trade integration lands (Milestone 5).
-          The current challenge league will be the default.
+          Private leagues are not listed: the trade search only exposes public leagues
+          without an account sign-in, which Vaaluation deliberately does not require.
         </Text>
       </Section>
 
@@ -262,6 +288,12 @@ const styles = StyleSheet.create({
   smallButtonActive: {
     backgroundColor: colors.vaalRed,
     borderColor: colors.vaalRedBright,
+  },
+  leagueList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
   copyRow: {
     flexDirection: 'row',
