@@ -36,6 +36,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
   }
 
+  /// Clicking the app in Finder, Launchpad or Spotlight while it is already
+  /// running would otherwise do nothing at all: there is no Dock icon and no
+  /// window to bring forward, so the app looks broken while working fine.
+  /// Opening the main window gives that click a visible result.
+  func applicationShouldHandleReopen(
+    _ sender: NSApplication,
+    hasVisibleWindows flag: Bool
+  ) -> Bool {
+    showSettingsWindow(route: "price-check")
+    return true
+  }
+
   func applicationDidBecomeActive(_ notification: Notification) {
     // Permission grants happen in System Settings; re-check whenever the user
     // comes back to us and let the React side update its UI.
