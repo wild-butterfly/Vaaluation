@@ -43,6 +43,22 @@ final class ClipboardService {
 
   private init() {}
 
+  /// Modifier flags for the copy keystroke. Players can rebind the game's
+  /// Highlight key, so this is read from settings and falls back to
+  /// Ctrl+Option (the game's default) when unset.
+  static var copyModifierFlags: CGEventFlags {
+    switch SettingsStore.shared.copyModifiers {
+    case "control":
+      return [.maskControl]
+    case "control-shift":
+      return [.maskControl, .maskShift]
+    case "command":
+      return [.maskCommand]
+    default:
+      return [.maskControl, .maskAlternate]
+    }
+  }
+
   func readText() -> String? {
     NSPasteboard.general.string(forType: .string)
   }
@@ -96,15 +112,23 @@ final class ClipboardService {
     }
   }
 
-  /// One keystroke: Cmd+C key-down + key-up delivered to the game's process.
+  /// One keystroke: the game's advanced-item-description copy combination,
+  /// delivered as a single key-down + key-up pair to the game's process.
+  ///
+  /// Path of Exile copies the *advanced* item description — the only form that
+  /// includes the "Item Class:" and "Rarity:" lines the parser needs — on
+  /// Ctrl + <Highlight> + C. The Highlight key defaults to Alt, which is
+  /// Option on macOS, giving Ctrl+Option+C. Plain Cmd+C and plain Ctrl+C copy
+  /// nothing at all.
   private func postCopyKeystroke(pid: pid_t) {
     let source = CGEventSource(stateID: .hidSystemState)
     let keyCVirtual: CGKeyCode = 8
+    let flags = Self.copyModifierFlags
 
     let keyDown = CGEvent(keyboardEventSource: source, virtualKey: keyCVirtual, keyDown: true)
-    keyDown?.flags = .maskCommand
+    keyDown?.flags = flags
     let keyUp = CGEvent(keyboardEventSource: source, virtualKey: keyCVirtual, keyDown: false)
-    keyUp?.flags = .maskCommand
+    keyUp?.flags = flags
 
     keyDown?.postToPid(pid)
     keyUp?.postToPid(pid)

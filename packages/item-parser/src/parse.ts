@@ -7,6 +7,7 @@ import type {
   ItemRarity,
   MapItem,
   Modifier,
+  ModifierAnnotation,
   ModifierType,
   ParseResult,
   ParsedItem,
@@ -20,6 +21,7 @@ import {
   parseStackSize,
   splitSections,
 } from './sections';
+import { isAnnotationLine, parseAnnotation, stripRanges } from './advanced';
 
 const RARITIES: Record<string, ItemRarity | 'currency' | 'gem' | 'divination'> = {
   Normal: 'normal',
@@ -77,13 +79,48 @@ function isUsageSection(lines: readonly string[]): boolean {
   return lines.some((line) => USAGE_PREFIXES.some((prefix) => line.startsWith(prefix)));
 }
 
-function classifyModLine(line: string): Modifier {
-  for (const { suffix, type } of MOD_SUFFIXES) {
-    if (line.endsWith(suffix)) {
-      return { text: line.slice(0, -suffix.length), type };
+function classifyModLine(line: string, annotation?: ModifierAnnotation): Modifier {
+  let body = line;
+  let type: ModifierType = 'explicit';
+  for (const { suffix, type: suffixType } of MOD_SUFFIXES) {
+    if (body.endsWith(suffix)) {
+      body = body.slice(0, -suffix.length);
+      type = suffixType;
+      break;
     }
   }
-  return { text: line, type: 'explicit' };
+
+  const { text, range } = stripRanges(body);
+  return {
+    text,
+    type,
+    ...(annotation !== undefined ? { annotation } : {}),
+    ...(range !== undefined ? { range } : {}),
+  };
+}
+
+/**
+ * Converts a run of free-text lines into modifiers, attaching any advanced
+ * mod-description annotation to the modifier it introduces.
+ */
+function toModifiers(lines: readonly string[]): Modifier[] {
+  const modifiers: Modifier[] = [];
+  let pending: ModifierAnnotation | undefined;
+
+  for (const line of lines) {
+    if (isAnnotationLine(line)) {
+      const annotation = parseAnnotation(line);
+      if (annotation !== null) {
+        pending = annotation;
+        continue;
+      }
+      // Unrecognized braces: keep the line rather than dropping it.
+    }
+    modifiers.push(classifyModLine(line, pending));
+    pending = undefined;
+  }
+
+  return modifiers;
 }
 
 interface HeaderInfo {
@@ -243,7 +280,7 @@ function scanSections(
         // Mixed or usage-hint section: keep the text as unknown, not as mods.
         state.unknownLines.push(...freeLines);
       } else {
-        state.modifierSections.push(freeLines.map(classifyModLine));
+        state.modifierSections.push(toModifiers(freeLines));
       }
     }
   }

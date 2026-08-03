@@ -15,9 +15,26 @@ export type ModifierType =
   | 'scourge'
   | 'unknown';
 
+/**
+ * Metadata the game emits above a modifier when the player has "Advanced Mod
+ * Descriptions" enabled, e.g.
+ * `{ Prefix Modifier "Healthy" (Tier: 12) — Life }`.
+ */
+export interface ModifierAnnotation {
+  readonly affix: 'prefix' | 'suffix' | 'unknown';
+  readonly name: string;
+  readonly tier?: number;
+  readonly tags: readonly string[];
+}
+
 export interface Modifier {
+  /** Modifier text with any advanced-description value ranges removed. */
   readonly text: string;
   readonly type: ModifierType;
+  /** Present only with Advanced Mod Descriptions enabled. */
+  readonly annotation?: ModifierAnnotation;
+  /** The roll range the game reported, e.g. `+18(10-24)` → 10…24. */
+  readonly range?: { min: number; max: number };
 }
 
 export type Influence =

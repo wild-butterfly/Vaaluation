@@ -18,9 +18,18 @@ export type HotkeyConfig = {
   readonly [K in HotkeyAction]: KeyCombo | null;
 };
 
+/**
+ * Modifiers sent with C to make the game copy an item. Path of Exile copies
+ * the advanced item description on Ctrl + <Highlight> + C, and Highlight
+ * defaults to Alt (Option on macOS). Players who rebind Highlight need the
+ * other options.
+ */
+export type CopyModifiers = 'control-option' | 'control' | 'control-shift' | 'command';
+
 export interface AppSettings {
   /** Trade league id, e.g. "Standard". Null until leagues are first fetched. */
   readonly leagueId: string | null;
+  readonly copyModifiers: CopyModifiers;
   readonly hotkeys: HotkeyConfig;
   /** Whether the overlay may be dragged to a new position. */
   readonly overlayUnlocked: boolean;
@@ -38,6 +47,7 @@ export const KEY_CODE_SPACE = 49;
 
 export const DEFAULT_SETTINGS: AppSettings = {
   leagueId: null,
+  copyModifiers: 'control-option',
   hotkeys: {
     priceCheck: {
       keyCode: KEY_CODE_D,

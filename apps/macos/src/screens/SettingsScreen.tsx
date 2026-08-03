@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import type { HotkeyAction, KeyCombo } from '@vaaluation/shared-types';
+import type { CopyModifiers, HotkeyAction, KeyCombo } from '@vaaluation/shared-types';
 import { colors, radii, spacing, typography } from '@vaaluation/ui';
 import { Section } from '../components/Section';
 import { useSettings } from '../state/SettingsContext';
@@ -33,6 +33,13 @@ const HOTKEY_LABELS: Record<HotkeyAction, string> = {
 };
 
 const HOTKEY_ACTIONS = Object.keys(HOTKEY_LABELS) as HotkeyAction[];
+
+const COPY_MODIFIER_OPTIONS: ReadonlyArray<{ value: CopyModifiers; label: string }> = [
+  { value: 'control-option', label: '⌃⌥C (default)' },
+  { value: 'control', label: '⌃C' },
+  { value: 'control-shift', label: '⌃⇧C' },
+  { value: 'command', label: '⌘C' },
+];
 
 export function SettingsScreen() {
   const { settings, update } = useSettings();
@@ -156,6 +163,28 @@ export function SettingsScreen() {
         </Text>
       </Section>
 
+      <Section title="Item Copy">
+        <Text style={styles.hint}>
+          Path of Exile copies the advanced item description on Ctrl + Highlight + C.
+          Highlight defaults to Alt (Option on macOS). Change this only if you rebound
+          Highlight in the game's options.
+        </Text>
+        <View style={styles.copyRow}>
+          {COPY_MODIFIER_OPTIONS.map((option) => {
+            const active = settings.copyModifiers === option.value;
+            return (
+              <Pressable
+                key={option.value}
+                style={[styles.smallButton, active && styles.smallButtonActive]}
+                onPress={() => update({ copyModifiers: option.value })}
+              >
+                <Text style={styles.smallButtonText}>{option.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </Section>
+
       <Section title="League">
         <Text style={styles.value}>{settings.leagueId ?? 'Not selected yet'}</Text>
         <Text style={styles.hint}>
@@ -229,6 +258,15 @@ const styles = StyleSheet.create({
     borderRadius: radii.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
+  },
+  smallButtonActive: {
+    backgroundColor: colors.vaalRed,
+    borderColor: colors.vaalRedBright,
+  },
+  copyRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
   smallButtonText: {
     color: colors.textPrimary,

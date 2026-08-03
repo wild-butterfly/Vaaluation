@@ -1,0 +1,27 @@
+Item Class: Body Armours
+Rarity: Rare
+Wrath Pelt
+Chainmail Tunic
+--------
+Armour: 66 (augmented)
+Energy Shield: 18 (augmented)
+--------
+Requirements:
+Level: 8
+Str: 16
+Int: 16
+--------
+Sockets: W 
+--------
+Item Level: 15
+--------
+{ Prefix Modifier "Healthy" (Tier: 12) — Life }
++18(10-24) to maximum Life
+{ Prefix Modifier "Infixed" (Tier: 8) — Defences, Armour, Energy Shield }
+22(15-26)% increased Armour and Energy Shield
+{ Suffix Modifier "of the Inuit" (Tier: 8) — Elemental, Cold, Resistance }
++11(6-11)% to Cold Resistance
+{ Suffix Modifier "of the Whelpling" (Tier: 8) — Elemental, Fire, Resistance }
++8(6-11)% to Fire Resistance
+{ Suffix Modifier "of the Student" (Tier: 8) — Attribute }
++16(13-17) to Intelligence

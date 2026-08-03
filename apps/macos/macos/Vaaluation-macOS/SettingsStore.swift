@@ -24,6 +24,23 @@ final class SettingsStore {
     }
   }
 
+  /// Which modifiers accompany C when asking the game to copy an item.
+  /// Defaults to the game's own default (Ctrl + Highlight, i.e. Ctrl+Option).
+  var copyModifiers: String {
+    stringField("copyModifiers") ?? "control-option"
+  }
+
+  private func stringField(_ key: String) -> String? {
+    guard
+      let json = settingsJSON,
+      let data = json.data(using: .utf8),
+      let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+    else {
+      return nil
+    }
+    return object[key] as? String
+  }
+
   var onboardingCompleted: Bool {
     guard
       let json = settingsJSON,

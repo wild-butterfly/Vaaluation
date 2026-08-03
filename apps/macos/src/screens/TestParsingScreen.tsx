@@ -78,12 +78,31 @@ function ParsedItemView({ item }: { item: ParsedItem }) {
             <View style={styles.modBlock}>
               <Text style={styles.modHeading}>Modifiers</Text>
               {item.modifiers.map((mod, index) => (
-                <Text key={index} style={styles.modLine}>
-                  {mod.text}
-                  {mod.type !== 'explicit' ? (
-                    <Text style={styles.modTag}> ({mod.type})</Text>
+                <View key={index}>
+                  <Text style={styles.modLine}>
+                    {mod.text}
+                    {mod.type !== 'explicit' ? (
+                      <Text style={styles.modTag}> ({mod.type})</Text>
+                    ) : null}
+                    {mod.range ? (
+                      <Text style={styles.modTag}>
+                        {' '}
+                        [{mod.range.min}–{mod.range.max}]
+                      </Text>
+                    ) : null}
+                  </Text>
+                  {mod.annotation ? (
+                    <Text style={styles.modAnnotation}>
+                      {mod.annotation.affix} “{mod.annotation.name}”
+                      {mod.annotation.tier !== undefined
+                        ? ` · tier ${mod.annotation.tier}`
+                        : ''}
+                      {mod.annotation.tags.length > 0
+                        ? ` · ${mod.annotation.tags.join(', ')}`
+                        : ''}
+                    </Text>
                   ) : null}
-                </Text>
+                </View>
               ))}
             </View>
           ) : null}
@@ -224,6 +243,11 @@ const styles = StyleSheet.create({
   },
   modTag: {
     color: colors.textSecondary,
+  },
+  modAnnotation: {
+    color: colors.textDisabled,
+    fontSize: typography.sizeCaption,
+    paddingBottom: 2,
   },
   unknownLine: {
     color: colors.textSecondary,
