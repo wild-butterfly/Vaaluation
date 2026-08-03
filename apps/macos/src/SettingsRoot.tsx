@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, glass, spacing, typography } from '@vaaluation/ui';
+import { ThemeProvider, colors, glass, spacing, typography } from '@vaaluation/ui';
 import type { AppRoute } from './native/VLEvents';
 import { isAppRoute, onItemCopied, onNavigate } from './native/VLEvents';
 import { SettingsProvider, useSettings } from './state/SettingsContext';
@@ -77,13 +77,22 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
   );
 }
 
+function ThemedShell({ initialRoute }: { initialRoute: AppRoute }) {
+  const { settings } = useSettings();
+  return (
+    <ThemeProvider name={settings.theme}>
+      <Shell initialRoute={initialRoute} />
+    </ThemeProvider>
+  );
+}
+
 export function SettingsRoot(props: { initialRoute?: string }) {
   const initialRoute: AppRoute = isAppRoute(props.initialRoute)
     ? props.initialRoute
     : 'settings';
   return (
     <SettingsProvider>
-      <Shell initialRoute={initialRoute} />
+      <ThemedShell initialRoute={initialRoute} />
     </SettingsProvider>
   );
 }

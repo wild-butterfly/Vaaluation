@@ -1,6 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, glass, radii, spacing, typography } from '@vaaluation/ui';
+import {
+  ThemeProvider,
+  alpha,
+  borders,
+  fonts,
+  radii,
+  spacing,
+  surfaces,
+  text as palette,
+  type as scale,
+  useTheme,
+} from '@vaaluation/ui';
+import type { Theme } from '@vaaluation/ui';
 import { SettingsProvider, useSettings } from '../state/SettingsContext';
 import { useTradeRequests } from '../hooks/useTradeRequests';
 import { onItemCopied } from '../native/VLEvents';
@@ -10,6 +22,8 @@ import { TradeOverlay } from './TradeOverlay';
 type Tab = 'price' | 'trades';
 
 function Shell() {
+  const theme = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const { settings, update } = useSettings();
   const [tab, setTab] = useState<Tab>('price');
   const [seenCount, setSeenCount] = useState(0);
@@ -29,20 +43,20 @@ function Shell() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.tabs}>
+      <View style={styles.tabStrip}>
         <Pressable
-          style={[styles.tab, tab === 'price' && styles.tabActive]}
+          style={[styles.pill, tab === 'price' && styles.pillActive]}
           onPress={() => setTab('price')}
         >
-          <Text style={[styles.tabText, tab === 'price' && styles.tabTextActive]}>
+          <Text style={[styles.pillText, tab === 'price' && styles.pillTextActive]}>
             Price
           </Text>
         </Pressable>
         <Pressable
-          style={[styles.tab, tab === 'trades' && styles.tabActive]}
+          style={[styles.pill, tab === 'trades' && styles.pillActive]}
           onPress={() => setTab('trades')}
         >
-          <Text style={[styles.tabText, tab === 'trades' && styles.tabTextActive]}>
+          <Text style={[styles.pillText, tab === 'trades' && styles.pillTextActive]}>
             Trades
           </Text>
           {unread > 0 ? (
@@ -51,6 +65,9 @@ function Shell() {
             </View>
           ) : null}
         </Pressable>
+        <Text style={styles.league} numberOfLines={1}>
+          {settings.leagueId ?? '—'}
+        </Text>
       </View>
 
       <View style={styles.body}>
@@ -73,67 +90,79 @@ function Shell() {
   );
 }
 
+function ThemedShell() {
+  const { settings } = useSettings();
+  return (
+    <ThemeProvider name={settings.theme}>
+      <Shell />
+    </ThemeProvider>
+  );
+}
+
 /**
- * Root of the in-game overlay. The panel itself provides the blur and the
- * rounded border, so this view stays transparent.
+ * Root of the in-game overlay. The panel itself provides the blur, gradient
+ * and rounded border, so this view stays transparent.
  */
 export function OverlayRoot() {
   return (
     <SettingsProvider>
-      <Shell />
+      <ThemedShell />
     </SettingsProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  tabs: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xs,
-    backgroundColor: glass.surfaceStrong,
-  },
-  tab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    borderRadius: radii.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 3,
-  },
-  tabActive: {
-    backgroundColor: glass.fill,
-  },
-  tabText: {
-    color: colors.textSecondary,
-    fontSize: typography.sizeCaption,
-    fontWeight: '600',
-  },
-  tabTextActive: {
-    color: colors.textPrimary,
-  },
-  badge: {
-    minWidth: 15,
-    height: 15,
-    borderRadius: 8,
-    paddingHorizontal: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: glass.accent,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: glass.accentBorder,
-  },
-  badgeText: {
-    color: colors.textPrimary,
-    fontSize: 9,
-    fontWeight: '700',
-  },
-  body: {
-    flex: 1,
-  },
-});
+function makeStyles(theme: Theme) {
+  return StyleSheet.create({
+    root: { flex: 1, backgroundColor: 'transparent' },
+    tabStrip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: spacing.lg,
+      borderBottomWidth: 1,
+      borderBottomColor: borders.standard,
+      backgroundColor: surfaces.raised,
+    },
+    pill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      borderRadius: radii.keycap,
+      paddingHorizontal: spacing.xxl,
+      paddingVertical: spacing.sm,
+    },
+    pillActive: { backgroundColor: alpha(theme.accent, 0.14) },
+    pillText: {
+      fontFamily: fonts.sans,
+      fontSize: scale.ui,
+      fontWeight: '600',
+      color: palette.muted,
+    },
+    pillTextActive: { color: theme.accentText },
+    badge: {
+      minWidth: 15,
+      height: 15,
+      borderRadius: 8,
+      paddingHorizontal: 4,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.action,
+    },
+    badgeText: {
+      fontFamily: fonts.mono,
+      fontSize: 9,
+      fontWeight: '700',
+      color: theme.actionText,
+    },
+    league: {
+      marginLeft: 'auto',
+      fontFamily: fonts.mono,
+      fontSize: scale.tiny,
+      color: palette.dim,
+      maxWidth: 150,
+      textAlign: 'right',
+    },
+    body: { flex: 1 },
+  });
+}

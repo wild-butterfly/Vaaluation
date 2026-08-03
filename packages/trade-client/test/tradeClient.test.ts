@@ -8,6 +8,7 @@ import {
   parseExchangeResponse,
   offerRate,
   summarizeRates,
+  distribution,
   RateLimitPolicy,
   StatIndex,
   TradeClient,
@@ -523,5 +524,55 @@ describe('currency exchange', () => {
     expect(summary?.median).toBeGreaterThan(0);
     expect(summary?.low).toBeLessThanOrEqual(summary?.median ?? 0);
     expect(summary?.high).toBeGreaterThanOrEqual(summary?.median ?? 0);
+  });
+});
+
+describe('price distribution', () => {
+  const listing = (amount: number, currency = 'chaos') => ({
+    id: `l${amount}${currency}`,
+    amount,
+    currency,
+    accountName: 'seller',
+    presence: 'online' as const,
+    indexed: '2026-08-03T00:00:00Z',
+  });
+
+  it('reports percentiles and buckets over the dominant currency', () => {
+    const amounts = [18, 20, 25, 30, 35, 40, 42, 45, 60, 80, 100, 140];
+    const result = distribution(
+      amounts.map((a) => listing(a)),
+      14,
+    );
+    expect(result).not.toBeNull();
+    if (result === null) return;
+
+    expect(result.currency).toBe('chaos');
+    expect(result.count).toBe(amounts.length);
+    expect(result.min).toBe(18);
+    expect(result.max).toBe(140);
+    expect(result.p10).toBeLessThan(result.median);
+    expect(result.median).toBeLessThan(result.p90);
+    expect(result.buckets).toHaveLength(14);
+    // Every listing lands in exactly one bucket.
+    expect(result.buckets.reduce((sum, n) => sum + n, 0)).toBe(amounts.length);
+    expect(result.medianBucket).toBeGreaterThanOrEqual(0);
+    expect(result.medianBucket).toBeLessThan(14);
+  });
+
+  it('handles a single listing without dividing by zero', () => {
+    const result = distribution([listing(42)], 14);
+    expect(result).toMatchObject({ min: 42, max: 42, median: 42, medianBucket: 0 });
+    expect(result?.buckets[0]).toBe(1);
+  });
+
+  it('ignores listings in other currencies', () => {
+    const result = distribution([listing(10), listing(12), listing(500, 'divine')]);
+    expect(result?.currency).toBe('chaos');
+    expect(result?.count).toBe(2);
+    expect(result?.max).toBe(12);
+  });
+
+  it('returns nothing when there is nothing priced', () => {
+    expect(distribution([])).toBeNull();
   });
 });

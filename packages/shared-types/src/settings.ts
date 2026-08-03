@@ -26,7 +26,13 @@ export type HotkeyConfig = {
  */
 export type CopyModifiers = 'control-option' | 'control' | 'control-shift' | 'command';
 
+/** Accent themes from the design system. */
+export type ThemeSetting =
+  'emberGold' | 'coldSteel' | 'verdantRot' | 'vaalViolet' | 'boneAsh';
+
 export interface AppSettings {
+  /** Accent theme; switching it re-tints every screen. */
+  readonly theme: ThemeSetting;
   /** Trade league id, e.g. "Standard". Null until leagues are first fetched. */
   readonly leagueId: string | null;
   readonly copyModifiers: CopyModifiers;
@@ -55,6 +61,7 @@ export const KEY_CODE_D = 2;
 export const KEY_CODE_SPACE = 49;
 
 export const DEFAULT_SETTINGS: AppSettings = {
+  theme: 'coldSteel',
   leagueId: null,
   copyModifiers: 'control-option',
   tradeWhispersEnabled: false,

@@ -138,3 +138,82 @@ export function detectPriceWarnings(listings: readonly PricedListing[]): PriceWa
 
   return warnings;
 }
+
+export interface PriceDistribution {
+  readonly currency: string;
+  readonly count: number;
+  readonly min: number;
+  readonly max: number;
+  readonly p10: number;
+  readonly median: number;
+  readonly p90: number;
+  /** Bucket counts across the min–max range, for the histogram. */
+  readonly buckets: readonly number[];
+  /** Index of the bucket the median falls in, for highlighting. */
+  readonly medianBucket: number;
+}
+
+function percentile(sorted: readonly number[], fraction: number): number {
+  if (sorted.length === 0) return 0;
+  if (sorted.length === 1) return sorted[0] as number;
+  const position = (sorted.length - 1) * fraction;
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  const low = sorted[lower] as number;
+  if (lower === upper) return low;
+  const high = sorted[upper] as number;
+  return low + (high - low) * (position - lower);
+}
+
+/**
+ * Distribution of asking prices for the histogram and percentile labels.
+ *
+ * Only the dominant currency is used: mixing currencies without exchange
+ * rates would produce a meaningless shape.
+ */
+export function distribution(
+  listings: readonly PricedListing[],
+  bucketCount = 14,
+): PriceDistribution | null {
+  const summary = summarize(listings);
+  if (summary === null) return null;
+
+  const amounts = listings
+    .filter((listing) => listing.currency === summary.currency)
+    .map((listing) => listing.amount)
+    .sort((a, b) => a - b);
+
+  if (amounts.length === 0) return null;
+
+  const min = amounts[0] as number;
+  const max = amounts[amounts.length - 1] as number;
+  const buckets = new Array<number>(bucketCount).fill(0);
+  const span = max - min;
+
+  for (const amount of amounts) {
+    // A flat series collapses into the first bucket rather than dividing by 0.
+    const index =
+      span === 0
+        ? 0
+        : Math.min(bucketCount - 1, Math.floor(((amount - min) / span) * bucketCount));
+    buckets[index] = (buckets[index] ?? 0) + 1;
+  }
+
+  const median = percentile(amounts, 0.5);
+  const medianBucket =
+    span === 0
+      ? 0
+      : Math.min(bucketCount - 1, Math.floor(((median - min) / span) * bucketCount));
+
+  return {
+    currency: summary.currency,
+    count: amounts.length,
+    min,
+    max,
+    p10: percentile(amounts, 0.1),
+    median,
+    p90: percentile(amounts, 0.9),
+    buckets,
+    medianBucket,
+  };
+}

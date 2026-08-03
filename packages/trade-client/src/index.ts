@@ -13,8 +13,18 @@ export {
 export type { CurrencyRate, ExchangeOffer } from './exchange';
 export type { ItemEntry, ItemGroup } from './baseTypes';
 export type { StatMatch } from './stats';
-export { toPricedListings, summarize, detectPriceWarnings } from './pricing';
-export type { PricedListing, PriceSummary, PriceWarning } from './pricing';
+export {
+  toPricedListings,
+  summarize,
+  detectPriceWarnings,
+  distribution,
+} from './pricing';
+export type {
+  PricedListing,
+  PriceSummary,
+  PriceWarning,
+  PriceDistribution,
+} from './pricing';
 export { RateLimitPolicy, parseRules, parseState } from './rateLimit';
 export type { RateLimitRule, RateLimitState } from './rateLimit';
 export { TradeError } from './types';

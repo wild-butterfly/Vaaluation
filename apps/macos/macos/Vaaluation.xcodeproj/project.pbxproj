@@ -26,6 +26,7 @@
 		6C40D4035A68C6484EC25C23 /* ReactHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4516344722C65BA9DBE6E9 /* ReactHost.swift */; };
 		8EA37AF6622B0834EEBA37D6 /* VaaluationModules.m in Sources */ = {isa = PBXBuildFile; fileRef = D13F5198BA95668A2ECDFC55 /* VaaluationModules.m */; };
 		92E695D35201919BFA6CA00B /* ChatSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5B24F0A09AE81DEA0E4569 /* ChatSender.swift */; };
+		95949F5911B46F7C680A0552 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = ABED0C58E29B453BA9994135 /* Fonts */; };
 		9A23B852E1686DDE0900DCEA /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */; };
 		A013EE07ECDAB6A5790299CD /* VLClipboardModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73428FDC40AC06D37FC3368D /* VLClipboardModule.swift */; };
 		A04FF082C06452BF534D1126 /* VLPermissionsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4366BFF47442E947BE623552 /* VLPermissionsModule.swift */; };
@@ -73,6 +74,7 @@
 		A702284B8144EC0176DA0DFD /* OverlayWindowController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OverlayWindowController.swift; sourceTree = "<group>"; };
 		A8CFA25EA0CD62211C41490B /* HotkeySettingsParsingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HotkeySettingsParsingTests.swift; sourceTree = "<group>"; };
 		A9540FB40722B840FA36ECE3 /* OverlayPanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OverlayPanel.swift; sourceTree = "<group>"; };
+		ABED0C58E29B453BA9994135 /* Fonts */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
 		B303CF7C90B5BB28FD4D2C0E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		B78BE21688D0EC2E322BB4C7 /* PermissionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
 		BBE393BB6DC5F7B7B1A22DD3 /* Pods-Vaaluation-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vaaluation-macOS.debug.xcconfig"; path = "Target Support Files/Pods-Vaaluation-macOS/Pods-Vaaluation-macOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				4E3C8A5737C772C499E27447 /* GameLogWatcher.swift */,
 				1B5B24F0A09AE81DEA0E4569 /* ChatSender.swift */,
 				2C3ECACCC8206E31AE00BA4E /* VLTradeModule.swift */,
+				ABED0C58E29B453BA9994135 /* Fonts */,
 			);
 			path = "Vaaluation-macOS";
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 			files = (
 				514201522437B4B40078DB4F /* Assets.xcassets in Resources */,
 				44F66BE01C838CB17E5A008E /* PrivacyInfo.xcprivacy in Resources */,
+				95949F5911B46F7C680A0552 /* Fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

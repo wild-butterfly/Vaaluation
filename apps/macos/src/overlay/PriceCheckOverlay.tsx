@@ -12,7 +12,7 @@ import {
 import { parseItemText } from '@vaaluation/item-parser';
 import type { ParsedItem } from '@vaaluation/shared-types';
 import type {
-  PriceSummary,
+  PriceDistribution,
   PriceWarning,
   PricedListing,
   SelectableFilter,
@@ -21,11 +21,23 @@ import {
   buildFilters,
   buildQuery,
   detectPriceWarnings,
-  summarize,
+  distribution,
   toPricedListings,
   tradeSearchUrl,
 } from '@vaaluation/trade-client';
-import { colors, glass, radii, spacing, typography } from '@vaaluation/ui';
+import {
+  alpha,
+  borders,
+  fonts,
+  radii,
+  semantic,
+  spacing,
+  surfaces,
+  text as palette,
+  type as scale,
+  useTheme,
+} from '@vaaluation/ui';
+import type { Theme } from '@vaaluation/ui';
 import { useSettings } from '../state/SettingsContext';
 import { defaultLeagueId, useLeagues } from '../hooks/useLeagues';
 import { getTradeClient } from '../services/trade';
@@ -39,38 +51,44 @@ type SearchState =
       total: number;
       queryId: string;
       listings: PricedListing[];
-      summary: PriceSummary | null;
+      spread: PriceDistribution | null;
       warnings: PriceWarning[];
     }
   | { status: 'error'; message: string };
 
-function age(iso: string): string {
-  const then = Date.parse(iso);
-  if (Number.isNaN(then)) return '—';
-  const minutes = Math.max(0, Math.round((Date.now() - then) / 60_000));
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}h`;
-  return `${Math.round(hours / 24)}d`;
+function round(value: number): string {
+  if (value >= 100) return String(Math.round(value));
+  if (value >= 10) return value.toFixed(0);
+  return value.toFixed(1);
 }
 
-function titleOf(item: ParsedItem): { primary: string; secondary: string | null } {
+function nameOf(item: ParsedItem): string {
+  return item.kind === 'equipment' || item.kind === 'map' ? item.name : item.name;
+}
+
+function subtitleOf(item: ParsedItem): string {
+  const parts: string[] = [];
   switch (item.kind) {
-    case 'currency':
-    case 'divinationCard':
-      return { primary: item.name, secondary: item.itemClass };
-    case 'gem':
-      return { primary: item.name, secondary: `Level ${item.level} · ${item.quality}%` };
     case 'equipment':
+      if (item.name !== item.baseType) parts.push(item.baseType);
+      if (item.itemLevel !== undefined) parts.push(`iLvl ${item.itemLevel}`);
+      break;
     case 'map':
-      return {
-        primary: item.name,
-        secondary: item.name === item.baseType ? null : item.baseType,
-      };
+      parts.push(item.baseType);
+      if (item.mapTier !== undefined) parts.push(`T${item.mapTier}`);
+      break;
+    case 'gem':
+      parts.push(`Level ${item.level}`, `${item.quality}%`);
+      break;
+    default:
+      parts.push(item.itemClass);
   }
+  return parts.join(' · ');
 }
 
 export function PriceCheckOverlay() {
+  const theme = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const { settings, update } = useSettings();
   const { leagues } = useLeagues();
   const [item, setItem] = useState<ParsedItem | null>(null);
@@ -127,21 +145,24 @@ export function PriceCheckOverlay() {
     setState({ status: 'searching' });
     try {
       const client = getTradeClient();
-      // Magic items carry affixes in their name, so the searchable base type
-      // comes from the official catalog rather than the parsed name.
       const baseTypes = await client.getBaseTypeIndex();
       const search = await client.search(
         league,
         buildQuery(item, filters, { baseTypes }),
       );
-      const results = await client.fetchListings(search.result.slice(0, 10), search.id);
-      const listings = toPricedListings(results);
+      // Two pages: ten listings is too few for the histogram to show a shape.
+      const first = await client.fetchListings(search.result.slice(0, 10), search.id);
+      const second =
+        search.result.length > 10
+          ? await client.fetchListings(search.result.slice(10, 20), search.id)
+          : [];
+      const listings = toPricedListings([...first, ...second]);
       setState({
         status: 'done',
         total: search.total,
         queryId: search.id,
         listings,
-        summary: summarize(listings),
+        spread: distribution(listings),
         warnings: detectPriceWarnings(listings),
       });
     } catch (cause: unknown) {
@@ -152,156 +173,163 @@ export function PriceCheckOverlay() {
     }
   }, [item, league, filters]);
 
-  const title = useMemo(() => (item === null ? null : titleOf(item)), [item]);
+  const setBound = (key: string, bound: 'min' | 'max', raw: string) => {
+    const value = raw.trim() === '' ? null : Number(raw);
+    if (value !== null && Number.isNaN(value)) return;
+    setFilters((current) =>
+      current.map((f) => (f.key === key ? { ...f, [bound]: value } : f)),
+    );
+  };
+
+  const spread = state.status === 'done' ? state.spread : null;
+  const maxBucket = spread ? Math.max(...spread.buckets, 1) : 1;
+  const unit = spread?.currency.charAt(0) ?? '';
 
   return (
     <View style={styles.panel}>
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <Text style={styles.title} numberOfLines={1}>
-            {title?.primary ?? 'Vaaluation'}
+          <Text style={styles.itemName} numberOfLines={1}>
+            {item === null ? 'Vaaluation' : nameOf(item)}
           </Text>
-          {title?.secondary != null ? (
-            <Text style={styles.subtitle} numberOfLines={1}>
-              {title.secondary}
+          {item !== null ? (
+            <Text style={styles.itemMeta} numberOfLines={1}>
+              {subtitleOf(item)}
             </Text>
           ) : null}
         </View>
-        <Text style={styles.league} numberOfLines={1}>
-          {league ?? '—'}
-        </Text>
+        {spread !== null ? (
+          <View style={styles.priceBlock}>
+            <Text style={styles.price}>
+              {round(spread.median)}
+              <Text style={styles.priceUnit}> {spread.currency}</Text>
+            </Text>
+            <Text style={styles.priceMeta}>
+              median · {state.status === 'done' ? state.total : 0} live listings
+            </Text>
+          </View>
+        ) : null}
       </View>
 
-      <ScrollView
-        style={styles.body}
-        contentContainerStyle={styles.bodyContent}
-        showsVerticalScrollIndicator={false}
-      >
+      {spread !== null ? (
+        <View style={styles.histogram}>
+          <View style={styles.bars}>
+            {spread.buckets.map((count, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.bar,
+                  {
+                    height: Math.max(2, (count / maxBucket) * 52),
+                    backgroundColor:
+                      index === spread.medianBucket
+                        ? theme.accent
+                        : alpha(theme.accent, 0.28),
+                  },
+                ]}
+              />
+            ))}
+          </View>
+          <View style={styles.scale}>
+            <Text style={styles.scaleEnd}>
+              {round(spread.min)}
+              {unit}
+            </Text>
+            <Text style={styles.scaleMedian}>
+              {round(spread.median)}
+              {unit} median
+            </Text>
+            <Text style={styles.scaleEnd}>
+              {round(spread.max)}
+              {unit}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
+      <View style={styles.divider} />
+
+      <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
         {item === null ? (
           <Text style={styles.empty}>
-            {parseError ?? 'Hover an item in Path of Exile and press ⌃D.'}
+            {parseError ?? 'Hover an item in Path of Exile and press Ctrl+D.'}
           </Text>
         ) : (
-          <>
-            {filters.length > 0 ? (
-              <View style={styles.filters}>
-                {filters.map((filter) => (
-                  <View key={filter.key} style={styles.filterRow}>
-                    <Pressable
-                      style={styles.filterHit}
-                      onPress={() =>
-                        setFilters((current) =>
-                          current.map((f) =>
-                            f.key === filter.key ? { ...f, selected: !f.selected } : f,
-                          ),
-                        )
-                      }
-                    >
-                      <View style={[styles.tick, filter.selected && styles.tickOn]} />
-                      <Text
-                        style={[
-                          styles.filterText,
-                          !filter.selected && styles.filterTextOff,
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {filter.label}
-                      </Text>
-                    </Pressable>
-                    <TextInput
-                      style={styles.bound}
-                      value={filter.min === null ? '' : String(filter.min)}
-                      onChangeText={(raw) => {
-                        const value = raw.trim() === '' ? null : Number(raw);
-                        if (value !== null && Number.isNaN(value)) return;
-                        setFilters((current) =>
-                          current.map((f) =>
-                            f.key === filter.key ? { ...f, min: value } : f,
-                          ),
-                        );
-                      }}
-                      placeholder="min"
-                      placeholderTextColor={colors.textDisabled}
-                    />
-                  </View>
-                ))}
+          <View style={styles.mods}>
+            {filters.map((filter) => (
+              <View key={filter.key} style={styles.modRow}>
+                <Pressable
+                  style={styles.modHit}
+                  onPress={() =>
+                    setFilters((current) =>
+                      current.map((f) =>
+                        f.key === filter.key ? { ...f, selected: !f.selected } : f,
+                      ),
+                    )
+                  }
+                >
+                  <View style={[styles.checkbox, filter.selected && styles.checkboxOn]} />
+                  <Text
+                    style={[styles.modText, !filter.selected && styles.modTextOff]}
+                    numberOfLines={1}
+                  >
+                    {filter.label}
+                  </Text>
+                </Pressable>
+                <TextInput
+                  style={styles.input}
+                  value={filter.min === null ? '' : String(filter.min)}
+                  onChangeText={(raw) => setBound(filter.key, 'min', raw)}
+                  placeholder="min"
+                  placeholderTextColor={palette.faint}
+                />
+                <TextInput
+                  style={[styles.input, styles.inputDim]}
+                  value={filter.max === null ? '' : String(filter.max)}
+                  onChangeText={(raw) => setBound(filter.key, 'max', raw)}
+                  placeholder="max"
+                  placeholderTextColor={palette.faint}
+                />
               </View>
-            ) : null}
+            ))}
 
             {state.status === 'error' ? (
               <Text style={styles.error}>{state.message}</Text>
             ) : null}
 
-            {state.status === 'done' ? (
-              <>
-                {state.summary ? (
-                  <View style={styles.summaryRow}>
-                    <Text style={styles.summaryValue}>
-                      {state.summary.min}–{state.summary.max}
-                      <Text style={styles.summaryUnit}> {state.summary.currency}</Text>
-                    </Text>
-                    <Text style={styles.summaryMeta}>
-                      median {state.summary.median} · {state.total} listed
-                    </Text>
-                  </View>
-                ) : null}
-
-                {state.warnings.map((warning, index) => (
+            {state.status === 'done'
+              ? state.warnings.map((warning, index) => (
                   <Text key={index} style={styles.warning}>
                     {warning.message}
                   </Text>
-                ))}
+                ))
+              : null}
 
-                {state.listings.length === 0 ? (
-                  <Text style={styles.empty}>
-                    No priced listings. Try deselecting a modifier.
-                  </Text>
-                ) : (
-                  state.listings.map((listing) => (
-                    <View key={listing.id} style={styles.listing}>
-                      <Text style={styles.price} numberOfLines={1}>
-                        {listing.amount}
-                        <Text style={styles.priceUnit}> {listing.currency}</Text>
-                      </Text>
-                      <View
-                        style={[
-                          styles.dot,
-                          listing.presence === 'online'
-                            ? styles.dotOnline
-                            : listing.presence === 'afk'
-                              ? styles.dotAfk
-                              : styles.dotOffline,
-                        ]}
-                      />
-                      <Text style={styles.seller} numberOfLines={1}>
-                        {listing.accountName.split('#')[0]}
-                      </Text>
-                      <Text style={styles.age}>{age(listing.indexed)}</Text>
-                    </View>
-                  ))
-                )}
-              </>
+            {state.status === 'done' && state.listings.length === 0 ? (
+              <Text style={styles.empty}>
+                No priced listings matched. Try deselecting a modifier.
+              </Text>
             ) : null}
-          </>
+          </View>
         )}
       </ScrollView>
 
       <View style={styles.footer}>
         <Pressable
-          style={[styles.action, styles.primary]}
+          style={[styles.search, item === null && styles.disabled]}
           onPress={() => {
             void runSearch();
           }}
           disabled={item === null || state.status === 'searching'}
         >
           {state.status === 'searching' ? (
-            <ActivityIndicator size="small" color={colors.textPrimary} />
+            <ActivityIndicator size="small" color={theme.actionText} />
           ) : (
-            <Text style={styles.actionText}>Search</Text>
+            <Text style={styles.searchText}>Search</Text>
           )}
         </Pressable>
         <Pressable
-          style={styles.action}
+          style={[styles.ghost, state.status !== 'done' && styles.disabled]}
           onPress={() => {
             if (state.status === 'done' && league !== null) {
               void Linking.openURL(tradeSearchUrl(league, state.queryId));
@@ -309,213 +337,170 @@ export function PriceCheckOverlay() {
           }}
           disabled={state.status !== 'done'}
         >
-          <Text
-            style={[styles.actionText, state.status !== 'done' && styles.actionTextOff]}
-          >
-            Trade site
-          </Text>
+          <Text style={styles.ghostText}>Trade site</Text>
         </Pressable>
-        <Text style={styles.hintKey}>esc</Text>
+        <Text style={styles.hint}>esc to close · ⌥ to pin</Text>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  panel: {
-    flex: 1,
-    backgroundColor: glass.surface,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: glass.surfaceStrong,
-    borderBottomColor: glass.hairline,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  headerText: {
-    flex: 1,
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: typography.sizeTitle,
-    fontWeight: '600',
-    letterSpacing: 0.2,
-  },
-  subtitle: {
-    color: colors.textSecondary,
-    fontSize: typography.sizeCaption,
-    marginTop: 1,
-  },
-  league: {
-    color: colors.goldBright,
-    fontSize: typography.sizeCaption,
-    maxWidth: 110,
-    textAlign: 'right',
-  },
-  body: {
-    flex: 1,
-  },
-  bodyContent: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  empty: {
-    color: colors.textSecondary,
-    fontSize: typography.sizeCaption,
-    paddingVertical: spacing.sm,
-    lineHeight: 16,
-  },
-  filters: {
-    marginBottom: spacing.sm,
-  },
-  filterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingVertical: 2,
-  },
-  filterHit: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  tick: {
-    width: 11,
-    height: 11,
-    borderRadius: 3,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: glass.border,
-    backgroundColor: glass.fill,
-  },
-  tickOn: {
-    backgroundColor: glass.accent,
-    borderColor: glass.accentBorder,
-  },
-  filterText: {
-    flex: 1,
-    color: colors.textPrimary,
-    fontSize: typography.sizeCaption,
-  },
-  filterTextOff: {
-    color: colors.textSecondary,
-  },
-  bound: {
-    width: 42,
-    backgroundColor: glass.fill,
-    borderColor: glass.hairline,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radii.sm,
-    color: colors.textPrimary,
-    fontSize: typography.sizeCaption,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 1,
-    textAlign: 'right',
-  },
-  summaryRow: {
-    marginBottom: spacing.sm,
-  },
-  summaryValue: {
-    color: colors.goldBright,
-    fontSize: typography.sizeHeading,
-    fontWeight: '700',
-  },
-  summaryUnit: {
-    fontSize: typography.sizeCaption,
-    fontWeight: '400',
-    color: colors.textSecondary,
-  },
-  summaryMeta: {
-    color: colors.textSecondary,
-    fontSize: typography.sizeCaption,
-    marginTop: 1,
-  },
-  warning: {
-    color: colors.warning,
-    fontSize: typography.sizeCaption,
-    marginBottom: spacing.xs,
-    lineHeight: 15,
-  },
-  listing: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: 4,
-    borderTopColor: glass.hairline,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  price: {
-    color: colors.textPrimary,
-    fontSize: typography.sizeBody,
-    fontWeight: '600',
-    minWidth: 74,
-  },
-  priceUnit: {
-    color: colors.textSecondary,
-    fontSize: typography.sizeCaption,
-    fontWeight: '400',
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  dotOnline: { backgroundColor: colors.online },
-  dotAfk: { backgroundColor: colors.warning },
-  dotOffline: { backgroundColor: colors.offline },
-  seller: {
-    flex: 1,
-    color: colors.textSecondary,
-    fontSize: typography.sizeCaption,
-  },
-  age: {
-    color: colors.textDisabled,
-    fontSize: typography.sizeCaption,
-  },
-  error: {
-    color: colors.danger,
-    fontSize: typography.sizeCaption,
-    marginBottom: spacing.xs,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: glass.surfaceStrong,
-    borderTopColor: glass.hairline,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  action: {
-    borderRadius: radii.sm,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: glass.hairline,
-    backgroundColor: glass.fill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 3,
-    minWidth: 62,
-    alignItems: 'center',
-  },
-  primary: {
-    backgroundColor: glass.accent,
-    borderColor: glass.accentBorder,
-  },
-  actionText: {
-    color: colors.textPrimary,
-    fontSize: typography.sizeCaption,
-    fontWeight: '600',
-  },
-  actionTextOff: {
-    color: colors.textDisabled,
-  },
-  hintKey: {
-    marginLeft: 'auto',
-    color: colors.textDisabled,
-    fontSize: typography.sizeCaption,
-  },
-});
+function makeStyles(theme: Theme) {
+  return StyleSheet.create({
+    panel: { flex: 1 },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      paddingHorizontal: spacing.h3,
+      paddingTop: spacing.h2,
+      paddingBottom: spacing.xxl,
+      gap: spacing.xl,
+    },
+    headerText: { flex: 1 },
+    itemName: {
+      fontFamily: fonts.sans,
+      fontSize: scale.xl,
+      fontWeight: '600',
+      color: theme.accentText,
+      letterSpacing: -0.2,
+    },
+    itemMeta: {
+      fontFamily: fonts.sans,
+      fontSize: scale.body,
+      color: palette.secondary,
+      marginTop: 3,
+    },
+    priceBlock: { alignItems: 'flex-end' },
+    price: {
+      fontFamily: fonts.mono,
+      fontSize: scale.display,
+      fontWeight: '600',
+      color: palette.primary,
+    },
+    priceUnit: {
+      fontFamily: fonts.sans,
+      fontSize: scale.body,
+      fontWeight: '400',
+      color: palette.muted,
+    },
+    priceMeta: {
+      fontFamily: fonts.mono,
+      fontSize: scale.tiny,
+      color: semantic.up,
+      marginTop: 2,
+    },
+    histogram: { paddingHorizontal: spacing.h3, paddingBottom: spacing.h1 },
+    bars: { flexDirection: 'row', alignItems: 'flex-end', gap: 3, height: 52 },
+    bar: { flex: 1, borderTopLeftRadius: 2, borderTopRightRadius: 2 },
+    scale: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: spacing.sm,
+    },
+    scaleEnd: { fontFamily: fonts.mono, fontSize: scale.tiny, color: palette.dim },
+    scaleMedian: { fontFamily: fonts.mono, fontSize: scale.tiny, color: theme.accent },
+    divider: { height: 1, backgroundColor: borders.standard },
+    body: { flex: 1 },
+    mods: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
+    empty: {
+      fontFamily: fonts.sans,
+      fontSize: scale.ui,
+      color: palette.secondary,
+      padding: spacing.h1,
+      lineHeight: 19,
+    },
+    modRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: 9,
+      borderRadius: radii.button,
+    },
+    modHit: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+    checkbox: {
+      width: 15,
+      height: 15,
+      borderRadius: radii.tag,
+      borderWidth: 1,
+      borderColor: borders.checkbox,
+    },
+    checkboxOn: { backgroundColor: theme.accent, borderColor: theme.accent },
+    modText: {
+      flex: 1,
+      fontFamily: fonts.sans,
+      fontSize: scale.bodyTight,
+      color: palette.body,
+    },
+    modTextOff: { color: '#a4a6ad' },
+    input: {
+      width: 52,
+      borderRadius: radii.input,
+      borderWidth: 1,
+      borderColor: borders.input,
+      backgroundColor: surfaces.sunkenStrong,
+      color: palette.primary,
+      fontFamily: fonts.mono,
+      fontSize: scale.mono,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 3,
+      textAlign: 'center',
+    },
+    inputDim: { backgroundColor: surfaces.sunken, borderColor: borders.inputDim },
+    error: {
+      fontFamily: fonts.sans,
+      fontSize: scale.caption,
+      color: semantic.down,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: spacing.sm,
+    },
+    warning: {
+      fontFamily: fonts.sans,
+      fontSize: scale.caption,
+      color: theme.accent,
+      paddingHorizontal: spacing.xl,
+      paddingBottom: spacing.sm,
+      lineHeight: 16,
+    },
+    footer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.lg,
+      paddingHorizontal: spacing.h1,
+      paddingVertical: spacing.xl,
+      borderTopWidth: 1,
+      borderTopColor: borders.standard,
+      backgroundColor: surfaces.sunken,
+    },
+    search: {
+      backgroundColor: theme.action,
+      borderRadius: radii.button,
+      paddingHorizontal: spacing.h3,
+      paddingVertical: 9,
+      minWidth: 84,
+      alignItems: 'center',
+    },
+    searchText: {
+      fontFamily: fonts.sans,
+      fontSize: scale.bodyTight,
+      fontWeight: '600',
+      color: theme.actionText,
+    },
+    ghost: {
+      borderWidth: 1,
+      borderColor: borders.stronger,
+      borderRadius: radii.button,
+      paddingHorizontal: spacing.h1,
+      paddingVertical: 9,
+    },
+    ghostText: { fontFamily: fonts.sans, fontSize: scale.bodyTight, color: '#c9c7c1' },
+    disabled: { opacity: 0.45 },
+    hint: {
+      marginLeft: 'auto',
+      fontFamily: fonts.mono,
+      fontSize: scale.tiny,
+      color: palette.faint,
+    },
+  });
+}

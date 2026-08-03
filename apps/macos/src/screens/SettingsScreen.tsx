@@ -8,8 +8,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import type { CopyModifiers, HotkeyAction, KeyCombo } from '@vaaluation/shared-types';
-import { colors, radii, spacing, typography } from '@vaaluation/ui';
+import type {
+  CopyModifiers,
+  HotkeyAction,
+  KeyCombo,
+  ThemeSetting,
+} from '@vaaluation/shared-types';
+import { THEMES, colors, radii, spacing, typography } from '@vaaluation/ui';
 import { Section } from '../components/Section';
 import { useSettings } from '../state/SettingsContext';
 import { usePermissions } from '../hooks/usePermissions';
@@ -171,6 +176,35 @@ export function SettingsScreen() {
           Shortcuts must include at least one modifier (⌃⌥⇧⌘). Press Escape while
           recording to cancel.
         </Text>
+      </Section>
+
+      <Section title="Theme">
+        <Text style={styles.hint}>
+          The accent re-tints every screen, including the in-game overlay.
+        </Text>
+        <View style={styles.leagueList}>
+          {Object.values(THEMES).map((entry) => {
+            const active = settings.theme === entry.name;
+            return (
+              <Pressable
+                key={entry.name}
+                style={[styles.smallButton, active && styles.smallButtonActive]}
+                onPress={() => update({ theme: entry.name as ThemeSetting })}
+              >
+                <View
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: entry.accent,
+                    marginRight: 6,
+                  }}
+                />
+                <Text style={styles.smallButtonText}>{entry.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </Section>
 
       <Section title="Trade Replies">
@@ -338,6 +372,8 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   smallButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.obsidian,
     borderColor: colors.gold,
     borderWidth: StyleSheet.hairlineWidth,
