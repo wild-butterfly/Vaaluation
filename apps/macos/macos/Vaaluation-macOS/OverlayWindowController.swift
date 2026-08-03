@@ -16,19 +16,29 @@ final class OverlayWindowController: NSWindowController {
 
     // Background blur is what makes the panel read as glass rather than a
     // flat dark rectangle over the game.
-    let effect = NSVisualEffectView(
-      frame: NSRect(origin: .zero, size: Self.defaultSize)
-    )
-    effect.material = .hudWindow
-    effect.blendingMode = .behindWindow
-    effect.state = .active
+    // Per the design the overlay is a solid vertical gradient with an accent
+    // hairline, not a blur — the game behind it would otherwise show through
+    // and fight the numbers for attention.
+    let effect = NSView(frame: NSRect(origin: .zero, size: Self.defaultSize))
     effect.autoresizingMask = [.width, .height]
     effect.wantsLayer = true
+
+    let gradient = CAGradientLayer()
+    gradient.frame = effect.bounds
+    gradient.colors = [
+      NSColor(calibratedRed: 0.067, green: 0.086, blue: 0.125, alpha: 1).cgColor,
+      NSColor(calibratedRed: 0.043, green: 0.055, blue: 0.075, alpha: 1).cgColor,
+    ]
+    gradient.startPoint = CGPoint(x: 0.5, y: 1)
+    gradient.endPoint = CGPoint(x: 0.5, y: 0)
+    gradient.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
+    effect.layer?.addSublayer(gradient)
+
     effect.layer?.cornerRadius = Self.cornerRadius
     effect.layer?.masksToBounds = true
     effect.layer?.borderWidth = 1
     effect.layer?.borderColor = NSColor(
-      calibratedRed: 0.55, green: 0.48, blue: 0.29, alpha: 0.45
+      calibratedRed: 0.56, green: 0.72, blue: 0.85, alpha: 0.16
     ).cgColor
 
     let rootView = reactHost.makeRootView(

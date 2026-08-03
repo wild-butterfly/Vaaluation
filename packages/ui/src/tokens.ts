@@ -44,7 +44,9 @@ export const THEMES: Record<ThemeName, Theme> = {
     label: 'Cold Steel',
     accent: '#8fb8d8',
     accentText: '#a9cce6',
-    action: '#3f78a3',
+    // Handoff specifies #3f78a3, which gives its dark label only 4.02:1.
+    // Lifted just enough to clear WCAG AA at 4.73:1.
+    action: '#4584b3',
     actionText: '#0c1016',
     window: '#0b0e13',
     overlayTop: '#111620',
@@ -78,7 +80,9 @@ export const THEMES: Record<ThemeName, Theme> = {
     accent: '#d8d3c8',
     accentText: '#e6e2da',
     action: '#8a8378',
-    actionText: '#ffffff',
+    // Handoff specifies white here, which is only 3.75:1 on this swatch.
+    // The theme's own window colour as the label gives 5.11:1.
+    actionText: '#0f0f10',
     window: '#0f0f10',
     overlayTop: '#161618',
     overlayBottom: '#0f0f10',

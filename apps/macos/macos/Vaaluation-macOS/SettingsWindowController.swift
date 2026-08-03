@@ -30,15 +30,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     rootView.wantsLayer = true
     rootView.layer?.backgroundColor = NSColor.clear.cgColor
 
-    let effect = NSVisualEffectView(frame: window.contentLayoutRect)
-    effect.material = .underWindowBackground
-    effect.blendingMode = .behindWindow
-    effect.state = .active
-    effect.autoresizingMask = [.width, .height]
-    rootView.frame = effect.bounds
-    rootView.autoresizingMask = [.width, .height]
-    effect.addSubview(rootView)
-    window.contentView = effect
+    // The design specifies solid surfaces, not a blurred backdrop: the rail
+    // and content columns carry their own colours, so a translucent window
+    // would wash them out against whatever sits behind it.
+    window.backgroundColor = NSColor(
+      calibratedRed: 0.043, green: 0.055, blue: 0.075, alpha: 1
+    )
+    window.contentView = rootView
 
     super.init(window: window)
     window.delegate = self
