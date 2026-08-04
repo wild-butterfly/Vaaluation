@@ -85,6 +85,54 @@ final class VLTradeModule: NSObject {
     }
   }
 
+  /// Appends one completed request, keeping the newest first and ignoring a
+  /// request already recorded. Done natively so concurrent writes from more
+  /// than one window cannot clobber each other.
+  @objc(appendHistory:resolver:rejecter:)
+  func appendHistory(
+    _ json: String,
+    resolver resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    let url = historyURL
+    DispatchQueue.global(qos: .utility).async {
+      guard
+        let entryData = json.data(using: .utf8),
+        let entry = try? JSONSerialization.jsonObject(with: entryData) as? [String: Any],
+        let id = entry["id"] as? String
+      else {
+        DispatchQueue.main.async {
+          reject("invalid_entry", "History entry was not a JSON object with an id", nil)
+        }
+        return
+      }
+
+      var entries: [[String: Any]] = []
+      if let existing = try? Data(contentsOf: url),
+        let parsed = try? JSONSerialization.jsonObject(with: existing) as? [[String: Any]]
+      {
+        entries = parsed
+      }
+      guard !entries.contains(where: { ($0["id"] as? String) == id }) else {
+        DispatchQueue.main.async { resolve(nil) }
+        return
+      }
+
+      entries.insert(entry, at: 0)
+      if entries.count > 300 { entries = Array(entries.prefix(300)) }
+
+      do {
+        let data = try JSONSerialization.data(withJSONObject: entries)
+        try data.write(to: url, options: .atomic)
+        DispatchQueue.main.async { resolve(nil) }
+      } catch {
+        DispatchQueue.main.async {
+          reject("write_failed", "Could not save trade history", nil)
+        }
+      }
+    }
+  }
+
   @objc(clearHistory:rejecter:)
   func clearHistory(
     _ resolve: @escaping RCTPromiseResolveBlock,

@@ -10,6 +10,7 @@ interface VLTradeNative {
   consumePendingShowTrades(): Promise<boolean>;
   loadHistory(): Promise<string | null>;
   saveHistory(json: string): Promise<void>;
+  appendHistory(json: string): Promise<void>;
   clearHistory(): Promise<void>;
 }
 
@@ -65,6 +66,11 @@ export function loadTradeHistory(): Promise<string | null> {
 
 export function saveTradeHistory(json: string): Promise<void> {
   return native.saveHistory(json);
+}
+
+/** Records one completed request. Ignored if already recorded. */
+export function appendTradeHistory(entry: unknown): Promise<void> {
+  return native.appendHistory(JSON.stringify(entry));
 }
 
 export function clearTradeHistory(): Promise<void> {

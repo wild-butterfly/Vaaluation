@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TradeRequest } from '@vaaluation/trade-whispers';
 import { describeRequest, parseTradeWhisper } from '@vaaluation/trade-whispers';
-import { drainPendingLogLines, onLogLines } from '../native/VLTrade';
+import { appendTradeHistory, drainPendingLogLines, onLogLines } from '../native/VLTrade';
 import { log } from '../native/VLLog';
 
 export interface TrackedRequest {
@@ -75,10 +75,23 @@ export function useTradeRequests(enabled: boolean) {
     };
   }, [enabled]);
 
+  /**
+   * Completing a request records it and takes it off the incoming list.
+   * Leaving handled requests in place made the list grow without bound and
+   * gave no signal about what still needed attention.
+   */
   const markDone = useCallback((id: string) => {
-    setRequests((current) =>
-      current.map((entry) => (entry.id === id ? { ...entry, done: true } : entry)),
-    );
+    setRequests((current) => {
+      const entry = current.find((candidate) => candidate.id === id);
+      if (entry !== undefined) {
+        appendTradeHistory({
+          id: entry.id,
+          request: entry.request,
+          completedAt: new Date().toISOString(),
+        }).catch(() => {});
+      }
+      return current.filter((candidate) => candidate.id !== id);
+    });
   }, []);
 
   const dismiss = useCallback((id: string) => {

@@ -47,7 +47,6 @@ export function TradeOverlay({
   thanksMessage,
   onEnable,
   onDone,
-  onDismiss,
   onContentHeight,
 }: {
   requests: readonly TrackedRequest[];
@@ -57,7 +56,6 @@ export function TradeOverlay({
   thanksMessage: string;
   onEnable: () => void;
   onDone: (id: string) => void;
-  onDismiss: (id: string) => void;
   onContentHeight: (height: number) => void;
 }) {
   const { status } = usePermissions();
@@ -154,7 +152,6 @@ export function TradeOverlay({
               onToggleReply={() => setReplyFor(replyFor === entry.id ? null : entry.id)}
               onCommand={run}
               onDone={() => onDone(entry.id)}
-              onDismiss={() => onDismiss(entry.id)}
             />
           ))
         )}
@@ -186,7 +183,6 @@ function Row({
   onToggleReply,
   onCommand,
   onDone,
-  onDismiss,
 }: {
   request: TradeRequest;
   done: boolean;
@@ -196,7 +192,6 @@ function Row({
   onToggleReply: () => void;
   onCommand: (command: { text: string }) => void;
   onDone: () => void;
-  onDismiss: () => void;
 }) {
   return (
     <View style={[styles.row, done && styles.rowDone]}>
@@ -224,7 +219,7 @@ function Row({
         />
         <Action label="Kick" onPress={() => onCommand(kickCommand(request))} />
         <Action label={showReply ? 'Hide' : 'Reply'} onPress={onToggleReply} />
-        <Action label={done ? 'Remove' : 'Done'} onPress={done ? onDismiss : onDone} />
+        <Action label="Done" onPress={onDone} />
       </View>
 
       {showReply ? (

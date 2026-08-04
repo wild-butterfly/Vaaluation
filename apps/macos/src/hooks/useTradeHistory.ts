@@ -22,7 +22,7 @@ export function useTradeHistory() {
   const [loaded, setLoaded] = useState(false);
   const dirty = useRef(false);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let cancelled = false;
     loadTradeHistory()
       .then((json) => {
@@ -42,6 +42,8 @@ export function useTradeHistory() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(load, [load]);
 
   // Persist after changes, never on the initial load.
   useEffect(() => {
@@ -68,5 +70,5 @@ export function useTradeHistory() {
     clearTradeHistory().catch(() => {});
   }, []);
 
-  return { entries, loaded, record, clear };
+  return { entries, loaded, record, clear, reload: load };
 }

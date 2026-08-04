@@ -105,7 +105,6 @@ function Shell() {
             thanksMessage={settings.thanksMessage}
             onEnable={() => update({ tradeWhispersEnabled: true })}
             onDone={trades.markDone}
-            onDismiss={trades.dismiss}
             onContentHeight={reportHeight}
           />
         )}

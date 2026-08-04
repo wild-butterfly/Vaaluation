@@ -45,8 +45,7 @@ function ageOf(iso: string): string {
 export function TradeScreen() {
   const { settings, update } = useSettings();
   const enabled = settings.tradeWhispersEnabled;
-  const { requests, error, watching, markDone, dismiss, clear } =
-    useTradeRequests(enabled);
+  const { requests, error, watching, markDone, clear } = useTradeRequests(enabled);
   const [lastError, setLastError] = useState<string | null>(null);
   const [replyFor, setReplyFor] = useState<string | null>(null);
 
@@ -134,7 +133,6 @@ export function TradeScreen() {
                   quickReplies={settings.quickReplies}
                   thanksMessage={settings.thanksMessage}
                   onDone={() => markDone(entry.id)}
-                  onDismiss={() => dismiss(entry.id)}
                 />
               ))
             )}
@@ -155,7 +153,6 @@ export function TradeScreen() {
                   quickReplies={settings.quickReplies}
                   thanksMessage={settings.thanksMessage}
                   onDone={() => markDone(entry.id)}
-                  onDismiss={() => dismiss(entry.id)}
                 />
               ))}
             </Section>
@@ -184,7 +181,6 @@ function RequestRow({
   quickReplies,
   thanksMessage,
   onDone,
-  onDismiss,
 }: {
   request: TradeRequest;
   done: boolean;
@@ -194,7 +190,6 @@ function RequestRow({
   quickReplies: readonly string[];
   thanksMessage: string;
   onDone: () => void;
-  onDismiss: () => void;
 }) {
   return (
     <View style={[styles.request, done && styles.requestDone]}>
@@ -235,8 +230,8 @@ function RequestRow({
         <Pressable style={styles.action} onPress={onToggleReply}>
           <Text style={styles.actionText}>Reply</Text>
         </Pressable>
-        <Pressable style={styles.action} onPress={done ? onDismiss : onDone}>
-          <Text style={styles.actionText}>{done ? 'Remove' : 'Done'}</Text>
+        <Pressable style={styles.action} onPress={onDone}>
+          <Text style={styles.actionText}>Done</Text>
         </Pressable>
       </View>
 
