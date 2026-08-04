@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Linking,
@@ -145,6 +145,13 @@ export function PriceCheckOverlay({
     [],
   );
 
+  /**
+   * Latest search, reachable from the effect below without making that effect
+   * depend on it — the callback changes whenever a filter does, which would
+   * otherwise re-run the effect and search again on every checkbox.
+   */
+  const runSearchRef = useRef<((withFilters: SelectableFilter[]) => void) | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     if (item === null) {
@@ -154,7 +161,14 @@ export function PriceCheckOverlay({
     getTradeClient()
       .getStatIndex()
       .then((stats) => {
-        if (!cancelled) setFilters(buildFilters(item, stats));
+        if (cancelled) return;
+        const built = buildFilters(item, stats);
+        setFilters(built);
+        // Price checking is one keypress, so the panel answers rather than
+        // asking again: the modifiers it would have preselected are the ones
+        // it searches with, and a unique has none to choose in the first
+        // place. Adjusting a filter and pressing Search still works.
+        runSearchRef.current?.(built);
       })
       .catch(() => {
         if (!cancelled) setFilters([]);
@@ -164,38 +178,45 @@ export function PriceCheckOverlay({
     };
   }, [item]);
 
-  const runSearch = useCallback(async () => {
-    if (item === null || league === null) return;
-    setState({ status: 'searching' });
-    try {
-      const client = getTradeClient();
-      const baseTypes = await client.getBaseTypeIndex();
-      const search = await client.search(
-        league,
-        buildQuery(item, filters, { baseTypes }),
-      );
-      // Two pages: ten listings is too few for the histogram to show a shape.
-      const first = await client.fetchListings(search.result.slice(0, 10), search.id);
-      const second =
-        search.result.length > 10
-          ? await client.fetchListings(search.result.slice(10, 20), search.id)
-          : [];
-      const listings = toPricedListings([...first, ...second]);
-      setState({
-        status: 'done',
-        total: search.total,
-        queryId: search.id,
-        listings,
-        spread: distribution(listings),
-        warnings: detectPriceWarnings(listings),
-      });
-    } catch (cause: unknown) {
-      setState({
-        status: 'error',
-        message: cause instanceof Error ? cause.message : 'Search failed.',
-      });
-    }
-  }, [item, league, filters]);
+  const runSearch = useCallback(
+    async (withFilters: SelectableFilter[] = filters) => {
+      if (item === null || league === null) return;
+      setState({ status: 'searching' });
+      try {
+        const client = getTradeClient();
+        const baseTypes = await client.getBaseTypeIndex();
+        const search = await client.search(
+          league,
+          buildQuery(item, withFilters, { baseTypes }),
+        );
+        // Two pages: twenty listings give the table something to scroll.
+        const first = await client.fetchListings(search.result.slice(0, 10), search.id);
+        const second =
+          search.result.length > 10
+            ? await client.fetchListings(search.result.slice(10, 20), search.id)
+            : [];
+        const listings = toPricedListings([...first, ...second]);
+        setState({
+          status: 'done',
+          total: search.total,
+          queryId: search.id,
+          listings,
+          spread: distribution(listings),
+          warnings: detectPriceWarnings(listings),
+        });
+      } catch (cause: unknown) {
+        setState({
+          status: 'error',
+          message: cause instanceof Error ? cause.message : 'Search failed.',
+        });
+      }
+    },
+    [item, league, filters],
+  );
+
+  runSearchRef.current = (withFilters) => {
+    void runSearch(withFilters);
+  };
 
   const setBound = (key: string, bound: 'min' | 'max', raw: string) => {
     const value = raw.trim() === '' ? null : Number(raw);
