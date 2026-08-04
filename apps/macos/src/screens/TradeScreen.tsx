@@ -13,7 +13,25 @@ import {
 import { colors, radii, spacing, typography } from '@vaaluation/ui';
 import { useSettings } from '../state/SettingsContext';
 import { useTradeRequests } from '../hooks/useTradeRequests';
-import { sendChatCommand } from '../native/VLTrade';
+import { sendChatCommand, simulateWhisper } from '../native/VLTrade';
+
+/**
+ * A line in the game's own wording, timestamped now. Used only by the test
+ * button below — the format matches the real whisper captured in the parser
+ * fixtures, so a passing simulation means a real one will parse too.
+ */
+function sampleWhisperLine(): string {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const stamp =
+    `${now.getFullYear()}/${pad(now.getMonth() + 1)}/${pad(now.getDate())} ` +
+    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  return (
+    `${stamp} 1000000 abcdef12 [INFO Client 1000] @From TestBuyer: ` +
+    'Hi, I would like to buy your Limbsplit, Woodsplitter listed for 1 regal ' +
+    'in Allflame (stash tab "~price 1 regal"; position: left 11, top 1)'
+  );
+}
 
 function ageOf(iso: string): string {
   const then = Date.parse(iso);
@@ -67,7 +85,9 @@ export function TradeScreen() {
         Vaaluation reads the game's log only from the moment you switch this on, keeps
         only messages matching the game's trade-whisper format, and discards all other
         chat immediately. Nothing is uploaded, and each button below sends exactly one
-        chat command — the same one you would type yourself.
+        chat command — the same one you would type yourself. "Simulate a whisper" injects
+        a test request through the same path a real one takes, so you can try the flow
+        without a second player; it writes nothing to the game's log.
       </Text>
 
       {error !== null ? <Text style={styles.error}>{error}</Text> : null}
@@ -84,6 +104,14 @@ export function TradeScreen() {
                 <Text style={styles.buttonText}>Clear list</Text>
               </Pressable>
             ) : null}
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                simulateWhisper(sampleWhisperLine()).catch(() => {});
+              }}
+            >
+              <Text style={styles.buttonText}>Simulate a whisper</Text>
+            </Pressable>
           </View>
 
           <Section title={`Incoming (${incoming.length})`}>
