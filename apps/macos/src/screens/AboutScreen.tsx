@@ -3,7 +3,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { colors, spacing, typography } from '@vaaluation/ui';
 import { Section } from '../components/Section';
 
-const REPO_URL = 'https://github.com/OWNER/vaaluation';
+const REPO_URL = 'https://github.com/wild-butterfly/Vaaluation';
 
 export function AboutScreen() {
   return (

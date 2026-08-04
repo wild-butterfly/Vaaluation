@@ -10,7 +10,7 @@
 ## Getting started
 
 ```bash
-git clone https://github.com/OWNER/vaaluation.git
+git clone https://github.com/wild-butterfly/Vaaluation.git
 cd vaaluation
 npm install
 cd apps/macos/macos && pod install && cd -

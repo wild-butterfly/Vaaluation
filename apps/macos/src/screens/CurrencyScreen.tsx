@@ -175,42 +175,51 @@ export function CurrencyScreen() {
       </View>
 
       <Text style={styles.disclaimer}>
-        Median asking rate across the cheapest live bulk offers, in the currency you pick.
-        A wide range or a low offer count means the median is soft. The trade site
-        publishes what sellers ask, not what items sold for, so treat these as the going
-        rate rather than a settled price.
+        Median of the cheapest live bulk offers — what sellers are asking, not what items
+        sold for. A wide range or a low offer count means the median is soft.
       </Text>
 
       <View style={styles.columns}>
         <Text style={[styles.columnLabel, styles.columnName]}>Currency</Text>
-        <Text style={styles.columnLabel}>Rate · range · offers</Text>
+        <Text style={[styles.columnLabel, styles.columnRate]}>Rate</Text>
+        <Text style={[styles.columnLabel, styles.columnRange]}>Range · offers</Text>
       </View>
 
-      <View style={styles.card}>
-        {shown.map((row, index) => (
-          <View key={row.id} style={[styles.row, index > 0 && styles.rowDivided]}>
-            <Text style={styles.currency}>{row.label}</Text>
-            {row.rate !== null ? (
-              <View style={styles.rateBlock}>
-                <Text style={styles.rate}>
-                  {formatRate(row.rate.median)}
-                  <Text style={styles.rateUnit}> {denomination}</Text>
-                </Text>
-                <Text style={styles.spread}>
-                  {formatRate(row.rate.low)}–{formatRate(row.rate.high)} · n=
-                  {row.rate.sampleSize}
-                </Text>
-              </View>
-            ) : row.error !== null ? (
-              <Text style={styles.error} numberOfLines={1}>
-                {row.error}
+      {shown.map((row) => (
+        <View key={row.id} style={styles.row}>
+          <View style={styles.icon} />
+          <Text style={styles.currency} numberOfLines={1}>
+            {row.label}
+          </Text>
+
+          {row.rate !== null ? (
+            <>
+              <Text style={styles.rate}>
+                {formatRate(row.rate.median)}
+                <Text style={styles.rateUnit}> {denomination}</Text>
               </Text>
-            ) : (
-              <Text style={styles.pending}>{loading ? '…' : 'no offers'}</Text>
-            )}
-          </View>
-        ))}
-      </View>
+              <Text style={styles.range}>
+                {formatRate(row.rate.low)}–{formatRate(row.rate.high)} · n=
+                {row.rate.sampleSize}
+              </Text>
+            </>
+          ) : row.error !== null ? (
+            <Text style={styles.rowError} numberOfLines={1}>
+              {row.error}
+            </Text>
+          ) : loading ? (
+            <>
+              <Text style={styles.pendingRate}>—</Text>
+              <Text style={styles.range}>checking…</Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.pendingRate}>—</Text>
+              <Text style={styles.range}>nothing listed</Text>
+            </>
+          )}
+        </View>
+      ))}
     </ScrollView>
   );
 }
@@ -245,9 +254,10 @@ function makeStyles(theme: Theme) {
     },
     columns: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingHorizontal: spacing.h3,
+      alignItems: 'center',
+      paddingHorizontal: spacing.lg,
       paddingBottom: spacing.md,
+      gap: spacing.xl,
     },
     columnLabel: {
       fontFamily: fonts.mono,
@@ -256,53 +266,71 @@ function makeStyles(theme: Theme) {
       textTransform: 'uppercase',
       color: palette.dim,
     },
-    columnName: { flex: 1 },
-    card: {
-      backgroundColor: surfaces.card,
-      borderColor: borders.standard,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderRadius: radii.lg,
-      paddingHorizontal: spacing.lg,
-      paddingVertical: spacing.sm,
+    // Matches the row layout below so headers sit over their own values.
+    columnName: { flex: 1, marginLeft: 28 + spacing.lg },
+    columnRate: { width: 104, textAlign: 'right' },
+    columnRange: { width: 122, textAlign: 'right' },
+    icon: {
+      width: 28,
+      height: 28,
+      borderRadius: 7,
+      backgroundColor: alpha(theme.accent, 0.18),
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.14)',
     },
+
     row: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: spacing.sm,
-    },
-    rowDivided: {
-      borderTopColor: borders.hairline,
-      borderTopWidth: StyleSheet.hairlineWidth,
+      gap: spacing.xl,
+      backgroundColor: surfaces.card,
+      borderWidth: 1,
+      borderColor: surfaces.cardBorder,
+      borderTopColor: borders.rimLight,
+      borderRadius: radii.card,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.lg,
+      marginBottom: 5,
     },
     currency: {
-      color: palette.primary,
-      fontSize: scale.body,
+      color: '#e8ded8',
+      fontFamily: fonts.sans,
+      fontSize: 13.5,
       flex: 1,
     },
-    rateBlock: { alignItems: 'flex-end' },
     rate: {
-      color: theme.accentText,
+      fontFamily: fonts.mono,
+      color: palette.primary,
       fontSize: scale.price,
-      fontWeight: '700',
+      fontWeight: '600',
+      width: 104,
+      textAlign: 'right',
+    },
+    pendingRate: {
+      fontFamily: fonts.mono,
+      color: palette.dim,
+      fontSize: scale.price,
+      width: 104,
+      textAlign: 'right',
     },
     rateUnit: {
       color: palette.secondary,
       fontSize: scale.mono,
       fontWeight: '400',
     },
-    spread: {
-      color: palette.faint,
+    range: {
+      fontFamily: fonts.mono,
+      color: palette.dim,
       fontSize: scale.mono,
+      width: 122,
+      textAlign: 'right',
     },
-    pending: {
-      color: palette.faint,
-      fontSize: scale.mono,
-    },
-    error: {
+
+    rowError: {
+      fontFamily: fonts.mono,
       color: theme.accentText,
       fontSize: scale.mono,
-      maxWidth: 220,
+      width: 104 + 122 + 12,
       textAlign: 'right',
     },
     selectWrap: { marginRight: spacing.md, zIndex: 10 },
