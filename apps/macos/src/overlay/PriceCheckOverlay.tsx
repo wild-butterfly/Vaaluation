@@ -68,6 +68,21 @@ const round = formatAmount;
  */
 const QUOTE_CURRENCIES = ['divine', 'exalted'] as const;
 
+/**
+ * Table-width currency names. A bare initial ("c", "d") was ambiguous once
+ * the panel could quote in more than one currency — "d" reads as divine to
+ * one player and nothing at all to another.
+ */
+const SHORT_CURRENCY: Record<string, string> = {
+  chaos: 'chaos',
+  divine: 'div',
+  exalted: 'ex',
+};
+
+function shortCurrency(currency: string): string {
+  return SHORT_CURRENCY[currency] ?? currency;
+}
+
 function nameOf(item: ParsedItem): string {
   return item.kind === 'equipment' || item.kind === 'map' ? item.name : item.name;
 }
@@ -192,7 +207,6 @@ export function PriceCheckOverlay({
   };
 
   const spread = state.status === 'done' ? state.spread : null;
-  const unit = spread?.currency.charAt(0) ?? '';
   /**
    * The listings themselves, cheapest first. A histogram of ten listings was
    * mostly empty buckets; the prices, who is asking them and how stale each
@@ -230,12 +244,36 @@ export function PriceCheckOverlay({
     };
   }, [league, spread]);
 
+  /**
+   * The currency the panel quotes in: the largest one the median is worth at
+   * least one whole unit of. Sixty exalted is how a player would say it;
+   * "600c" makes them do the division themselves.
+   */
+  const display = useMemo(() => {
+    if (spread === null || spread.currency !== 'chaos') {
+      return { currency: spread?.currency ?? 'chaos', rate: 1 };
+    }
+    let best = { currency: 'chaos', rate: 1 };
+    for (const [currency, rate] of chaosRates) {
+      if (rate > best.rate && spread.median / rate >= 1) best = { currency, rate };
+    }
+    return best;
+  }, [spread, chaosRates]);
+
+  /** The same price in every other currency worth naming it in. */
   const alternatives = useMemo(
     () =>
       spread !== null && spread.currency === 'chaos'
-        ? quoteAlternatives(spread.median, chaosRates)
+        ? [
+            ...(display.currency === 'chaos'
+              ? []
+              : [{ amount: spread.median, currency: 'chaos' }]),
+            ...quoteAlternatives(spread.median, chaosRates).filter(
+              (quote) => quote.currency !== display.currency,
+            ),
+          ]
         : [],
-    [spread, chaosRates],
+    [spread, chaosRates, display],
   );
 
   return (
@@ -256,13 +294,13 @@ export function PriceCheckOverlay({
         {spread !== null ? (
           <View style={styles.priceBlock}>
             <Text style={styles.price}>
-              {round(spread.median)}
-              <Text style={styles.priceUnit}> {spread.currency}</Text>
+              {round(spread.median / display.rate)}
+              <Text style={styles.priceUnit}> {display.currency}</Text>
             </Text>
             {alternatives.length > 0 ? (
               <Text style={styles.priceAlt} numberOfLines={1}>
                 {alternatives
-                  .map((quote) => `${round(quote.amount)} ${quote.currency}`)
+                  .map((quote) => `${round(quote.amount)} ${shortCurrency(quote.currency)}`)
                   .join(' · ')}
               </Text>
             ) : null}
@@ -281,12 +319,20 @@ export function PriceCheckOverlay({
             <Text style={[styles.headCell, styles.colAccount]}>Account</Text>
             <Text style={[styles.headCell, styles.colAge]}>Listed</Text>
           </View>
-          <ScrollView style={styles.tableBody} nestedScrollEnabled>
+          {/* Keyed by the search, so a new item starts at the top. Without
+              this the list kept the previous scroll position and opened part
+              way down, hiding the cheapest listings the table exists to
+              show — and making the headline median look wrong against them. */}
+          <ScrollView
+            key={state.status === 'done' ? state.queryId : 'idle'}
+            style={styles.tableBody}
+            nestedScrollEnabled
+          >
             {rows.map((listing) => (
               <View key={listing.id} style={styles.tableRow}>
                 <Text style={[styles.cellPrice, styles.colPrice]} numberOfLines={1}>
-                  {round(listing.amount)}
-                  <Text style={styles.cellUnit}>{unit}</Text>
+                  {round(listing.amount / display.rate)}
+                  <Text style={styles.cellUnit}> {shortCurrency(display.currency)}</Text>
                 </Text>
                 <Text style={[styles.cell, styles.colIlvl]}>{listing.ilvl ?? '—'}</Text>
                 <View style={[styles.colAccount, styles.accountCell]}>
@@ -513,10 +559,10 @@ function makeStyles(theme: Theme) {
       alignItems: 'center',
       height: 24,
     },
-    colPrice: { width: 62 },
+    colPrice: { width: 76 },
     colIlvl: { width: 34, textAlign: 'right' },
     colAccount: { flex: 1, paddingLeft: spacing.xl },
-    colAge: { width: 40, textAlign: 'right' },
+    colAge: { width: 46, textAlign: 'right' },
     accountCell: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
     cell: { fontFamily: fonts.sans, fontSize: 11.5, color: palette.secondary, flexShrink: 1 },
     cellPrice: { fontFamily: fonts.mono, fontSize: 12, color: palette.primary },
