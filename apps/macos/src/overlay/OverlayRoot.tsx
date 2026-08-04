@@ -18,6 +18,7 @@ import { useTradeRequests } from '../hooks/useTradeRequests';
 import { onItemCopied, onShowTrades } from '../native/VLEvents';
 import { consumePendingShowTrades } from '../native/VLTrade';
 import { hideOverlay, setOverlayContentHeight } from '../native/VLOverlay';
+import { Mark } from '../components/Mark';
 import { PriceCheckOverlay } from './PriceCheckOverlay';
 import { TradeOverlay } from './TradeOverlay';
 
@@ -64,6 +65,7 @@ function Shell() {
   return (
     <View style={styles.root}>
       <View style={styles.tabStrip}>
+        <Mark size={19} on="#120c0e" />
         <Pressable
           style={[styles.pill, tab === 'price' && styles.pillActive]}
           onPress={() => setTab('price')}
@@ -136,16 +138,20 @@ export function OverlayRoot() {
 
 function makeStyles(theme: Theme) {
   return StyleSheet.create({
-    root: { flex: 1, backgroundColor: 'transparent' },
+    // Tint over the native blur; the window itself supplies the blur.
+    root: { flex: 1, backgroundColor: surfaces.glassOverlay },
     tabStrip: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: spacing.sm,
-      paddingHorizontal: spacing.xl,
-      paddingVertical: spacing.lg,
+      gap: spacing.md,
+      paddingHorizontal: spacing.xxl,
+      paddingVertical: 11,
       borderBottomWidth: 1,
-      borderBottomColor: borders.standard,
-      backgroundColor: surfaces.raised,
+      borderBottomColor: borders.hairline,
+      // Header sheen, and the top rim light that reads as glass.
+      backgroundColor: 'rgba(255,255,255,0.06)',
+      borderTopWidth: 1,
+      borderTopColor: borders.rimLight,
     },
     pill: {
       flexDirection: 'row',
@@ -155,14 +161,22 @@ function makeStyles(theme: Theme) {
       paddingHorizontal: spacing.xxl,
       paddingVertical: spacing.sm,
     },
-    pillActive: { backgroundColor: alpha(theme.accent, 0.14) },
+    pillActive: {
+      backgroundColor: alpha(theme.accent, 0.3),
+      borderWidth: 1,
+      borderColor: 'rgba(207,31,45,0.4)',
+      shadowColor: theme.accent,
+      shadowOpacity: 0.3,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 2 },
+    },
     pillText: {
       fontFamily: fonts.sans,
       fontSize: scale.ui,
       fontWeight: '600',
       color: palette.muted,
     },
-    pillTextActive: { color: theme.accentText },
+    pillTextActive: { color: '#ffdde1' },
     badge: {
       minWidth: 15,
       height: 15,
@@ -170,13 +184,13 @@ function makeStyles(theme: Theme) {
       paddingHorizontal: 4,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: theme.action,
+      backgroundColor: 'rgba(255,255,255,0.9)',
     },
     badgeText: {
       fontFamily: fonts.mono,
-      fontSize: 9,
+      fontSize: 10,
       fontWeight: '700',
-      color: theme.actionText,
+      color: '#78060f',
     },
     close: {
       width: 20,

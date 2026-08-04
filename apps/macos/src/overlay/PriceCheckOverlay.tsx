@@ -26,7 +26,6 @@ import {
   tradeSearchUrl,
 } from '@vaaluation/trade-client';
 import {
-  alpha,
   borders,
   fonts,
   radii,
@@ -192,6 +191,8 @@ export function PriceCheckOverlay({
   return (
     <View style={styles.panel}>
       <View style={styles.header}>
+        {/* Crimson bloom behind the numeral — the panel's one piece of glow. */}
+        <View style={styles.bloom} pointerEvents="none" />
         <View style={styles.headerText}>
           <Text style={styles.itemName} numberOfLines={1}>
             {item === null ? 'Vaaluation' : nameOf(item)}
@@ -224,11 +225,17 @@ export function PriceCheckOverlay({
                 style={[
                   styles.bar,
                   {
-                    height: Math.max(2, (count / maxBucket) * 52),
+                    height: Math.max(2, (count / maxBucket) * 44),
                     backgroundColor:
-                      index === spread.medianBucket
-                        ? theme.accent
-                        : alpha(theme.accent, 0.28),
+                      index === spread.medianBucket ? '#cf1f2d' : 'rgba(214,84,99,0.3)',
+                    ...(index === spread.medianBucket
+                      ? {
+                          shadowColor: '#cf1f2d',
+                          shadowOpacity: 0.6,
+                          shadowRadius: 14,
+                          shadowOffset: { width: 0, height: 0 },
+                        }
+                      : {}),
                   },
                 ]}
               />
@@ -351,7 +358,7 @@ export function PriceCheckOverlay({
         >
           <Text style={styles.ghostText}>Trade site</Text>
         </Pressable>
-        <Text style={styles.hint}>esc to close · ⌥ to pin</Text>
+        <Text style={styles.hint}>esc · ⌥ pin</Text>
       </View>
     </View>
   );
@@ -364,22 +371,36 @@ function makeStyles(theme: Theme) {
       flexDirection: 'row',
       alignItems: 'flex-start',
       justifyContent: 'space-between',
-      paddingHorizontal: spacing.h3,
+      paddingHorizontal: spacing.h1,
       paddingTop: spacing.h2,
       paddingBottom: spacing.xxl,
       gap: spacing.xl,
+      position: 'relative',
+      overflow: 'hidden',
+    },
+    bloom: {
+      position: 'absolute',
+      top: -46,
+      right: -30,
+      width: 190,
+      height: 150,
+      borderRadius: 95,
+      backgroundColor: 'rgba(207,31,45,0.16)',
     },
     headerText: { flex: 1 },
     itemName: {
       fontFamily: fonts.sans,
-      fontSize: scale.xl,
+      fontSize: 19,
       fontWeight: '600',
-      color: theme.accentText,
+      color: palette.primary,
       letterSpacing: -0.2,
+      textShadowColor: 'rgba(0,0,0,0.5)',
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 8,
     },
     itemMeta: {
       fontFamily: fonts.sans,
-      fontSize: scale.body,
+      fontSize: 12.5,
       color: palette.secondary,
       marginTop: 3,
     },
@@ -388,7 +409,10 @@ function makeStyles(theme: Theme) {
       fontFamily: fonts.mono,
       fontSize: scale.display,
       fontWeight: '600',
-      color: palette.primary,
+      color: '#ffffff',
+      textShadowColor: 'rgba(207,31,45,0.55)',
+      textShadowOffset: { width: 0, height: 2 },
+      textShadowRadius: 14,
     },
     priceUnit: {
       fontFamily: fonts.sans,
@@ -398,20 +422,20 @@ function makeStyles(theme: Theme) {
     },
     priceMeta: {
       fontFamily: fonts.mono,
-      fontSize: scale.tiny,
-      color: semantic.up,
+      fontSize: 10.5,
+      color: semantic.upText,
       marginTop: 2,
     },
-    histogram: { paddingHorizontal: spacing.h3, paddingBottom: spacing.h1 },
-    bars: { flexDirection: 'row', alignItems: 'flex-end', gap: 3, height: 52 },
+    histogram: { paddingHorizontal: spacing.h1, paddingBottom: spacing.xxl },
+    bars: { flexDirection: 'row', alignItems: 'flex-end', gap: 3, height: 44 },
     bar: { flex: 1, borderTopLeftRadius: 2, borderTopRightRadius: 2 },
     scale: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginTop: spacing.sm,
     },
-    scaleEnd: { fontFamily: fonts.mono, fontSize: scale.tiny, color: palette.dim },
-    scaleMedian: { fontFamily: fonts.mono, fontSize: scale.tiny, color: theme.accent },
+    scaleEnd: { fontFamily: fonts.mono, fontSize: 10.5, color: palette.dim },
+    scaleMedian: { fontFamily: fonts.mono, fontSize: 10.5, color: '#f0a0a8' },
     divider: { height: 1, backgroundColor: borders.standard },
     body: { flexShrink: 1 },
     mods: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
@@ -426,14 +450,18 @@ function makeStyles(theme: Theme) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.md,
-      paddingHorizontal: spacing.xl,
-      paddingVertical: 9,
-      borderRadius: radii.button,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+      borderRadius: radii.field,
+      backgroundColor: surfaces.chip,
+      borderWidth: 1,
+      borderColor: surfaces.chipBorder,
+      marginBottom: 3,
     },
     modHit: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
     checkbox: {
-      width: 15,
-      height: 15,
+      width: 14,
+      height: 14,
       borderRadius: radii.tag,
       borderWidth: 1,
       borderColor: borders.checkbox,
@@ -442,12 +470,12 @@ function makeStyles(theme: Theme) {
     modText: {
       flex: 1,
       fontFamily: fonts.sans,
-      fontSize: scale.bodyTight,
-      color: palette.body,
+      fontSize: 12.5,
+      color: '#d6cbc4',
     },
-    modTextOff: { color: '#a4a6ad' },
+    modTextOff: { color: palette.muted },
     input: {
-      width: 52,
+      width: 44,
       borderRadius: radii.input,
       borderWidth: 1,
       borderColor: borders.input,
@@ -479,19 +507,25 @@ function makeStyles(theme: Theme) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.lg,
-      paddingHorizontal: spacing.h1,
+      paddingHorizontal: spacing.xxl,
       paddingVertical: spacing.xl,
       borderTopWidth: 1,
-      borderTopColor: borders.standard,
-      backgroundColor: surfaces.sunken,
+      borderTopColor: borders.hairline,
+      backgroundColor: 'rgba(0,0,0,0.24)',
     },
     search: {
       backgroundColor: theme.action,
-      borderRadius: radii.button,
-      paddingHorizontal: spacing.h3,
+      borderRadius: radii.field,
+      borderWidth: 1,
+      borderColor: 'rgba(232,116,128,0.35)',
+      paddingHorizontal: spacing.h4,
       paddingVertical: 9,
       minWidth: 84,
       alignItems: 'center',
+      shadowColor: theme.accent,
+      shadowOpacity: 0.45,
+      shadowRadius: 16,
+      shadowOffset: { width: 0, height: 4 },
     },
     searchText: {
       fontFamily: fonts.sans,
@@ -500,18 +534,19 @@ function makeStyles(theme: Theme) {
       color: theme.actionText,
     },
     ghost: {
+      backgroundColor: 'rgba(255,255,255,0.07)',
       borderWidth: 1,
-      borderColor: borders.stronger,
-      borderRadius: radii.button,
+      borderColor: 'rgba(255,255,255,0.13)',
+      borderRadius: radii.field,
       paddingHorizontal: spacing.h1,
       paddingVertical: 9,
     },
-    ghostText: { fontFamily: fonts.sans, fontSize: scale.bodyTight, color: '#c9c7c1' },
+    ghostText: { fontFamily: fonts.sans, fontSize: scale.bodyTight, color: '#e2d8d2' },
     disabled: { opacity: 0.45 },
     hint: {
       marginLeft: 'auto',
       fontFamily: fonts.mono,
-      fontSize: scale.tiny,
+      fontSize: 10.5,
       color: palette.faint,
     },
   });

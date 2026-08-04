@@ -28,7 +28,7 @@ export type CopyModifiers = 'control-option' | 'control' | 'control-shift' | 'co
 
 /** Accent themes from the design system. */
 export type ThemeSetting =
-  'emberGold' | 'coldSteel' | 'verdantRot' | 'vaalViolet' | 'boneAsh';
+  'vaalRed' | 'emberGold' | 'coldSteel' | 'verdantRot' | 'vaalViolet' | 'boneAsh';
 
 export interface AppSettings {
   /** Accent theme; switching it re-tints every screen. */
@@ -63,7 +63,7 @@ export const KEY_CODE_D = 2;
 export const KEY_CODE_SPACE = 49;
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  theme: 'coldSteel',
+  theme: 'vaalRed',
   leagueId: null,
   copyModifiers: 'control-option',
   tradeWhispersEnabled: false,

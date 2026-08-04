@@ -7,7 +7,7 @@
  */
 
 export type ThemeName =
-  'emberGold' | 'coldSteel' | 'verdantRot' | 'vaalViolet' | 'boneAsh';
+  'vaalRed' | 'emberGold' | 'coldSteel' | 'verdantRot' | 'vaalViolet' | 'boneAsh';
 
 export interface Theme {
   readonly name: ThemeName;
@@ -28,6 +28,19 @@ export interface Theme {
 }
 
 export const THEMES: Record<ThemeName, Theme> = {
+  /** The brand palette. Red is the accent, so price movement deliberately
+   *  avoids red and green — see `semantic` below. */
+  vaalRed: {
+    name: 'vaalRed',
+    label: 'Vaal Red',
+    accent: '#9e1122',
+    accentText: '#e88a92',
+    action: '#b81527',
+    actionText: '#ffffff',
+    window: '#0c0a0b',
+    overlayTop: '#130e11',
+    overlayBottom: '#0a0809',
+  },
   emberGold: {
     name: 'emberGold',
     label: 'Ember Gold',
@@ -89,52 +102,68 @@ export const THEMES: Record<ThemeName, Theme> = {
   },
 };
 
-export const DEFAULT_THEME: ThemeName = 'coldSteel';
+export const DEFAULT_THEME: ThemeName = 'vaalRed';
 
 /** Surfaces that do not change with the accent. */
 export const surfaces = {
-  rail: '#101216',
-  card: '#171b22',
-  sunken: 'rgba(0,0,0,0.25)',
-  sunkenStrong: 'rgba(0,0,0,0.40)',
-  raised: 'rgba(255,255,255,0.02)',
-  hover: 'rgba(255,255,255,0.025)',
-  hoverStrong: 'rgba(255,255,255,0.04)',
+  rail: '#120e10',
+  card: 'rgba(255,255,255,0.04)',
+  cardBorder: 'rgba(255,255,255,0.055)',
+  sunken: 'rgba(0,0,0,0.28)',
+  sunkenStrong: 'rgba(0,0,0,0.38)',
+  raised: 'rgba(255,255,255,0.07)',
+  hover: 'rgba(158,17,34,0.04)',
+  hoverStrong: 'rgba(255,255,255,0.08)',
+  /** Panel tint laid over the native blur. */
+  glassOverlay: 'rgba(18,12,14,0.6)',
+  glassWindow: 'rgba(17,11,13,0.62)',
+  /** Chip used for mod rows and whisper strips. */
+  chip: 'rgba(255,255,255,0.045)',
+  chipBorder: 'rgba(255,255,255,0.06)',
 } as const;
 
 export const borders = {
   hairline: 'rgba(255,255,255,0.035)',
-  subtle: 'rgba(255,255,255,0.05)',
+  subtle: 'rgba(255,255,255,0.055)',
   standard: 'rgba(255,255,255,0.06)',
   strong: 'rgba(255,255,255,0.09)',
   stronger: 'rgba(255,255,255,0.12)',
-  input: 'rgba(255,255,255,0.08)',
+  glass: 'rgba(255,255,255,0.13)',
+  input: 'rgba(255,255,255,0.12)',
   inputDim: 'rgba(255,255,255,0.06)',
-  checkbox: 'rgba(255,255,255,0.18)',
+  checkbox: 'rgba(255,255,255,0.16)',
+  /** Top rim light — the detail that makes a surface read as glass. */
+  rimLight: 'rgba(255,255,255,0.16)',
+  rimShadow: 'rgba(0,0,0,0.3)',
 } as const;
 
 export const text = {
-  primary: '#f2efe8',
-  body: '#e2e0da',
-  secondary: '#9a9ca3',
-  muted: '#8d8f96',
-  dim: '#6f727a',
-  faint: '#5c5f66',
-  disabled: '#4d5057',
+  primary: '#fdf9f7',
+  body: '#e0d5ce',
+  secondary: '#c1b6ae',
+  muted: '#a29890',
+  dim: '#8f857e',
+  faint: '#5f5a54',
+  disabled: '#43403c',
 } as const;
 
+/**
+ * Red is the brand accent, so price movement deliberately avoids red and
+ * green: a rise is muted olive and a fall is ember. Both stay inside the
+ * game's own colour range rather than importing web-green.
+ */
 export const semantic = {
-  up: '#7fb069',
-  upSoft: 'rgba(127,176,105,0.12)',
-  upText: '#a7cf90',
-  upBorder: 'rgba(127,176,105,0.18)',
-  upBackground: 'rgba(127,176,105,0.07)',
-  down: '#c05a5a',
-  downSoft: 'rgba(192,90,90,0.12)',
-  downBorder: 'rgba(192,90,90,0.35)',
-  neutral: '#4d5057',
+  up: '#8fae6a',
+  upSoft: 'rgba(143,174,106,0.12)',
+  upText: '#b3d197',
+  upBorder: 'rgba(179,209,151,0.24)',
+  upBackground: 'rgba(179,209,151,0.1)',
+  down: '#c0864f',
+  downSoft: 'rgba(192,134,79,0.12)',
+  downBorder: 'rgba(192,134,79,0.35)',
+  neutral: '#43403c',
   /** Log severity only — deliberately not accent-derived. */
-  warn: '#d9b25f',
+  warn: '#c0864f',
 } as const;
 
 export const radii = {
@@ -170,7 +199,7 @@ export const spacing = {
 } as const;
 
 export const type = {
-  display: 34,
+  display: 32,
   xxl: 26,
   xl: 22,
   lg: 21,

@@ -176,9 +176,15 @@ export function CurrencyScreen() {
 
       <Text style={styles.disclaimer}>
         Median asking rate across the cheapest live bulk offers, in the currency you pick.
-        The trade site publishes what sellers ask, not what items sold for, so treat these
-        as the going rate rather than a settled price.
+        A wide range or a low offer count means the median is soft. The trade site
+        publishes what sellers ask, not what items sold for, so treat these as the going
+        rate rather than a settled price.
       </Text>
+
+      <View style={styles.columns}>
+        <Text style={[styles.columnLabel, styles.columnName]}>Currency</Text>
+        <Text style={styles.columnLabel}>Rate · range · offers</Text>
+      </View>
 
       <View style={styles.card}>
         {shown.map((row, index) => (
@@ -237,6 +243,20 @@ function makeStyles(theme: Theme) {
       lineHeight: 16,
       marginBottom: spacing.lg,
     },
+    columns: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingHorizontal: spacing.h3,
+      paddingBottom: spacing.md,
+    },
+    columnLabel: {
+      fontFamily: fonts.mono,
+      fontSize: 10,
+      letterSpacing: 1.2,
+      textTransform: 'uppercase',
+      color: palette.dim,
+    },
+    columnName: { flex: 1 },
     card: {
       backgroundColor: surfaces.card,
       borderColor: borders.standard,

@@ -18,6 +18,7 @@ import type { AppRoute } from './native/VLEvents';
 import { isAppRoute, onItemCopied, onNavigate } from './native/VLEvents';
 import { SettingsProvider, useSettings } from './state/SettingsContext';
 import { usePermissions } from './hooks/usePermissions';
+import { Mark } from './components/Mark';
 import { openSystemSettings, requestAccessibility } from './native/VLPermissions';
 import { AboutScreen } from './screens/AboutScreen';
 import { LogsScreen } from './screens/LogsScreen';
@@ -75,10 +76,11 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
     <View style={styles.root}>
       <View style={styles.rail}>
         <View style={styles.brandRow}>
-          <View style={styles.mark}>
-            <Text style={styles.markText}>V</Text>
+          <Mark size={28} on={surfaces.rail} />
+          <View>
+            <Text style={styles.brand}>Vaaluation</Text>
+            <Text style={styles.brandSub}>PRICE CHECK</Text>
           </View>
-          <Text style={styles.brand}>Vaaluation</Text>
         </View>
 
         <View style={styles.nav}>
@@ -164,9 +166,10 @@ export function SettingsRoot(props: { initialRoute?: string }) {
 
 function makeStyles(theme: Theme) {
   return StyleSheet.create({
-    root: { flex: 1, flexDirection: 'row', backgroundColor: theme.window },
+    // Tint over the window's vibrancy rather than a solid fill.
+    root: { flex: 1, flexDirection: 'row', backgroundColor: surfaces.glassWindow },
     rail: {
-      width: 212,
+      width: 214,
       backgroundColor: surfaces.rail,
       borderRightWidth: 1,
       borderRightColor: borders.subtle,
@@ -195,9 +198,17 @@ function makeStyles(theme: Theme) {
     },
     brand: {
       fontFamily: fonts.sans,
-      fontSize: scale.body,
+      fontSize: 14.5,
       fontWeight: '600',
       color: palette.primary,
+      letterSpacing: -0.2,
+    },
+    brandSub: {
+      fontFamily: fonts.mono,
+      fontSize: 9,
+      letterSpacing: 1.4,
+      color: palette.dim,
+      marginTop: 1,
     },
     nav: { flex: 1, paddingHorizontal: spacing.md },
     navItem: {
@@ -206,14 +217,20 @@ function makeStyles(theme: Theme) {
       gap: spacing.lg,
       paddingHorizontal: spacing.xl,
       paddingVertical: 9,
-      borderRadius: radii.button,
-      borderLeftWidth: 2,
-      borderLeftColor: 'transparent',
-      marginBottom: 2,
+      borderRadius: radii.card,
+      borderWidth: 1,
+      borderColor: 'transparent',
+      marginBottom: 3,
     },
     navItemActive: {
-      backgroundColor: alpha(theme.accent, 0.1),
-      borderLeftColor: theme.accent,
+      backgroundColor: alpha(theme.accent, 0.28),
+      borderLeftColor: 'transparent',
+      borderWidth: 1,
+      borderColor: 'rgba(207,31,45,0.4)',
+      shadowColor: theme.accent,
+      shadowOpacity: 0.3,
+      shadowRadius: 14,
+      shadowOffset: { width: 0, height: 3 },
     },
     glyph: {
       fontFamily: fonts.mono,
@@ -221,16 +238,16 @@ function makeStyles(theme: Theme) {
       color: palette.faint,
       width: 14,
     },
-    glyphActive: { color: theme.accent },
+    glyphActive: { color: '#ffc2c8' },
     navLabel: {
       flex: 1,
       fontFamily: fonts.sans,
       fontSize: scale.ui,
       color: '#a4a6ad',
     },
-    navLabelActive: { color: palette.primary, fontWeight: '600' },
+    navLabelActive: { color: '#ffffff', fontWeight: '600' },
     navKey: { fontFamily: fonts.mono, fontSize: scale.label, color: palette.faint },
-    navKeyActive: { color: theme.accent },
+    navKeyActive: { color: '#ffc2c8' },
     statusCard: {
       margin: spacing.xl,
       padding: spacing.xl,
@@ -259,6 +276,6 @@ function makeStyles(theme: Theme) {
       color: '#7b8a72',
       marginTop: 3,
     },
-    main: { flex: 1, backgroundColor: theme.overlayBottom },
+    main: { flex: 1 },
   });
 }

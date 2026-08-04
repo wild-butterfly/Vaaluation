@@ -2,8 +2,8 @@ import Cocoa
 
 /// Hosts the compact React Native overlay inside a blurred glass panel.
 final class OverlayWindowController: NSWindowController, NSWindowDelegate {
-  private static let defaultSize = NSSize(width: 430, height: 400)
-  private static let cornerRadius: CGFloat = 12
+  private static let defaultSize = NSSize(width: 396, height: 360)
+  private static let cornerRadius: CGFloat = 15
 
   /// Where a newly shown panel is placed.
   enum Anchor {
@@ -49,9 +49,11 @@ final class OverlayWindowController: NSWindowController, NSWindowDelegate {
 
     let gradient = CAGradientLayer()
     gradient.frame = effect.bounds
+    // Kept faint: React paints the panel tint, so this only deepens the
+    // bottom edge the way the design's vertical gradient does.
     gradient.colors = [
-      NSColor(calibratedRed: 0.067, green: 0.086, blue: 0.125, alpha: 0.86).cgColor,
-      NSColor(calibratedRed: 0.043, green: 0.055, blue: 0.075, alpha: 0.92).cgColor,
+      NSColor(calibratedRed: 0.075, green: 0.055, blue: 0.066, alpha: 0.25).cgColor,
+      NSColor(calibratedRed: 0.039, green: 0.031, blue: 0.035, alpha: 0.45).cgColor,
     ]
     gradient.startPoint = CGPoint(x: 0.5, y: 1)
     gradient.endPoint = CGPoint(x: 0.5, y: 0)
@@ -62,7 +64,7 @@ final class OverlayWindowController: NSWindowController, NSWindowDelegate {
     effect.layer?.masksToBounds = true
     effect.layer?.borderWidth = 1
     effect.layer?.borderColor = NSColor(
-      calibratedRed: 0.56, green: 0.72, blue: 0.85, alpha: 0.16
+      calibratedRed: 1, green: 1, blue: 1, alpha: 0.13
     ).cgColor
 
     let rootView = reactHost.makeRootView(

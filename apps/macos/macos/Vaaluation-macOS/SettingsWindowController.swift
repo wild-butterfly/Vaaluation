@@ -5,13 +5,13 @@ import Cocoa
 final class SettingsWindowController: NSWindowController, NSWindowDelegate {
   init(reactHost: ReactHost, initialRoute: String) {
     let window = NSWindow(
-      contentRect: NSRect(x: 0, y: 0, width: 760, height: 560),
+      contentRect: NSRect(x: 0, y: 0, width: 1000, height: 560),
       styleMask: [.titled, .closable, .miniaturizable, .resizable],
       backing: .buffered,
       defer: false
     )
     window.title = "Vaaluation"
-    window.minSize = NSSize(width: 720, height: 520)
+    window.minSize = NSSize(width: 860, height: 520)
     // Match the overlay: content runs under a transparent titlebar so the
     // blur reaches the top edge instead of stopping at a grey bar.
     window.titlebarAppearsTransparent = true
@@ -30,13 +30,21 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     rootView.wantsLayer = true
     rootView.layer?.backgroundColor = NSColor.clear.cgColor
 
-    // The design specifies solid surfaces, not a blurred backdrop: the rail
-    // and content columns carry their own colours, so a translucent window
-    // would wash them out against whatever sits behind it.
-    window.backgroundColor = NSColor(
-      calibratedRed: 0.043, green: 0.055, blue: 0.075, alpha: 1
-    )
-    window.contentView = rootView
+    // The design's glass treatment needs a genuinely translucent window; on
+    // macOS under-window vibrancy is the sanctioned substitute for the
+    // backdrop blur the mock uses.
+    window.backgroundColor = .clear
+    window.isOpaque = false
+
+    let effect = NSVisualEffectView(frame: window.contentLayoutRect)
+    effect.material = .underWindowBackground
+    effect.blendingMode = .behindWindow
+    effect.state = .active
+    effect.autoresizingMask = [.width, .height]
+    rootView.frame = effect.bounds
+    rootView.autoresizingMask = [.width, .height]
+    effect.addSubview(rootView)
+    window.contentView = effect
 
     super.init(window: window)
     window.delegate = self

@@ -10,7 +10,16 @@ import {
   tradeCommand,
   whisperCommand,
 } from '@vaaluation/trade-whispers';
-import { colors, glass, radii, spacing, typography } from '@vaaluation/ui';
+import {
+  colors,
+  fonts,
+  glass,
+  radii,
+  semantic,
+  spacing,
+  text as palette,
+  typography,
+} from '@vaaluation/ui';
 import type { TrackedRequest } from '../hooks/useTradeRequests';
 import { sendChatCommand, simulateWhisper } from '../native/VLTrade';
 import { openSystemSettings, requestAccessibility } from '../native/VLPermissions';
@@ -204,6 +213,13 @@ function Row({
       <Text style={styles.summary} numberOfLines={2}>
         {describeRequest(request)}
       </Text>
+      {/* The raw whisper, so the user can see exactly what was said. */}
+      <View style={styles.whisperStrip}>
+        <Text style={styles.whisperLabel}>wtb</Text>
+        <Text style={styles.whisperText} numberOfLines={2}>
+          {request.raw}
+        </Text>
+      </View>
       {request.kind === 'item' && request.stash !== null ? (
         <Text style={styles.stash} numberOfLines={1}>
           {request.stash.tab} · {request.stash.left},{request.stash.top}
@@ -298,6 +314,26 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   rowDone: { opacity: 0.45 },
+  whisperStrip: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+    backgroundColor: 'rgba(0,0,0,0.34)',
+    borderRadius: radii.keycap,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 5,
+  },
+  whisperLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 10.5,
+    color: '#4d4842',
+  },
+  whisperText: {
+    flex: 1,
+    fontFamily: fonts.mono,
+    fontSize: 10.5,
+    color: palette.dim,
+  },
   rowHead: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -340,6 +376,12 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: typography.sizeCaption,
   },
+  doneAction: {
+    marginLeft: 'auto',
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
+  },
+  doneText: { color: semantic.up, fontWeight: '600' },
   replies: {
     marginTop: spacing.xs,
     gap: 3,
