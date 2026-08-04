@@ -129,7 +129,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   private func showTradeOverlay() {
     guard SettingsStore.shared.showOverlayOnTradeWhisper else { return }
     let controller = overlay()
-    controller.show(pinned: true)
+    controller.show(pinned: true, anchor: .topRight)
     VLEventsModule.emitShowTrades()
   }
 

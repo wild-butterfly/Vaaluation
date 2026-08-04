@@ -1,9 +1,28 @@
 import Cocoa
 
 /// Hosts the compact React Native overlay inside a blurred glass panel.
-final class OverlayWindowController: NSWindowController {
+final class OverlayWindowController: NSWindowController, NSWindowDelegate {
   private static let defaultSize = NSSize(width: 430, height: 400)
   private static let cornerRadius: CGFloat = 12
+
+  /// Where a newly shown panel is placed.
+  enum Anchor {
+    /// Beside the pointer — right for a price check, where the user is
+    /// already looking at the item they hovered.
+    case cursor
+    /// Docked to the top-right of the screen, clear of the play area. Trade
+    /// requests arrive unprompted, so the panel must not land wherever the
+    /// mouse happens to be sitting.
+    case topRight
+  }
+
+  /// Set once the user drags the panel; their placement then wins over both
+  /// defaults, and is remembered across launches.
+  private var userPlacedKey = "vaaluation.overlay.userPlaced"
+  private var hasUserPlacement: Bool {
+    get { UserDefaults.standard.bool(forKey: userPlacedKey) }
+    set { UserDefaults.standard.set(newValue, forKey: userPlacedKey) }
+  }
 
   private var clickOutsideMonitor: Any?
   private var escapeMonitor: Any?
@@ -62,6 +81,7 @@ final class OverlayWindowController: NSWindowController {
 
     panel.contentView = effect
     super.init(window: panel)
+    panel.delegate = self
     panel.setFrameAutosaveName("VaaluationOverlayPanel")
   }
 
@@ -70,12 +90,18 @@ final class OverlayWindowController: NSWindowController {
     fatalError("init(coder:) is not supported")
   }
 
-  /// Shows the overlay anchored near the pointer but always fully on screen.
-  func show(pinned: Bool) {
+  /// Shows the overlay, placed according to `anchor` unless the user has
+  /// already dragged it somewhere of their own choosing.
+  func show(pinned: Bool, anchor: Anchor = .cursor) {
     guard let panel = window as? OverlayPanel else { return }
     isPinned = pinned
 
-    positionNearCursor(panel)
+    if !hasUserPlacement {
+      switch anchor {
+      case .cursor: positionNearCursor(panel)
+      case .topRight: positionTopRight(panel)
+      }
+    }
     panel.orderFrontRegardless()
     panel.makeKey()
 
@@ -132,6 +158,27 @@ final class OverlayWindowController: NSWindowController {
     panel.setFrameOrigin(origin)
   }
 
+  /// Docks the panel to the top-right of the active screen, inset far enough
+  /// to clear the minimap.
+  private func positionTopRight(_ panel: NSWindow) {
+    let mouse = NSEvent.mouseLocation
+    guard
+      let screen = NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) })
+        ?? NSScreen.main
+    else {
+      return
+    }
+    let visible = screen.visibleFrame
+    let size = panel.frame.size
+    let margin: CGFloat = 20
+    panel.setFrameOrigin(
+      NSPoint(
+        x: visible.maxX - size.width - margin,
+        y: visible.maxY - size.height - margin
+      )
+    )
+  }
+
   private func installMonitors() {
     removeMonitors()
 
@@ -160,6 +207,18 @@ final class OverlayWindowController: NSWindowController {
       NSEvent.removeMonitor(escapeMonitor)
       self.escapeMonitor = nil
     }
+  }
+
+  /// A drag is the user placing the panel deliberately, so stop moving it
+  /// for them afterwards.
+  func windowDidMove(_ notification: Notification) {
+    guard window?.isVisible == true else { return }
+    hasUserPlacement = true
+  }
+
+  /// Forgets a manual placement, so the panel returns to its default corner.
+  func resetPlacement() {
+    hasUserPlacement = false
   }
 
   deinit {
