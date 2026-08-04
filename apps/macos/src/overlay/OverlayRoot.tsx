@@ -17,7 +17,11 @@ import { SettingsProvider, useSettings } from '../state/SettingsContext';
 import { useTradeRequests } from '../hooks/useTradeRequests';
 import { onItemCopied, onShowTrades } from '../native/VLEvents';
 import { consumePendingShowTrades } from '../native/VLTrade';
-import { hideOverlay, setOverlayContentHeight } from '../native/VLOverlay';
+import {
+  beginOverlayDrag,
+  hideOverlay,
+  setOverlayContentHeight,
+} from '../native/VLOverlay';
 import { Mark } from '../components/Mark';
 import { PriceCheckOverlay } from './PriceCheckOverlay';
 import { TradeOverlay } from './TradeOverlay';
@@ -64,7 +68,15 @@ function Shell() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.tabStrip}>
+      {/* The strip doubles as the panel's title bar. Using the bubbling
+          responder rather than the capturing one lets the pills and the close
+          control claim their own presses first, so only the empty chrome
+          between them starts a drag. */}
+      <View
+        style={styles.tabStrip}
+        onStartShouldSetResponder={() => true}
+        onResponderGrant={beginOverlayDrag}
+      >
         <Mark size={19} on="#120c0e" />
         <Pressable
           style={[styles.pill, tab === 'price' && styles.pillActive]}

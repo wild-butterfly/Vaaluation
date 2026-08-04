@@ -20,8 +20,10 @@ import type {
 import {
   buildFilters,
   buildQuery,
+  cheapestFirst,
   detectPriceWarnings,
   distribution,
+  listingAge,
   toPricedListings,
   tradeSearchUrl,
 } from '@vaaluation/trade-client';
@@ -185,8 +187,19 @@ export function PriceCheckOverlay({
   };
 
   const spread = state.status === 'done' ? state.spread : null;
-  const maxBucket = spread ? Math.max(...spread.buckets, 1) : 1;
   const unit = spread?.currency.charAt(0) ?? '';
+  /**
+   * The listings themselves, cheapest first. A histogram of ten listings was
+   * mostly empty buckets; the prices, who is asking them and how stale each
+   * one is answer the question the histogram was gesturing at.
+   */
+  const rows = useMemo(
+    () =>
+      state.status === 'done' && spread !== null
+        ? cheapestFirst(state.listings, spread.currency)
+        : [],
+    [state, spread],
+  );
 
   return (
     <View style={styles.panel}>
@@ -216,45 +229,45 @@ export function PriceCheckOverlay({
         ) : null}
       </View>
 
-      {spread !== null ? (
-        <View style={styles.histogram}>
-          <View style={styles.bars}>
-            {spread.buckets.map((count, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.bar,
-                  {
-                    height: Math.max(2, (count / maxBucket) * 44),
-                    backgroundColor:
-                      index === spread.medianBucket ? '#cf1f2d' : 'rgba(214,84,99,0.3)',
-                    ...(index === spread.medianBucket
-                      ? {
-                          shadowColor: '#cf1f2d',
-                          shadowOpacity: 0.6,
-                          shadowRadius: 14,
-                          shadowOffset: { width: 0, height: 0 },
-                        }
-                      : {}),
-                  },
-                ]}
-              />
+      {rows.length > 0 ? (
+        <View style={styles.table}>
+          <View style={styles.tableHead}>
+            <Text style={[styles.headCell, styles.colPrice]}>Price</Text>
+            <Text style={[styles.headCell, styles.colIlvl]}>iLvl</Text>
+            <Text style={[styles.headCell, styles.colAccount]}>Account</Text>
+            <Text style={[styles.headCell, styles.colAge]}>Listed</Text>
+          </View>
+          <ScrollView style={styles.tableBody} nestedScrollEnabled>
+            {rows.map((listing) => (
+              <View key={listing.id} style={styles.tableRow}>
+                <Text style={[styles.cellPrice, styles.colPrice]} numberOfLines={1}>
+                  {round(listing.amount)}
+                  <Text style={styles.cellUnit}>{unit}</Text>
+                </Text>
+                <Text style={[styles.cell, styles.colIlvl]}>{listing.ilvl ?? '—'}</Text>
+                <View style={[styles.colAccount, styles.accountCell]}>
+                  {/* Presence decides whether a whisper gets answered, so it
+                      earns a place next to the name rather than a legend. */}
+                  <View
+                    style={[
+                      styles.presence,
+                      listing.presence === 'online'
+                        ? styles.presenceOnline
+                        : listing.presence === 'afk'
+                          ? styles.presenceAfk
+                          : styles.presenceOffline,
+                    ]}
+                  />
+                  <Text style={styles.cell} numberOfLines={1}>
+                    {listing.accountName}
+                  </Text>
+                </View>
+                <Text style={[styles.cellAge, styles.colAge]}>
+                  {listingAge(listing.indexed)}
+                </Text>
+              </View>
             ))}
-          </View>
-          <View style={styles.scale}>
-            <Text style={styles.scaleEnd}>
-              {round(spread.min)}
-              {unit}
-            </Text>
-            <Text style={styles.scaleMedian}>
-              {round(spread.median)}
-              {unit} median
-            </Text>
-            <Text style={styles.scaleEnd}>
-              {round(spread.max)}
-              {unit}
-            </Text>
-          </View>
+          </ScrollView>
         </View>
       ) : null}
 
@@ -426,16 +439,42 @@ function makeStyles(theme: Theme) {
       color: semantic.upText,
       marginTop: 2,
     },
-    histogram: { paddingHorizontal: spacing.h1, paddingBottom: spacing.xxl },
-    bars: { flexDirection: 'row', alignItems: 'flex-end', gap: 3, height: 44 },
-    bar: { flex: 1, borderTopLeftRadius: 2, borderTopRightRadius: 2 },
-    scale: {
+    table: { paddingHorizontal: spacing.h1, paddingBottom: spacing.xxl },
+    tableHead: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: spacing.sm,
+      alignItems: 'center',
+      paddingBottom: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: borders.hairline,
     },
-    scaleEnd: { fontFamily: fonts.mono, fontSize: 10.5, color: palette.dim },
-    scaleMedian: { fontFamily: fonts.mono, fontSize: 10.5, color: '#f0a0a8' },
+    headCell: {
+      fontFamily: fonts.mono,
+      fontSize: 9.5,
+      letterSpacing: 1.1,
+      textTransform: 'uppercase',
+      color: palette.faint,
+    },
+    // Six rows before scrolling: enough to see the cheap end and its spread
+    // without the panel growing tall enough to cover the game.
+    tableBody: { maxHeight: 6 * 24 },
+    tableRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      height: 24,
+    },
+    colPrice: { width: 62 },
+    colIlvl: { width: 34, textAlign: 'right' },
+    colAccount: { flex: 1, paddingLeft: spacing.xl },
+    colAge: { width: 40, textAlign: 'right' },
+    accountCell: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+    cell: { fontFamily: fonts.sans, fontSize: 11.5, color: palette.secondary, flexShrink: 1 },
+    cellPrice: { fontFamily: fonts.mono, fontSize: 12, color: palette.primary },
+    cellUnit: { color: palette.dim, fontSize: 10.5 },
+    cellAge: { fontFamily: fonts.mono, fontSize: 10.5, color: palette.dim },
+    presence: { width: 5, height: 5, borderRadius: 3 },
+    presenceOnline: { backgroundColor: semantic.up },
+    presenceAfk: { backgroundColor: semantic.down },
+    presenceOffline: { backgroundColor: palette.disabled },
     divider: { height: 1, backgroundColor: borders.standard },
     body: { flexShrink: 1 },
     mods: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },

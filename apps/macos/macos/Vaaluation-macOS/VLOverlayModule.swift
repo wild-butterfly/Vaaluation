@@ -27,4 +27,23 @@ final class VLOverlayModule: NSObject {
       VLOverlayModule.controller?.resizeToContentHeight(CGFloat(height.doubleValue))
     }
   }
+
+  /// Starts dragging the panel from the current mouse-down.
+  ///
+  /// The panel is `isMovableByWindowBackground`, but the React root view sits
+  /// over the whole window and consumes the mouse events that would otherwise
+  /// reach it, so the drag never began. React knows which parts of its header
+  /// are buttons and which are empty chrome, so it decides when a press is a
+  /// drag and calls this; AppKit takes over from there and runs the drag loop
+  /// until the button comes up.
+  @objc(beginDrag)
+  func beginDrag() {
+    DispatchQueue.main.async {
+      guard
+        let window = VLOverlayModule.controller?.window,
+        let event = NSApp.currentEvent
+      else { return }
+      window.performDrag(with: event)
+    }
+  }
 }

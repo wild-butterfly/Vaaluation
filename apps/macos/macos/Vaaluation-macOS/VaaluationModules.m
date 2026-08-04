@@ -66,6 +66,8 @@ RCT_EXTERN_METHOD(setContentHeight : (nonnull NSNumber *)height)
 
 RCT_EXTERN_METHOD(hide)
 
+RCT_EXTERN_METHOD(beginDrag)
+
 @end
 
 @interface RCT_EXTERN_MODULE (VLTrade, NSObject)

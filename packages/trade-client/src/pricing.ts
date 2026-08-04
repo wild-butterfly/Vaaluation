@@ -16,6 +16,8 @@ export interface PricedListing {
   /** 'online' | 'afk' | 'offline' */
   readonly presence: 'online' | 'afk' | 'offline';
   readonly indexed: string;
+  /** Item level, where the listing reports one. */
+  readonly ilvl?: number | undefined;
   readonly whisper?: string | undefined;
 }
 
@@ -33,6 +35,7 @@ export function toPricedListings(results: readonly FetchResult[]): PricedListing
       presence:
         online === undefined ? 'offline' : online.status === 'afk' ? 'afk' : 'online',
       indexed: result.listing.indexed,
+      ilvl: result.item.ilvl,
       whisper: result.listing.whisper,
     });
   }
@@ -216,4 +219,42 @@ export function distribution(
     buckets,
     medianBucket,
   };
+}
+
+/**
+ * How long ago a listing went up, in the compact form trade tools use ("6h",
+ * "10d", "4mo").
+ *
+ * Age is the single best staleness signal the trade site gives: a four-month-
+ * old listing at a tempting price is usually someone who quit, not an offer
+ * anyone will honour. Precision past the leading unit is noise here, so only
+ * the largest unit is shown.
+ */
+export function listingAge(indexed: string, now: number = Date.now()): string {
+  const then = Date.parse(indexed);
+  if (Number.isNaN(then)) return '';
+
+  const minutes = Math.max(0, Math.round((now - then) / 60_000));
+  if (minutes < 60) return `${minutes}m`;
+
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+
+  const days = Math.round(hours / 24);
+  if (days < 30) return `${days}d`;
+
+  const months = Math.round(days / 30);
+  if (months < 12) return `${months}mo`;
+
+  return `${Math.round(months / 12)}y`;
+}
+
+/** Listings of the summary currency, cheapest first. */
+export function cheapestFirst(
+  listings: readonly PricedListing[],
+  currency: string,
+): PricedListing[] {
+  return listings
+    .filter((listing) => listing.currency === currency)
+    .sort((a, b) => a.amount - b.amount);
 }

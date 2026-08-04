@@ -9,6 +9,8 @@ import {
   offerRate,
   summarizeRates,
   summarizeBatch,
+  cheapestFirst,
+  listingAge,
   distribution,
   convertRate,
   currencyBatches,
@@ -528,6 +530,40 @@ describe('currency exchange', () => {
     expect(summary?.median).toBeGreaterThan(0);
     expect(summary?.low).toBeLessThanOrEqual(summary?.median ?? 0);
     expect(summary?.high).toBeGreaterThanOrEqual(summary?.median ?? 0);
+  });
+});
+
+describe('listing table', () => {
+  const at = (iso: string, amount: number, currency = 'chaos') => ({
+    id: iso + amount,
+    amount,
+    currency,
+    accountName: 'x',
+    presence: 'online' as const,
+    indexed: iso,
+  });
+
+  it('reports age in the largest unit that applies', () => {
+    const now = Date.parse('2026-08-04T12:00:00Z');
+    const age = (iso: string) => listingAge(iso, now);
+
+    expect(age('2026-08-04T11:30:00Z')).toBe('30m');
+    expect(age('2026-08-04T06:00:00Z')).toBe('6h');
+    expect(age('2026-07-25T12:00:00Z')).toBe('10d');
+    expect(age('2026-04-04T12:00:00Z')).toBe('4mo');
+    expect(age('2024-08-04T12:00:00Z')).toBe('2y');
+  });
+
+  it('says nothing rather than guessing at an unparseable date', () => {
+    expect(listingAge('not a date')).toBe('');
+  });
+
+  it('orders by price and drops other currencies', () => {
+    const rows = cheapestFirst(
+      [at('2026-01-01T00:00:00Z', 30), at('2026-01-01T00:00:00Z', 2, 'divine'), at('2026-01-01T00:00:00Z', 10)],
+      'chaos',
+    );
+    expect(rows.map((row) => row.amount)).toEqual([10, 30]);
   });
 });
 
