@@ -13,6 +13,7 @@ import {
 import { colors, glass, radii, spacing, typography } from '@vaaluation/ui';
 import type { TrackedRequest } from '../hooks/useTradeRequests';
 import { sendChatCommand } from '../native/VLTrade';
+import { openSystemSettings, requestAccessibility } from '../native/VLPermissions';
 
 function ageOf(iso: string): string {
   const then = Date.parse(iso);
@@ -71,7 +72,23 @@ export function TradeOverlay({
   return (
     <View style={styles.container}>
       {error !== null ? <Text style={styles.error}>{error}</Text> : null}
-      {sendError !== null ? <Text style={styles.error}>{sendError}</Text> : null}
+      {sendError !== null ? (
+        <View style={styles.errorRow}>
+          <Text style={styles.error}>{sendError}</Text>
+          {/* A permission failure is actionable, so offer the fix in place. */}
+          {sendError.includes('Accessibility') ? (
+            <Pressable
+              style={styles.fixButton}
+              onPress={() => {
+                requestAccessibility().catch(() => {});
+                openSystemSettings('accessibility');
+              }}
+            >
+              <Text style={styles.fixButtonText}>Grant…</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
 
       <ScrollView
         style={styles.list}
@@ -202,7 +219,27 @@ const styles = StyleSheet.create({
     fontSize: typography.sizeCaption,
     lineHeight: 16,
   },
+  errorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingRight: spacing.md,
+  },
+  fixButton: {
+    backgroundColor: glass.fill,
+    borderColor: glass.hairline,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+  },
+  fixButtonText: {
+    color: colors.textPrimary,
+    fontSize: typography.sizeCaption,
+    fontWeight: '600',
+  },
   error: {
+    flex: 1,
     color: colors.danger,
     fontSize: typography.sizeCaption,
     paddingHorizontal: spacing.md,

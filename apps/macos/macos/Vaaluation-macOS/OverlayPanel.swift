@@ -12,12 +12,14 @@ final class OverlayPanel: NSPanel {
   init(contentRect: NSRect) {
     super.init(
       contentRect: contentRect,
-      styleMask: [.borderless, .nonactivatingPanel, .fullSizeContentView],
+      styleMask: [.borderless, .nonactivatingPanel, .fullSizeContentView, .resizable],
       backing: .buffered,
       defer: false
     )
 
     isOpaque = false
+    minSize = NSSize(width: 340, height: 260)
+    maxSize = NSSize(width: 900, height: 900)
     backgroundColor = .clear
     hasShadow = true
     isMovableByWindowBackground = true

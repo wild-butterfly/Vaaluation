@@ -41,8 +41,25 @@ fi
 # One signature across the whole bundle. Signing nested frameworks separately
 # gives them mismatched identities, and library validation then refuses to load
 # them at launch.
-echo "==> Signing for local use"
-codesign --force --deep --sign - --timestamp=none "$APP"
+#
+# A real signing identity is strongly preferred over ad-hoc: ad-hoc signatures
+# are derived from the app's contents, so every rebuild looks like a different
+# program to macOS and silently invalidates granted permissions. A development
+# certificate keeps the identity stable, so Accessibility survives updates.
+IDENTITY="${VAALUATION_SIGN_IDENTITY:-$(
+  security find-identity -v -p codesigning 2>/dev/null |
+    sed -n 's/.*"\(Apple Development:[^"]*\)".*/\1/p' | head -1
+)}"
+
+if [ -n "$IDENTITY" ]; then
+  echo "==> Signing as: $IDENTITY"
+else
+  echo "==> No development certificate found; falling back to ad-hoc."
+  echo "    Accessibility will need re-granting after each install."
+  IDENTITY="-"
+fi
+
+codesign --force --deep --sign "$IDENTITY" --timestamp=none "$APP"
 codesign --verify --deep --strict "$APP"
 
 echo "==> Installing to $DEST"
@@ -58,7 +75,8 @@ Installed: $DEST/$APP_NAME
 Vaaluation is a menu-bar app: it has no Dock icon and opens no window on
 launch. After starting it, look for the scales icon in the menu bar.
 
-Because the app moved and was re-signed, macOS treats it as a new program:
-re-grant Accessibility in System Settings > Privacy & Security > Accessibility
-(remove any older Vaaluation entry first).
+If this is the first install signed with a development certificate, re-grant
+Accessibility once in System Settings > Privacy & Security > Accessibility
+(remove any older Vaaluation entry first). Later installs keep the same
+signing identity, so the grant should persist.
 EOF

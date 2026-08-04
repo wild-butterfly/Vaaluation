@@ -2,7 +2,7 @@ import Cocoa
 
 /// Hosts the compact React Native overlay inside a blurred glass panel.
 final class OverlayWindowController: NSWindowController {
-  private static let defaultSize = NSSize(width: 560, height: 560)
+  private static let defaultSize = NSSize(width: 430, height: 400)
   private static let cornerRadius: CGFloat = 12
 
   private var clickOutsideMonitor: Any?
@@ -16,18 +16,23 @@ final class OverlayWindowController: NSWindowController {
 
     // Background blur is what makes the panel read as glass rather than a
     // flat dark rectangle over the game.
-    // Per the design the overlay is a solid vertical gradient with an accent
-    // hairline, not a blur — the game behind it would otherwise show through
-    // and fight the numbers for attention.
-    let effect = NSView(frame: NSRect(origin: .zero, size: Self.defaultSize))
+    // Background blur, with the design's gradient laid over it at high
+    // opacity: the panel reads as glass while the game stays dim enough that
+    // it never competes with the numbers.
+    let effect = NSVisualEffectView(
+      frame: NSRect(origin: .zero, size: Self.defaultSize)
+    )
+    effect.material = .hudWindow
+    effect.blendingMode = .behindWindow
+    effect.state = .active
     effect.autoresizingMask = [.width, .height]
     effect.wantsLayer = true
 
     let gradient = CAGradientLayer()
     gradient.frame = effect.bounds
     gradient.colors = [
-      NSColor(calibratedRed: 0.067, green: 0.086, blue: 0.125, alpha: 1).cgColor,
-      NSColor(calibratedRed: 0.043, green: 0.055, blue: 0.075, alpha: 1).cgColor,
+      NSColor(calibratedRed: 0.067, green: 0.086, blue: 0.125, alpha: 0.86).cgColor,
+      NSColor(calibratedRed: 0.043, green: 0.055, blue: 0.075, alpha: 0.92).cgColor,
     ]
     gradient.startPoint = CGPoint(x: 0.5, y: 1)
     gradient.endPoint = CGPoint(x: 0.5, y: 0)
@@ -57,6 +62,7 @@ final class OverlayWindowController: NSWindowController {
 
     panel.contentView = effect
     super.init(window: panel)
+    panel.setFrameAutosaveName("VaaluationOverlayPanel")
   }
 
   @available(*, unavailable)
