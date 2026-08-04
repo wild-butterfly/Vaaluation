@@ -27,7 +27,9 @@ export type { StatMatch } from './stats';
 export {
   toPricedListings,
   cheapestFirst,
+  formatAmount,
   listingAge,
+  quoteAlternatives,
   summarize,
   detectPriceWarnings,
   distribution,
@@ -37,6 +39,7 @@ export type {
   PriceSummary,
   PriceWarning,
   PriceDistribution,
+  PriceQuote,
 } from './pricing';
 export { RateLimitPolicy, parseRules, parseState } from './rateLimit';
 export type { RateLimitRule, RateLimitState } from './rateLimit';

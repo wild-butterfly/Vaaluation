@@ -258,3 +258,48 @@ export function cheapestFirst(
     .filter((listing) => listing.currency === currency)
     .sort((a, b) => a.amount - b.amount);
 }
+
+export interface PriceQuote {
+  readonly amount: number;
+  readonly currency: string;
+}
+
+/**
+ * Formats a currency amount the way players say it.
+ *
+ * Prices in Path of Exile are whole orbs, so a trailing ".0" is noise that
+ * makes a plain two-chaos item read like a measurement. Fractions are kept
+ * only where they carry meaning — a divine is worth hundreds of chaos, so
+ * "1.3 divine" is a real distinction, while "2.0 chaos" is not.
+ */
+export function formatAmount(value: number): string {
+  if (value >= 10) return String(Math.round(value));
+  if (Number.isInteger(value)) return String(value);
+  return value.toFixed(1).replace(/\.0$/, '');
+}
+
+/**
+ * Re-expresses a chaos price in the larger currencies a player would name
+ * instead, cheapest-sounding first.
+ *
+ * Nobody quotes six hundred chaos; they say three divine. A currency is only
+ * offered when the price reaches one whole unit of it, since "0.4 divine" is
+ * a worse way of saying the same thing than the chaos figure already shown.
+ *
+ * @param chaosRates chaos per one unit of each currency.
+ */
+export function quoteAlternatives(
+  chaosAmount: number,
+  chaosRates: ReadonlyMap<string, number>,
+): PriceQuote[] {
+  const quotes: PriceQuote[] = [];
+  for (const [currency, rate] of chaosRates) {
+    if (rate <= 0) continue;
+    const amount = chaosAmount / rate;
+    if (amount < 1) continue;
+    quotes.push({ amount, currency });
+  }
+  // Ascending by count, so the largest currency — the shortest way to say the
+  // price — comes first.
+  return quotes.sort((a, b) => a.amount - b.amount);
+}

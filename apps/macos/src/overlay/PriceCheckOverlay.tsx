@@ -23,7 +23,9 @@ import {
   cheapestFirst,
   detectPriceWarnings,
   distribution,
+  formatAmount,
   listingAge,
+  quoteAlternatives,
   toPricedListings,
   tradeSearchUrl,
 } from '@vaaluation/trade-client';
@@ -57,11 +59,14 @@ type SearchState =
     }
   | { status: 'error'; message: string };
 
-function round(value: number): string {
-  if (value >= 100) return String(Math.round(value));
-  if (value >= 10) return value.toFixed(0);
-  return value.toFixed(1);
-}
+const round = formatAmount;
+
+/**
+ * Currencies a price is worth restating in, and how often those rates are
+ * refreshed. Kept to two so the extra line stays a glance, and so the lookup
+ * costs one batched exchange request rather than one per currency.
+ */
+const QUOTE_CURRENCIES = ['divine', 'exalted'] as const;
 
 function nameOf(item: ParsedItem): string {
   return item.kind === 'equipment' || item.kind === 'map' ? item.name : item.name;
@@ -201,6 +206,38 @@ export function PriceCheckOverlay({
     [state, spread],
   );
 
+  /**
+   * Chaos value of the larger currencies, so a big price can be restated in
+   * them. The client caches exchange results for five minutes, so repeated
+   * price checks do not each spend a request; if the lookup fails the line is
+   * simply absent, since it is a convenience rather than the answer.
+   */
+  const [chaosRates, setChaosRates] = useState<Map<string, number>>(new Map());
+  useEffect(() => {
+    if (league === null || spread === null || spread.currency !== 'chaos') return;
+    let cancelled = false;
+    getTradeClient()
+      .currencyRates(league, QUOTE_CURRENCIES, 'chaos')
+      .then((rates) => {
+        if (cancelled) return;
+        setChaosRates(
+          new Map([...rates].map(([currency, rate]) => [currency, rate.median])),
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [league, spread]);
+
+  const alternatives = useMemo(
+    () =>
+      spread !== null && spread.currency === 'chaos'
+        ? quoteAlternatives(spread.median, chaosRates)
+        : [],
+    [spread, chaosRates],
+  );
+
   return (
     <View style={styles.panel}>
       <View style={styles.header}>
@@ -222,6 +259,13 @@ export function PriceCheckOverlay({
               {round(spread.median)}
               <Text style={styles.priceUnit}> {spread.currency}</Text>
             </Text>
+            {alternatives.length > 0 ? (
+              <Text style={styles.priceAlt} numberOfLines={1}>
+                {alternatives
+                  .map((quote) => `${round(quote.amount)} ${quote.currency}`)
+                  .join(' · ')}
+              </Text>
+            ) : null}
             <Text style={styles.priceMeta}>
               median · {state.status === 'done' ? state.total : 0} live listings
             </Text>
@@ -438,6 +482,13 @@ function makeStyles(theme: Theme) {
       fontSize: 10.5,
       color: semantic.upText,
       marginTop: 2,
+    },
+    priceAlt: {
+      fontFamily: fonts.mono,
+      fontSize: 11,
+      color: palette.secondary,
+      marginTop: 3,
+      textAlign: 'right',
     },
     table: { paddingHorizontal: spacing.h1, paddingBottom: spacing.xxl },
     tableHead: {

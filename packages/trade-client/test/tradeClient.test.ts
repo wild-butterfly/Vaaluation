@@ -10,7 +10,9 @@ import {
   summarizeRates,
   summarizeBatch,
   cheapestFirst,
+  formatAmount,
   listingAge,
+  quoteAlternatives,
   distribution,
   convertRate,
   currencyBatches,
@@ -564,6 +566,41 @@ describe('listing table', () => {
       'chaos',
     );
     expect(rows.map((row) => row.amount)).toEqual([10, 30]);
+  });
+});
+
+describe('price wording', () => {
+  it('drops the decimal point orbs never have', () => {
+    expect(formatAmount(2)).toBe('2');
+    expect(formatAmount(15)).toBe('15');
+    expect(formatAmount(250)).toBe('250');
+  });
+
+  it('keeps a fraction only where it distinguishes something', () => {
+    // A third of a divine is a real amount of money; a tenth of a chaos is
+    // rounding noise, but the caller decides which currency it passed.
+    expect(formatAmount(1.3)).toBe('1.3');
+    expect(formatAmount(0.5)).toBe('0.5');
+  });
+
+  it('restates a large price in the currency players would name', () => {
+    const rates = new Map([
+      ['divine', 200],
+      ['exalted', 5],
+    ]);
+    expect(quoteAlternatives(600, rates)).toEqual([
+      { amount: 3, currency: 'divine' },
+      { amount: 120, currency: 'exalted' },
+    ]);
+  });
+
+  it('offers nothing for a price below one unit of anything bigger', () => {
+    // "0.4 divine" is a worse way of saying two chaos than "two chaos" is.
+    expect(quoteAlternatives(2, new Map([['divine', 200]]))).toEqual([]);
+  });
+
+  it('ignores a currency with no usable rate', () => {
+    expect(quoteAlternatives(600, new Map([['divine', 0]]))).toEqual([]);
   });
 });
 
