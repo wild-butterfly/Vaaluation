@@ -47,6 +47,7 @@ export function CurrencyScreen() {
   const league = settings.leagueId ?? defaultLeagueId(leagues);
 
   const [denomination, setDenomination] = useState('chaos');
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [rows, setRows] = useState<RateRow[]>(
     TRACKED_CURRENCIES.filter((entry) => entry.id !== 'chaos').map((entry) => ({
       ...entry,
@@ -54,6 +55,9 @@ export function CurrencyScreen() {
       error: null,
     })),
   );
+
+  const denominationLabel =
+    DENOMINATIONS.find((entry) => entry.id === denomination)?.short ?? 'Chaos';
 
   /** Chaos-denominated measurements, kept so denominations can be derived. */
   const chaosRates = useRef<Map<string, CurrencyRate | null>>(new Map());
@@ -126,22 +130,36 @@ export function CurrencyScreen() {
             {updatedAt !== null ? ` · updated ${updatedAt.toLocaleTimeString()}` : ''}
           </Text>
         </View>
-        <View style={styles.denominations}>
-          {DENOMINATIONS.map((entry) => {
-            const active = denomination === entry.id;
-            return (
-              <Pressable
-                key={entry.id}
-                style={[styles.denom, active && styles.denomActive]}
-                onPress={() => setDenomination(entry.id)}
-                disabled={loading}
-              >
-                <Text style={[styles.denomText, active && styles.denomTextActive]}>
-                  {entry.short}
-                </Text>
-              </Pressable>
-            );
-          })}
+        <View style={styles.selectWrap}>
+          <Pressable
+            style={[styles.select, pickerOpen && styles.selectOpen]}
+            onPress={() => setPickerOpen((open) => !open)}
+          >
+            <Text style={styles.selectText}>{denominationLabel}</Text>
+            <Text style={styles.caret}>▾</Text>
+          </Pressable>
+          {pickerOpen ? (
+            <View style={styles.menu}>
+              {DENOMINATIONS.map((entry) => {
+                const active = denomination === entry.id;
+                return (
+                  <Pressable
+                    key={entry.id}
+                    style={[styles.option, active && styles.optionActive]}
+                    onPress={() => {
+                      setDenomination(entry.id);
+                      setPickerOpen(false);
+                    }}
+                  >
+                    <Text style={[styles.optionText, active && styles.optionTextActive]}>
+                      {entry.short}
+                    </Text>
+                    {active ? <Text style={styles.tick}>✓</Text> : null}
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : null}
         </View>
         <Pressable
           style={styles.button}
@@ -200,6 +218,7 @@ function makeStyles(theme: Theme) {
       alignItems: 'center',
       justifyContent: 'space-between',
       marginBottom: spacing.sm,
+      zIndex: 10,
     },
     headerText: { flex: 1 },
     heading: {
@@ -266,28 +285,47 @@ function makeStyles(theme: Theme) {
       maxWidth: 220,
       textAlign: 'right',
     },
-    denominations: {
+    selectWrap: { marginRight: spacing.md, zIndex: 10 },
+    select: {
       flexDirection: 'row',
-      gap: 3,
-      marginRight: spacing.md,
-    },
-    denom: {
+      alignItems: 'center',
+      gap: spacing.md,
       borderRadius: radii.keycap,
       borderWidth: 1,
       borderColor: borders.strong,
-      paddingHorizontal: spacing.lg,
-      paddingVertical: 5,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: 7,
     },
-    denomActive: {
-      backgroundColor: alpha(theme.accent, 0.14),
-      borderColor: alpha(theme.accent, 0.4),
+    selectOpen: { borderColor: alpha(theme.accent, 0.45) },
+    selectText: { fontFamily: fonts.sans, fontSize: scale.small, color: '#c9c7c1' },
+    caret: { fontFamily: fonts.mono, fontSize: scale.label, color: palette.dim },
+    menu: {
+      position: 'absolute',
+      top: 34,
+      right: 0,
+      minWidth: 132,
+      backgroundColor: surfaces.card,
+      borderRadius: radii.field,
+      borderWidth: 1,
+      borderColor: borders.strong,
+      paddingVertical: spacing.xs,
+      shadowColor: '#000',
+      shadowOpacity: 0.6,
+      shadowRadius: 18,
+      shadowOffset: { width: 0, height: 10 },
     },
-    denomText: {
-      fontFamily: fonts.sans,
-      fontSize: scale.small,
-      color: palette.muted,
+    option: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing.xl,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: 7,
     },
-    denomTextActive: { color: theme.accentText, fontWeight: '600' },
+    optionActive: { backgroundColor: alpha(theme.accent, 0.12) },
+    optionText: { fontFamily: fonts.sans, fontSize: scale.small, color: palette.body },
+    optionTextActive: { color: theme.accentText, fontWeight: '600' },
+    tick: { fontFamily: fonts.mono, fontSize: scale.label, color: theme.accent },
     button: {
       backgroundColor: alpha(theme.accent, 0.14),
       borderColor: borders.standard,
