@@ -33,6 +33,9 @@ interface RateRow {
   readonly error: string | null;
 }
 
+/** Below this many sampled offers, the median is worth a caveat. */
+const THIN_SAMPLE = 8;
+
 function formatRate(value: number): string {
   if (value >= 1000) return Math.round(value).toLocaleString();
   if (value >= 10) return value.toFixed(0);
@@ -201,7 +204,6 @@ export function CurrencyScreen() {
       <View style={styles.columns}>
         <Text style={[styles.columnLabel, styles.columnName]}>Currency</Text>
         <Text style={[styles.columnLabel, styles.columnRate]}>Rate</Text>
-        <Text style={[styles.columnLabel, styles.columnRange]}>Range · offers</Text>
       </View>
 
       {shown.map((row) => (
@@ -220,30 +222,24 @@ export function CurrencyScreen() {
           </Text>
 
           {row.rate !== null ? (
-            <>
+            <View style={styles.rateBlock}>
               <Text style={styles.rate}>
                 {formatRate(row.rate.median)}
                 <Text style={styles.rateUnit}> {denomination}</Text>
               </Text>
-              <Text style={styles.range}>
-                {formatRate(row.rate.low)}–{formatRate(row.rate.high)} · n=
-                {row.rate.sampleSize}
-              </Text>
-            </>
+              {/* Only surfaced when the sample is too thin to trust. A bare
+                  number from a handful of offers overstates its own
+                  confidence, and that is worth one quiet line. */}
+              {row.rate.sampleSize < THIN_SAMPLE ? (
+                <Text style={styles.thin}>from {row.rate.sampleSize} offers</Text>
+              ) : null}
+            </View>
           ) : row.error !== null ? (
             <Text style={styles.rowError} numberOfLines={1}>
               {row.error}
             </Text>
-          ) : loading ? (
-            <>
-              <Text style={styles.pendingRate}>—</Text>
-              <Text style={styles.range}>checking…</Text>
-            </>
           ) : (
-            <>
-              <Text style={styles.pendingRate}>—</Text>
-              <Text style={styles.range}>nothing listed</Text>
-            </>
+            <Text style={styles.pendingRate}>{loading ? '—' : 'no offers'}</Text>
           )}
         </View>
       ))}
@@ -294,16 +290,11 @@ function makeStyles(theme: Theme) {
       color: palette.dim,
     },
     // Matches the row layout below so headers sit over their own values.
-    columnName: { flex: 1, marginLeft: 28 + spacing.lg },
-    columnRate: { width: 104, textAlign: 'right' },
-    columnRange: { width: 122, textAlign: 'right' },
+    columnName: { flex: 1, marginLeft: 30 + spacing.xl },
+    columnRate: { textAlign: 'right' },
     icon: {
-      width: 28,
-      height: 28,
-      borderRadius: 7,
-      backgroundColor: 'rgba(255,255,255,0.05)',
-      borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.14)',
+      width: 30,
+      height: 30,
     },
 
     row: {
@@ -325,19 +316,25 @@ function makeStyles(theme: Theme) {
       fontSize: 13.5,
       flex: 1,
     },
+    rateBlock: { alignItems: 'flex-end' },
     rate: {
       fontFamily: fonts.mono,
       color: palette.primary,
       fontSize: scale.price,
       fontWeight: '600',
-      width: 104,
       textAlign: 'right',
+    },
+    thin: {
+      fontFamily: fonts.mono,
+      color: palette.dim,
+      fontSize: scale.label,
+      textAlign: 'right',
+      marginTop: 1,
     },
     pendingRate: {
       fontFamily: fonts.mono,
       color: palette.dim,
-      fontSize: scale.price,
-      width: 104,
+      fontSize: scale.mono,
       textAlign: 'right',
     },
     rateUnit: {
@@ -345,20 +342,13 @@ function makeStyles(theme: Theme) {
       fontSize: scale.mono,
       fontWeight: '400',
     },
-    range: {
-      fontFamily: fonts.mono,
-      color: palette.dim,
-      fontSize: scale.mono,
-      width: 122,
-      textAlign: 'right',
-    },
 
     rowError: {
       fontFamily: fonts.mono,
       color: theme.accentText,
       fontSize: scale.mono,
-      width: 104 + 122 + 12,
       textAlign: 'right',
+      flexShrink: 1,
     },
     selectWrap: { marginRight: spacing.md, zIndex: 10 },
     select: {
