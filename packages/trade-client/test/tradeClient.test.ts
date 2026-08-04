@@ -9,7 +9,6 @@ import {
   offerRate,
   summarizeRates,
   summarizeBatch,
-  byAskingPrice,
   formatAmount,
   listingAge,
   quoteAlternatives,
@@ -536,15 +535,6 @@ describe('currency exchange', () => {
 });
 
 describe('listing table', () => {
-  const at = (iso: string, amount: number, currency = 'chaos') => ({
-    id: iso + amount,
-    amount,
-    currency,
-    accountName: 'x',
-    presence: 'online' as const,
-    indexed: iso,
-  });
-
   it('reports age in the largest unit that applies', () => {
     const now = Date.parse('2026-08-04T12:00:00Z');
     const age = (iso: string) => listingAge(iso, now);
@@ -560,30 +550,28 @@ describe('listing table', () => {
     expect(listingAge('not a date')).toBe('');
   });
 
-  it('orders across currencies without rewriting any of them', () => {
-    // One divine at 200 chaos outranks thirty chaos, but it stays "1 divine":
-    // converting it would invent a price no seller is asking.
-    const rows = byAskingPrice(
-      [
-        at('2026-01-01T00:00:00Z', 30),
-        at('2026-01-01T00:00:00Z', 1, 'divine'),
-        at('2026-01-01T00:00:00Z', 10),
-      ],
-      new Map([['divine', 200]]),
-    );
-    expect(rows.map((row) => [row.amount, row.currency])).toEqual([
-      [10, 'chaos'],
-      [30, 'chaos'],
-      [1, 'divine'],
-    ]);
+  it('preserves the order the trade API returned', () => {
+    // The search asks for price ascending and the API answers in that order,
+    // across currencies and using its own rates. Nothing downstream may
+    // reorder it, or a divine listing would be shuffled away from the place
+    // the trade site put it.
+    const results = [
+      { id: 'a', listing: { price: { amount: 1, currency: 'chaos' }, account: { name: 'x' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
+      { id: 'b', listing: { price: { amount: 1, currency: 'divine' }, account: { name: 'y' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
+      { id: 'c', listing: { price: { amount: 2, currency: 'chaos' }, account: { name: 'z' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
+    ] as unknown as Parameters<typeof toPricedListings>[0];
+
+    expect(toPricedListings(results).map((row) => row.id)).toEqual(['a', 'b', 'c']);
   });
 
-  it('keeps a listing it cannot rate, sorting it last', () => {
-    const rows = byAskingPrice(
-      [at('2026-01-01T00:00:00Z', 5, 'mirror'), at('2026-01-01T00:00:00Z', 30)],
-      new Map(),
-    );
-    expect(rows.map((row) => row.currency)).toEqual(['chaos', 'mirror']);
+  it('skips a listing with no price without disturbing the rest', () => {
+    const results = [
+      { id: 'a', listing: { price: { amount: 1, currency: 'chaos' }, account: { name: 'x' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
+      { id: 'b', listing: { account: { name: 'y' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
+      { id: 'c', listing: { price: { amount: 2, currency: 'chaos' }, account: { name: 'z' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
+    ] as unknown as Parameters<typeof toPricedListings>[0];
+
+    expect(toPricedListings(results).map((row) => row.id)).toEqual(['a', 'c']);
   });
 });
 

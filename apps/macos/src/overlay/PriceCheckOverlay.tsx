@@ -20,7 +20,6 @@ import type {
 import {
   buildFilters,
   buildQuery,
-  byAskingPrice,
   detectPriceWarnings,
   distribution,
   formatAmount,
@@ -232,14 +231,16 @@ export function PriceCheckOverlay({
   }, [league, spread]);
 
   /**
-   * The listings themselves, cheapest first, each in the currency its seller
-   * chose. Rates order the rows against each other but never rewrite them: an
-   * asking price is a fact about a listing, not a quantity to convert.
+   * The listings, in the order the trade site itself would show them.
+   *
+   * The search asks for `price: asc` and the API returns the hashes already
+   * ordered, so the rows arrive cheapest first — across currencies, converted
+   * with GGG's own rates. Re-sorting them here could only be worse: the panel
+   * knows the rate of two currencies, and knows neither until the exchange
+   * lookup lands, so a divine listing sorted after a one-chaos one on the
+   * first paint and then jumped.
    */
-  const rows = useMemo(
-    () => (state.status === 'done' ? byAskingPrice(state.listings, chaosRates) : []),
-    [state, chaosRates],
-  );
+  const rows = state.status === 'done' ? state.listings : [];
 
   /**
    * The currency the panel quotes in: the largest one the median is worth at
