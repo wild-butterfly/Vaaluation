@@ -64,6 +64,8 @@ RCT_EXTERN_METHOD(cancelCapture)
 
 RCT_EXTERN_METHOD(setContentHeight : (nonnull NSNumber *)height)
 
+RCT_EXTERN_METHOD(hide)
+
 @end
 
 @interface RCT_EXTERN_MODULE (VLTrade, NSObject)

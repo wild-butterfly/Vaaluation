@@ -17,7 +17,7 @@ import { SettingsProvider, useSettings } from '../state/SettingsContext';
 import { useTradeRequests } from '../hooks/useTradeRequests';
 import { onItemCopied, onShowTrades } from '../native/VLEvents';
 import { consumePendingShowTrades } from '../native/VLTrade';
-import { setOverlayContentHeight } from '../native/VLOverlay';
+import { hideOverlay, setOverlayContentHeight } from '../native/VLOverlay';
 import { PriceCheckOverlay } from './PriceCheckOverlay';
 import { TradeOverlay } from './TradeOverlay';
 
@@ -88,6 +88,9 @@ function Shell() {
         <Text style={styles.league} numberOfLines={1}>
           {settings.leagueId ?? '—'}
         </Text>
+        <Pressable style={styles.close} onPress={hideOverlay}>
+          <Text style={styles.closeText}>✕</Text>
+        </Pressable>
       </View>
 
       <View style={styles.body}>
@@ -176,8 +179,21 @@ function makeStyles(theme: Theme) {
       fontWeight: '700',
       color: theme.actionText,
     },
+    close: {
+      width: 20,
+      height: 20,
+      borderRadius: radii.keycap,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    closeText: {
+      fontFamily: fonts.mono,
+      fontSize: scale.caption,
+      color: palette.muted,
+    },
     league: {
       marginLeft: 'auto',
+      marginRight: spacing.md,
       fontFamily: fonts.mono,
       fontSize: scale.tiny,
       color: palette.dim,

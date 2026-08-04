@@ -13,6 +13,14 @@ final class VLOverlayModule: NSObject {
   /// Weak so the module never keeps a closed overlay alive.
   static weak var controller: OverlayWindowController?
 
+  /// Hides the overlay. Used by the panel's own close control.
+  @objc(hide)
+  func hide() {
+    DispatchQueue.main.async {
+      VLOverlayModule.controller?.hide()
+    }
+  }
+
   @objc(setContentHeight:)
   func setContentHeight(_ height: NSNumber) {
     DispatchQueue.main.async {

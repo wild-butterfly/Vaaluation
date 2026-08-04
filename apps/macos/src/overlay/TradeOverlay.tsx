@@ -14,6 +14,7 @@ import { colors, glass, radii, spacing, typography } from '@vaaluation/ui';
 import type { TrackedRequest } from '../hooks/useTradeRequests';
 import { sendChatCommand, simulateWhisper } from '../native/VLTrade';
 import { openSystemSettings, requestAccessibility } from '../native/VLPermissions';
+import { usePermissions } from '../hooks/usePermissions';
 
 /** A line in the game's own wording, for the test button below. */
 function sampleWhisperLine(): string {
@@ -59,6 +60,8 @@ export function TradeOverlay({
   onDismiss: (id: string) => void;
   onContentHeight: (height: number) => void;
 }) {
+  const { status } = usePermissions();
+  const needsPermission = status !== null && status.accessibility !== 'granted';
   const [sendError, setSendError] = useState<string | null>(null);
   const [replyFor, setReplyFor] = useState<string | null>(null);
 
@@ -90,6 +93,25 @@ export function TradeOverlay({
 
   return (
     <View style={styles.container}>
+      {/* Stated before anything is attempted: waiting for a button to fail
+          first is a poor way to learn the buttons cannot work yet. */}
+      {needsPermission ? (
+        <View style={styles.errorRow}>
+          <Text style={styles.error}>
+            Buttons need Accessibility permission to send chat commands.
+          </Text>
+          <Pressable
+            style={styles.fixButton}
+            onPress={() => {
+              requestAccessibility().catch(() => {});
+              openSystemSettings('accessibility');
+            }}
+          >
+            <Text style={styles.fixButtonText}>Grant…</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
       {error !== null ? <Text style={styles.error}>{error}</Text> : null}
       {sendError !== null ? (
         <View style={styles.errorRow}>

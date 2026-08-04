@@ -18,6 +18,7 @@ import type { AppRoute } from './native/VLEvents';
 import { isAppRoute, onItemCopied, onNavigate } from './native/VLEvents';
 import { SettingsProvider, useSettings } from './state/SettingsContext';
 import { usePermissions } from './hooks/usePermissions';
+import { openSystemSettings, requestAccessibility } from './native/VLPermissions';
 import { AboutScreen } from './screens/AboutScreen';
 import { LogsScreen } from './screens/LogsScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
@@ -105,7 +106,14 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
           })}
         </View>
 
-        <View style={[styles.statusCard, !armed && styles.statusCardOff]}>
+        <Pressable
+          style={[styles.statusCard, !armed && styles.statusCardOff]}
+          onPress={() => {
+            if (armed) return;
+            requestAccessibility().catch(() => {});
+            openSystemSettings('accessibility');
+          }}
+        >
           <View style={styles.statusHead}>
             <View style={[styles.dot, !armed && styles.dotOff]} />
             <Text style={[styles.statusTitle, !armed && styles.statusTitleOff]}>
@@ -115,9 +123,9 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
           <Text style={styles.statusMeta}>
             {armed
               ? 'Ctrl+D on hover · chat log watched'
-              : 'Grant Accessibility in Settings'}
+              : 'Click here to grant Accessibility'}
           </Text>
-        </View>
+        </Pressable>
       </View>
 
       <View style={styles.main}>

@@ -2,6 +2,7 @@ import { NativeModules } from 'react-native';
 
 interface VLOverlayNative {
   setContentHeight(height: number): void;
+  hide(): void;
 }
 
 const native = NativeModules.VLOverlay as VLOverlayNative;
@@ -12,4 +13,9 @@ const native = NativeModules.VLOverlay as VLOverlayNative;
  */
 export function setOverlayContentHeight(height: number): void {
   native.setContentHeight(Math.round(height));
+}
+
+/** Closes the overlay, same as pressing Escape. */
+export function hideOverlay(): void {
+  native.hide();
 }
