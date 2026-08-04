@@ -324,6 +324,13 @@ export function PriceCheckOverlay({
 
   return (
     <View style={styles.panel}>
+      {/* One measured container around everything. The height used to be a
+          hand-tuned constant added to the modifier list, which counted
+          neither the listing table nor the footer, so the panel opened too
+          short and the modifiers were squeezed out of view entirely. */}
+      <View
+        onLayout={(event) => onContentHeight(event.nativeEvent.layout.height)}
+      >
       <View style={styles.header}>
         {/* Crimson bloom behind the numeral — the panel's one piece of glow. */}
         <View style={styles.bloom} pointerEvents="none" />
@@ -409,15 +416,7 @@ export function PriceCheckOverlay({
 
       <View style={styles.divider} />
 
-      <ScrollView
-        style={styles.body}
-        showsVerticalScrollIndicator={false}
-        onContentSizeChange={(_width, height) =>
-          // The header and histogram sit above the scroll area, so the panel
-          // needs room for them on top of whatever the mod list measures.
-          onContentHeight(height + (spread === null ? 90 : 210))
-        }
-      >
+      <View style={styles.body}>
         {item === null ? (
           <Text style={styles.empty}>
             {parseError ?? 'Hover an item in Path of Exile and press Ctrl+D.'}
@@ -480,7 +479,7 @@ export function PriceCheckOverlay({
             ) : null}
           </View>
         )}
-      </ScrollView>
+      </View>
 
       <View style={styles.footer}>
         <Pressable
@@ -508,6 +507,7 @@ export function PriceCheckOverlay({
           <Text style={styles.ghostText}>Trade site</Text>
         </Pressable>
         <Text style={styles.hint}>esc · ⌥ pin</Text>
+      </View>
       </View>
     </View>
   );
@@ -597,9 +597,9 @@ function makeStyles(theme: Theme) {
       textTransform: 'uppercase',
       color: palette.faint,
     },
-    // Six rows before scrolling: enough to see the cheap end and its spread
-    // without the panel growing tall enough to cover the game.
-    tableBody: { maxHeight: 6 * 24 },
+    // Five rows before scrolling. The modifiers share the panel now, so the
+    // table gives up a row rather than pushing them off the bottom.
+    tableBody: { maxHeight: 5 * 24 },
     tableRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -619,7 +619,7 @@ function makeStyles(theme: Theme) {
     presenceAfk: { backgroundColor: semantic.down },
     presenceOffline: { backgroundColor: palette.disabled },
     divider: { height: 1, backgroundColor: borders.standard },
-    body: { flexShrink: 1 },
+    body: {},
     mods: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
     empty: {
       fontFamily: fonts.sans,
