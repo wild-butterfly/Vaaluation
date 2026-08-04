@@ -4,7 +4,7 @@ import { THEMES, borders, semantic, surfaces, text } from './tokens';
  * Compatibility palette.
  *
  * Screens written before the design system landed import `colors` and
- * `glass`. Both now resolve to Obsidian Console token values so those screens
+ * `glass`. Both now resolve to Vaal Red token values so those screens
  * inherit the design without a rewrite. Accent-derived entries fall back to
  * the default theme — anything that must follow the user's chosen accent
  * should call `useTheme()` instead of reading from here.
