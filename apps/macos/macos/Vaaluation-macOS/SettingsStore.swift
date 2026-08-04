@@ -57,6 +57,20 @@ final class SettingsStore {
     return object[key] as? Bool ?? false
   }
 
+  /// Whether an incoming buy request should raise the overlay. Defaults to
+  /// true when unset, since a trade panel nobody sees has no purpose.
+  var showOverlayOnTradeWhisper: Bool {
+    guard
+      let json = settingsJSON,
+      let data = json.data(using: .utf8),
+      let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+      let value = object["showOverlayOnTradeWhisper"] as? Bool
+    else {
+      return true
+    }
+    return value
+  }
+
   var onboardingCompleted: Bool {
     guard
       let json = settingsJSON,

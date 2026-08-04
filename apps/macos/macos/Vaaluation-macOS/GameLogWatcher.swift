@@ -26,6 +26,15 @@ final class GameLogWatcher {
 
   private init() {}
 
+  /// Cheap shape test used only to decide whether to surface the overlay.
+  /// Authoritative parsing stays in TypeScript; this must not be relied on
+  /// for anything the user sees.
+  static func looksLikeTradeWhisper(_ line: String) -> Bool {
+    guard line.contains("@From") else { return false }
+    return line.range(of: #"(would|want to) like to buy|'?d like to buy|like to buy your"#,
+                      options: .regularExpression) != nil
+  }
+
   static func resolveLogPath() -> String? {
     for path in candidatePaths {
       let expanded = (path as NSString).expandingTildeInPath

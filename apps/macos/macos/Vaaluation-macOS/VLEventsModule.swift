@@ -8,6 +8,10 @@ final class VLEventsModule: RCTEventEmitter {
   private static weak var shared: VLEventsModule?
   private var hasListeners = false
   private static var pendingRoute: String?
+  /// Log lines seen before any React root attached. Bounded: this is a live
+  /// tail, not a backlog to replay in full.
+  private static var pendingLines: [String] = []
+  private static let maxPendingLines = 200
 
   override init() {
     super.init()
@@ -17,7 +21,7 @@ final class VLEventsModule: RCTEventEmitter {
   override static func requiresMainQueueSetup() -> Bool { false }
 
   override func supportedEvents() -> [String] {
-    ["vl:navigate", "vl:hotkey", "vl:permissions", "vl:item-copied", "vl:overlay", "vl:log-lines"]
+    ["vl:navigate", "vl:hotkey", "vl:permissions", "vl:item-copied", "vl:overlay", "vl:log-lines", "vl:show-trades"]
   }
 
   override func startObserving() {
@@ -25,6 +29,11 @@ final class VLEventsModule: RCTEventEmitter {
     if let route = VLEventsModule.pendingRoute {
       VLEventsModule.pendingRoute = nil
       sendEvent(withName: "vl:navigate", body: ["route": route])
+    }
+    if !VLEventsModule.pendingLines.isEmpty {
+      let lines = VLEventsModule.pendingLines
+      VLEventsModule.pendingLines = []
+      sendEvent(withName: "vl:log-lines", body: ["lines": lines])
     }
   }
 
@@ -64,8 +73,22 @@ final class VLEventsModule: RCTEventEmitter {
   /// Raw client-log lines. JS keeps only recognized trade whispers and
   /// discards everything else, so ordinary chat never leaves native memory.
   static func emitLogLines(_ lines: [String]) {
-    guard let instance = shared, instance.hasListeners else { return }
+    guard let instance = shared, instance.hasListeners else {
+      // No React root yet — hold the lines so a whisper that arrives while
+      // the overlay is starting is not lost.
+      pendingLines.append(contentsOf: lines)
+      if pendingLines.count > maxPendingLines {
+        pendingLines.removeFirst(pendingLines.count - maxPendingLines)
+      }
+      return
+    }
     instance.sendEvent(withName: "vl:log-lines", body: ["lines": lines])
+  }
+
+  /// Asks the overlay to bring its Trades tab forward.
+  static func emitShowTrades() {
+    guard let instance = shared, instance.hasListeners else { return }
+    instance.sendEvent(withName: "vl:show-trades", body: [:])
   }
 
   /// Fired when permission state may have changed (app became active).

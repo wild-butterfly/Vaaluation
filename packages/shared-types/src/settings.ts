@@ -41,6 +41,8 @@ export interface AppSettings {
    * contains private conversation, so reading it is the user's choice.
    */
   readonly tradeWhispersEnabled: boolean;
+  /** Raise the overlay automatically when a buy request arrives. */
+  readonly showOverlayOnTradeWhisper: boolean;
   /** Canned whispers offered on a trade request. Each send is one command. */
   readonly quickReplies: readonly string[];
   /** Sent by the one-press Thanks button. */
@@ -65,6 +67,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   leagueId: null,
   copyModifiers: 'control-option',
   tradeWhispersEnabled: false,
+  showOverlayOnTradeWhisper: true,
   quickReplies: [
     'Hi, I am ready to trade. Sending an invite now.',
     'Hi, one moment please.',

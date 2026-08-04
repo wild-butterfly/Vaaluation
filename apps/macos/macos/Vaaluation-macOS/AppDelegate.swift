@@ -34,8 +34,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // The log watcher belongs to the app, not to a React view. Driving it
     // from component lifecycle meant either window unmounting stopped it for
     // both, so whispers silently went unwatched.
-    GameLogWatcher.shared.onLines = { lines in
+    GameLogWatcher.shared.onLines = { [weak self] lines in
       VLEventsModule.emitLogLines(lines)
+      guard lines.contains(where: GameLogWatcher.looksLikeTradeWhisper) else { return }
+      LogStore.shared.append(
+        level: "info",
+        scope: "trade",
+        message: "Trade whisper detected in the client log"
+      )
+      // Surfacing the overlay is what makes the feature visible at all: with
+      // no window open there is no React root, so nothing would render and
+      // the buffered line would sit unread.
+      self?.showTradeOverlay()
     }
     AppDelegate.syncLogWatcher()
 
@@ -111,6 +121,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
   private func showOverlay(pinned: Bool) {
     overlay().show(pinned: pinned)
+  }
+
+  /// Raises the overlay on its Trades tab when a buy request arrives.
+  /// Pinned, because a trade needs several deliberate clicks and a panel
+  /// that vanished on the first stray click would be worse than useless.
+  private func showTradeOverlay() {
+    guard SettingsStore.shared.showOverlayOnTradeWhisper else { return }
+    let controller = overlay()
+    controller.show(pinned: true)
+    VLEventsModule.emitShowTrades()
   }
 
   func applicationWillTerminate(_ notification: Notification) {

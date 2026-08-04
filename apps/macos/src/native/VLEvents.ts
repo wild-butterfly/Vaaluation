@@ -63,6 +63,12 @@ export function onItemCopied(
   return () => subscription.remove();
 }
 
+/** Fired when a buy request should bring the Trades view forward. */
+export function onShowTrades(handler: () => void): () => void {
+  const subscription = emitter.addListener('vl:show-trades', () => handler());
+  return () => subscription.remove();
+}
+
 /** Fired when permission state may have changed (the app became active). */
 export function onPermissionsChanged(
   handler: (status: { accessibility: string; inputMonitoring: string }) => void,
