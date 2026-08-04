@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   group: { marginBottom: spacing.lg },
   groupTitle: {
-    color: colors.goldBright,
+    color: colors.textSecondary,
     fontSize: typography.sizeBody,
     fontWeight: '600',
     marginBottom: spacing.xs,

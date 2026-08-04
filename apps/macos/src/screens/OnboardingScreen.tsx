@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   stepTitle: {
-    color: colors.goldBright,
+    color: colors.textSecondary,
     fontSize: typography.sizeTitle,
     fontWeight: '600',
     marginBottom: spacing.xs,

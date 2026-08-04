@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   },
   section: { marginBottom: spacing.xl },
   sectionTitle: {
-    color: colors.goldBright,
+    color: colors.textSecondary,
     fontSize: typography.sizeTitle,
     fontWeight: '600',
     marginBottom: spacing.sm,

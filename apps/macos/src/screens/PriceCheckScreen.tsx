@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   league: {
-    color: colors.goldBright,
+    color: colors.textSecondary,
     fontSize: typography.sizeBody,
   },
   card: {
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
     borderTopColor: borders.rimLight,
   },
   cardTitle: {
-    color: colors.goldBright,
+    color: colors.textSecondary,
     fontSize: typography.sizeTitle,
     fontWeight: '600',
     marginBottom: spacing.xs,
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   price: {
-    color: colors.goldBright,
+    color: colors.textPrimary,
     fontSize: typography.sizeBody,
     fontWeight: '600',
     minWidth: 92,

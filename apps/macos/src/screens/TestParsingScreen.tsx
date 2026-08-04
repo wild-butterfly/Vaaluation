@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   modHeading: {
-    color: colors.goldBright,
+    color: colors.textSecondary,
     fontSize: typography.sizeBody,
     fontWeight: '600',
     marginBottom: spacing.xs,

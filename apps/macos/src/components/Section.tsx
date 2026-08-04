@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { borders, colors, radii, spacing, surfaces, typography } from '@vaaluation/ui';
+import { borders, fonts, radii, spacing, surfaces, text, type } from '@vaaluation/ui';
 
 export function Section({
   title,
@@ -21,11 +21,15 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: spacing.xl,
   },
+  // Micro-label: mono, uppercase, wide tracking, deliberately quiet. The
+  // accent belongs on values and actions, not on every heading.
   title: {
-    color: colors.goldBright,
-    fontSize: typography.sizeTitle,
-    fontWeight: '600',
-    marginBottom: spacing.sm,
+    fontFamily: fonts.mono,
+    color: text.faint,
+    fontSize: type.label,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+    marginBottom: spacing.md,
   },
   body: {
     backgroundColor: surfaces.card,
