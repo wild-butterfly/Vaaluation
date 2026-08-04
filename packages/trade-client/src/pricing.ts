@@ -249,14 +249,30 @@ export function listingAge(indexed: string, now: number = Date.now()): string {
   return `${Math.round(months / 12)}y`;
 }
 
-/** Listings of the summary currency, cheapest first. */
-export function cheapestFirst(
+/**
+ * Every listing, cheapest first, each keeping the currency its seller chose.
+ *
+ * Prices are never converted for display. Orbs are indivisible, so restating
+ * a one-chaos listing against an exalted rate produced "0.5 ex" — a price no
+ * seller is asking and nobody could pay. Rates are used only to order rows
+ * against each other, which is a comparison rather than a claim.
+ *
+ * @param chaosRates chaos per one unit of each currency; chaos is implicit.
+ */
+export function byAskingPrice(
   listings: readonly PricedListing[],
-  currency: string,
+  chaosRates: ReadonlyMap<string, number> = new Map(),
 ): PricedListing[] {
-  return listings
-    .filter((listing) => listing.currency === currency)
-    .sort((a, b) => a.amount - b.amount);
+  const chaosValue = (listing: PricedListing): number => {
+    if (listing.currency === 'chaos') return listing.amount;
+    const rate = chaosRates.get(listing.currency);
+    // Without a rate there is no honest place for the row, so it sorts last
+    // rather than being dropped: the listing is still real.
+    if (rate === undefined || rate <= 0) return Number.POSITIVE_INFINITY;
+    return listing.amount * rate;
+  };
+
+  return [...listings].sort((a, b) => chaosValue(a) - chaosValue(b));
 }
 
 export interface PriceQuote {

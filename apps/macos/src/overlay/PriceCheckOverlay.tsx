@@ -20,7 +20,7 @@ import type {
 import {
   buildFilters,
   buildQuery,
-  cheapestFirst,
+  byAskingPrice,
   detectPriceWarnings,
   distribution,
   formatAmount,
@@ -208,19 +208,6 @@ export function PriceCheckOverlay({
 
   const spread = state.status === 'done' ? state.spread : null;
   /**
-   * The listings themselves, cheapest first. A histogram of ten listings was
-   * mostly empty buckets; the prices, who is asking them and how stale each
-   * one is answer the question the histogram was gesturing at.
-   */
-  const rows = useMemo(
-    () =>
-      state.status === 'done' && spread !== null
-        ? cheapestFirst(state.listings, spread.currency)
-        : [],
-    [state, spread],
-  );
-
-  /**
    * Chaos value of the larger currencies, so a big price can be restated in
    * them. The client caches exchange results for five minutes, so repeated
    * price checks do not each spend a request; if the lookup fails the line is
@@ -243,6 +230,16 @@ export function PriceCheckOverlay({
       cancelled = true;
     };
   }, [league, spread]);
+
+  /**
+   * The listings themselves, cheapest first, each in the currency its seller
+   * chose. Rates order the rows against each other but never rewrite them: an
+   * asking price is a fact about a listing, not a quantity to convert.
+   */
+  const rows = useMemo(
+    () => (state.status === 'done' ? byAskingPrice(state.listings, chaosRates) : []),
+    [state, chaosRates],
+  );
 
   /**
    * The currency the panel quotes in: the largest one the median is worth at
@@ -331,8 +328,8 @@ export function PriceCheckOverlay({
             {rows.map((listing) => (
               <View key={listing.id} style={styles.tableRow}>
                 <Text style={[styles.cellPrice, styles.colPrice]} numberOfLines={1}>
-                  {round(listing.amount / display.rate)}
-                  <Text style={styles.cellUnit}> {shortCurrency(display.currency)}</Text>
+                  {round(listing.amount)}
+                  <Text style={styles.cellUnit}> {shortCurrency(listing.currency)}</Text>
                 </Text>
                 <Text style={[styles.cell, styles.colIlvl]}>{listing.ilvl ?? '—'}</Text>
                 <View style={[styles.colAccount, styles.accountCell]}>

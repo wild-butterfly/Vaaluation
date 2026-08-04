@@ -9,7 +9,7 @@ import {
   offerRate,
   summarizeRates,
   summarizeBatch,
-  cheapestFirst,
+  byAskingPrice,
   formatAmount,
   listingAge,
   quoteAlternatives,
@@ -560,12 +560,30 @@ describe('listing table', () => {
     expect(listingAge('not a date')).toBe('');
   });
 
-  it('orders by price and drops other currencies', () => {
-    const rows = cheapestFirst(
-      [at('2026-01-01T00:00:00Z', 30), at('2026-01-01T00:00:00Z', 2, 'divine'), at('2026-01-01T00:00:00Z', 10)],
-      'chaos',
+  it('orders across currencies without rewriting any of them', () => {
+    // One divine at 200 chaos outranks thirty chaos, but it stays "1 divine":
+    // converting it would invent a price no seller is asking.
+    const rows = byAskingPrice(
+      [
+        at('2026-01-01T00:00:00Z', 30),
+        at('2026-01-01T00:00:00Z', 1, 'divine'),
+        at('2026-01-01T00:00:00Z', 10),
+      ],
+      new Map([['divine', 200]]),
     );
-    expect(rows.map((row) => row.amount)).toEqual([10, 30]);
+    expect(rows.map((row) => [row.amount, row.currency])).toEqual([
+      [10, 'chaos'],
+      [30, 'chaos'],
+      [1, 'divine'],
+    ]);
+  });
+
+  it('keeps a listing it cannot rate, sorting it last', () => {
+    const rows = byAskingPrice(
+      [at('2026-01-01T00:00:00Z', 5, 'mirror'), at('2026-01-01T00:00:00Z', 30)],
+      new Map(),
+    );
+    expect(rows.map((row) => row.currency)).toEqual(['chaos', 'mirror']);
   });
 });
 

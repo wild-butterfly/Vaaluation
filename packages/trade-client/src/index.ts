@@ -26,7 +26,7 @@ export type { ItemEntry, ItemGroup } from './baseTypes';
 export type { StatMatch } from './stats';
 export {
   toPricedListings,
-  cheapestFirst,
+  byAskingPrice,
   formatAmount,
   listingAge,
   quoteAlternatives,
