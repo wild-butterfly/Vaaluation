@@ -9,7 +9,12 @@ import {
   View,
 } from 'react-native';
 import type { CurrencyRate } from '@vaaluation/trade-client';
-import { DENOMINATIONS, TRACKED_CURRENCIES, convertRate } from '@vaaluation/trade-client';
+import {
+  DENOMINATIONS,
+  TRACKED_CURRENCIES,
+  convertRate,
+  currencyBatches,
+} from '@vaaluation/trade-client';
 import {
   alpha,
   borders,
@@ -107,24 +112,31 @@ export function CurrencyScreen() {
     // Everything is measured against chaos exactly once. Other denominations
     // are derived from those numbers, so switching costs no requests against
     // a tightly metered endpoint and thin pairs still resolve.
-    // The client paces itself from the API's own headers (5 per 15s here),
-    // waiting rather than failing a row; a parallel burst is what trips it.
+    //
+    // Currencies go up in value-banded batches rather than one at a time: the
+    // endpoint prices several currencies per request, which is what keeps a
+    // list this long inside the 5-per-15s budget. The client still paces
+    // itself from the API's own headers, waiting rather than failing a batch.
     const measured = new Map<string, CurrencyRate | null>();
-    for (const entry of TRACKED_CURRENCIES) {
+    for (const batch of currencyBatches()) {
       try {
-        const rate = await client.currencyRate(league, entry.id, 'chaos', {
+        const rates = await client.currencyRates(league, batch, 'chaos', {
           waitForCapacity: true,
         });
-        measured.set(entry.id, rate);
+        for (const id of batch) measured.set(id, rates.get(id) ?? null);
         setRows((current) =>
           current.map((row) =>
-            row.id === entry.id ? { ...row, rate, error: null } : row,
+            batch.includes(row.id)
+              ? { ...row, rate: rates.get(row.id) ?? null, error: null }
+              : row,
           ),
         );
       } catch (cause: unknown) {
         const message = cause instanceof Error ? cause.message : 'Failed';
         setRows((current) =>
-          current.map((row) => (row.id === entry.id ? { ...row, error: message } : row)),
+          current.map((row) =>
+            batch.includes(row.id) ? { ...row, error: message } : row,
+          ),
         );
       }
     }

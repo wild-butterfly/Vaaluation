@@ -11,7 +11,7 @@ import { RateLimitPolicy } from './rateLimit';
 import { StatIndex } from './stats';
 import { BaseTypeIndex, parseItemCatalog } from './baseTypes';
 import type { CurrencyRate, ExchangeOffer } from './exchange';
-import { parseExchangeResponse, summarizeRates } from './exchange';
+import { parseExchangeResponse, summarizeBatch, summarizeRates } from './exchange';
 import { parseStaticIcons } from './icons';
 
 const BASE = 'https://www.pathofexile.com/api/trade';
@@ -255,6 +255,43 @@ export class TradeClient {
     const offers = parseExchangeResponse(response);
     this.store(key, offers);
     return offers;
+  }
+
+  /**
+   * Rates for several currencies in one request.
+   *
+   * Batching is what makes a table of eighteen currencies practical against an
+   * endpoint capped at five requests per fifteen seconds: eighteen separate
+   * calls would take roughly a minute, six batched ones take a few seconds.
+   * Callers should pass currencies of comparable value — see `TrackedCurrency`
+   * on why mixing tiers loses the expensive ones.
+   */
+  async currencyRates(
+    league: string,
+    gives: readonly string[],
+    want = 'chaos',
+    options: { waitForCapacity?: boolean } = {},
+  ): Promise<Map<string, CurrencyRate>> {
+    if (gives.length === 0) return new Map();
+
+    const key = `exchange-batch:${league}:${want}:${[...gives].sort().join(',')}`;
+    const hit = this.cached<ExchangeOffer[]>(key, EXCHANGE_CACHE_MS);
+    if (hit !== null) return summarizeBatch(hit, want);
+
+    const body = JSON.stringify({
+      query: { status: { option: 'online' }, have: [want], want: [...gives] },
+      sort: { have: 'asc' },
+      engine: 'new',
+    });
+    const response = await this.request(
+      `${BASE}/exchange/${encodeURIComponent(league)}`,
+      { method: 'POST', body },
+      this.exchangePolicy,
+      options,
+    );
+    const offers = parseExchangeResponse(response);
+    this.store(key, offers);
+    return summarizeBatch(offers, want);
   }
 
   /** Median asking rate for one unit of `give`, priced in `want`. */

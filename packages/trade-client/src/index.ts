@@ -10,11 +10,18 @@ export {
   TRACKED_CURRENCIES,
   DENOMINATIONS,
   convertRate,
+  currencyBatches,
   offerRate,
   parseExchangeResponse,
+  summarizeBatch,
   summarizeRates,
 } from './exchange';
-export type { CurrencyRate, CurrencyDef, ExchangeOffer } from './exchange';
+export type {
+  CurrencyRate,
+  CurrencyDef,
+  ExchangeOffer,
+  TrackedCurrency,
+} from './exchange';
 export type { ItemEntry, ItemGroup } from './baseTypes';
 export type { StatMatch } from './stats';
 export {

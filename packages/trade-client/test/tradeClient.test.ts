@@ -8,8 +8,11 @@ import {
   parseExchangeResponse,
   offerRate,
   summarizeRates,
+  summarizeBatch,
   distribution,
   convertRate,
+  currencyBatches,
+  TRACKED_CURRENCIES,
   RateLimitPolicy,
   StatIndex,
   TradeClient,
@@ -525,6 +528,91 @@ describe('currency exchange', () => {
     expect(summary?.median).toBeGreaterThan(0);
     expect(summary?.low).toBeLessThanOrEqual(summary?.median ?? 0);
     expect(summary?.high).toBeGreaterThanOrEqual(summary?.median ?? 0);
+  });
+});
+
+describe('bulk-weighted rates', () => {
+  const offer = (want: number, give: number) => ({
+    wantCurrency: 'chaos',
+    wantAmount: want,
+    giveCurrency: 'transmute',
+    giveAmount: give,
+    stock: give,
+    accountName: 'x',
+    online: true,
+  });
+
+  it('lets real bulk offers outvote one-unit novelty listings', () => {
+    // The shape seen live: a few sellers moving hundreds at the market rate,
+    // and a crowd of single-orb listings asking absurd prices. By count the
+    // novelties win; by volume they are a rounding error.
+    const novelties = Array.from({ length: 10 }, () => offer(10, 1));
+    const bulk = [offer(10, 400), offer(20, 160)];
+
+    const summary = summarizeRates([...novelties, ...bulk], 'transmute', 'chaos');
+    expect(summary?.median).toBeLessThan(0.2);
+  });
+
+  it('leaves evenly sized offers on their plain median', () => {
+    // Nobody bulk-lists divines in stacks of four hundred, so weighting must
+    // not disturb currencies whose offers are all of comparable size.
+    const summary = summarizeRates(
+      [offer(170, 1), offer(175, 1), offer(180, 1), offer(185, 1)],
+      'divine',
+      'chaos',
+    );
+    expect(summary?.median).toBe(177.5);
+  });
+
+  it('still reports the full spread, not the weighted window', () => {
+    const summary = summarizeRates([offer(10, 400), offer(100, 1)], 'transmute', 'chaos');
+    expect(summary?.low).toBe(0.025);
+    expect(summary?.high).toBe(100);
+    expect(summary?.sampleSize).toBe(2);
+  });
+});
+
+describe('batched currency fetching', () => {
+  it('never mixes value tiers within a batch', () => {
+    // The whole point of banding: a cheap currency in with an expensive one
+    // fills the single result page and starves the expensive one.
+    const tierOf = new Map(TRACKED_CURRENCIES.map((entry) => [entry.id, entry.tier]));
+    for (const batch of currencyBatches()) {
+      const tiers = new Set(batch.map((id) => tierOf.get(id)));
+      expect(tiers.size).toBe(1);
+    }
+  });
+
+  it('covers every tracked currency exactly once', () => {
+    const flat = currencyBatches().flat();
+    expect([...flat].sort()).toEqual([...TRACKED_CURRENCIES.map((e) => e.id)].sort());
+  });
+
+  it('honours the batch size', () => {
+    for (const batch of currencyBatches(2)) {
+      expect(batch.length).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('splits a mixed response into one rate per currency', () => {
+    const make = (give: string, want: number) => ({
+      wantCurrency: 'chaos',
+      wantAmount: want,
+      giveCurrency: give,
+      giveAmount: 1,
+      stock: 1,
+      accountName: 'x',
+      online: true,
+    });
+    const rates = summarizeBatch(
+      [make('divine', 170), make('divine', 180), make('exalted', 12)],
+      'chaos',
+    );
+
+    expect(rates.get('divine')?.median).toBe(175);
+    expect(rates.get('divine')?.sampleSize).toBe(2);
+    expect(rates.get('exalted')?.median).toBe(12);
+    expect(rates.get('mirror')).toBeUndefined();
   });
 });
 
