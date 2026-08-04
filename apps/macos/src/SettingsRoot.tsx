@@ -275,9 +275,9 @@ function makeStyles(theme: Theme) {
       fontFamily: fonts.sans,
       fontSize: scale.caption,
       fontWeight: '600',
-      color: theme.accentText,
+      color: palette.primary,
     },
-    statusTitleOff: { color: theme.accentText },
+    statusTitleOff: { color: palette.primary },
     statusMeta: {
       fontFamily: fonts.mono,
       fontSize: scale.label,
