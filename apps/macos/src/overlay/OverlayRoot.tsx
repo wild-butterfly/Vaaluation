@@ -16,6 +16,7 @@ import type { Theme } from '@vaaluation/ui';
 import { SettingsProvider, useSettings } from '../state/SettingsContext';
 import { useTradeRequests } from '../hooks/useTradeRequests';
 import { onItemCopied, onShowTrades } from '../native/VLEvents';
+import { consumePendingShowTrades } from '../native/VLTrade';
 import { PriceCheckOverlay } from './PriceCheckOverlay';
 import { TradeOverlay } from './TradeOverlay';
 
@@ -33,8 +34,17 @@ function Shell() {
   // A price check always brings the price tab forward — that is what the
   // shortcut was pressed for.
   useEffect(() => onItemCopied(() => setTab('price')), []);
-  // A buy request opens straight onto the trade panel.
+  // A buy request opens straight onto the trade panel. The latch covers the
+  // case where the overlay was created by that very whisper and so was not
+  // yet listening when the signal fired.
   useEffect(() => onShowTrades(() => setTab('trades')), []);
+  useEffect(() => {
+    consumePendingShowTrades()
+      .then((pending) => {
+        if (pending) setTab('trades');
+      })
+      .catch(() => {});
+  }, []);
 
   // Clear the badge once the user has actually looked at the list.
   useEffect(() => {

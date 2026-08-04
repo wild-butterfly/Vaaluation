@@ -36,6 +36,13 @@ final class GameLogWatcher {
   }
 
   static func resolveLogPath() -> String? {
+    // Testing seam: point the watcher at a scratch file so the whole path
+    // can be exercised without writing to the game's own log.
+    if let override = ProcessInfo.processInfo.environment["VAALUATION_LOG_PATH"],
+      FileManager.default.isReadableFile(atPath: override)
+    {
+      return override
+    }
     for path in candidatePaths {
       let expanded = (path as NSString).expandingTildeInPath
       if FileManager.default.isReadableFile(atPath: expanded) {

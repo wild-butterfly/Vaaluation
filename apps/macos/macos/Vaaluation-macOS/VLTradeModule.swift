@@ -97,6 +97,27 @@ final class VLTradeModule: NSObject {
     }
   }
 
+  /// Log lines that arrived before React was listening.
+  @objc(drainPendingLines:rejecter:)
+  func drainPendingLines(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter _: @escaping RCTPromiseRejectBlock
+  ) {
+    DispatchQueue.main.async {
+      resolve(VLEventsModule.drainPendingLines())
+    }
+  }
+
+  @objc(consumePendingShowTrades:rejecter:)
+  func consumePendingShowTrades(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter _: @escaping RCTPromiseRejectBlock
+  ) {
+    DispatchQueue.main.async {
+      resolve(VLEventsModule.consumePendingShowTrades())
+    }
+  }
+
   /// Sends exactly one chat command, in response to one user action.
   @objc(sendChatCommand:resolver:rejecter:)
   func sendChatCommand(

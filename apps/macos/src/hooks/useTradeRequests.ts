@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TradeRequest } from '@vaaluation/trade-whispers';
 import { parseTradeWhisper } from '@vaaluation/trade-whispers';
-import { onLogLines } from '../native/VLTrade';
+import { drainPendingLogLines, onLogLines } from '../native/VLTrade';
 import { log } from '../native/VLLog';
 
 export interface TrackedRequest {
@@ -36,7 +36,7 @@ export function useTradeRequests(enabled: boolean) {
     setWatching(true);
     setError(null);
 
-    const unsubscribe = onLogLines((lines) => {
+    const ingest = (lines: readonly string[]) => {
       const found: TrackedRequest[] = [];
       for (const line of lines) {
         const request = parseTradeWhisper(line);
@@ -50,9 +50,21 @@ export function useTradeRequests(enabled: boolean) {
       if (found.length === 0) return;
       log('info', 'trade', `${found.length} trade whisper(s) received`);
       setRequests((current) => [...found.reverse(), ...current].slice(0, MAX_REQUESTS));
-    });
+    };
 
-    return unsubscribe;
+    // Anything that arrived before this root was ready, first.
+    let cancelled = false;
+    drainPendingLogLines()
+      .then((lines) => {
+        if (!cancelled && lines.length > 0) ingest(lines);
+      })
+      .catch(() => {});
+
+    const unsubscribe = onLogLines(ingest);
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, [enabled]);
 
   const markDone = useCallback((id: string) => {

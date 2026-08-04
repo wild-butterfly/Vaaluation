@@ -12,6 +12,7 @@ final class VLEventsModule: RCTEventEmitter {
   /// tail, not a backlog to replay in full.
   private static var pendingLines: [String] = []
   private static let maxPendingLines = 200
+  private static var pendingShowTrades = false
 
   override init() {
     super.init()
@@ -30,11 +31,7 @@ final class VLEventsModule: RCTEventEmitter {
       VLEventsModule.pendingRoute = nil
       sendEvent(withName: "vl:navigate", body: ["route": route])
     }
-    if !VLEventsModule.pendingLines.isEmpty {
-      let lines = VLEventsModule.pendingLines
-      VLEventsModule.pendingLines = []
-      sendEvent(withName: "vl:log-lines", body: ["lines": lines])
-    }
+
   }
 
   override func stopObserving() {
@@ -85,10 +82,26 @@ final class VLEventsModule: RCTEventEmitter {
     instance.sendEvent(withName: "vl:log-lines", body: ["lines": lines])
   }
 
-  /// Asks the overlay to bring its Trades tab forward.
+  /// Asks the overlay to bring its Trades tab forward. Also latched, so a
+  /// freshly created overlay still lands on the right tab once it mounts.
   static func emitShowTrades() {
+    pendingShowTrades = true
     guard let instance = shared, instance.hasListeners else { return }
     instance.sendEvent(withName: "vl:show-trades", body: [:])
+  }
+
+  /// Returns and clears buffered log lines. React drains this when it is
+  /// ready, rather than relying on being subscribed before lines arrive.
+  static func drainPendingLines() -> [String] {
+    let lines = pendingLines
+    pendingLines = []
+    return lines
+  }
+
+  static func consumePendingShowTrades() -> Bool {
+    let value = pendingShowTrades
+    pendingShowTrades = false
+    return value
   }
 
   /// Fired when permission state may have changed (app became active).

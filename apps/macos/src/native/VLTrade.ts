@@ -5,6 +5,8 @@ interface VLTradeNative {
   stopWatching(): void;
   isWatching(): Promise<boolean>;
   sendChatCommand(command: string): Promise<void>;
+  drainPendingLines(): Promise<string[]>;
+  consumePendingShowTrades(): Promise<boolean>;
   loadHistory(): Promise<string | null>;
   saveHistory(json: string): Promise<void>;
   clearHistory(): Promise<void>;
@@ -32,6 +34,19 @@ export function isWatchingLog(): Promise<boolean> {
  */
 export function sendChatCommand(command: string): Promise<void> {
   return native.sendChatCommand(command);
+}
+
+/**
+ * Log lines that arrived before this React root was listening. Draining is
+ * explicit so delivery does not depend on subscription timing.
+ */
+export function drainPendingLogLines(): Promise<string[]> {
+  return native.drainPendingLines();
+}
+
+/** Whether a buy request asked for the Trades view while it was not mounted. */
+export function consumePendingShowTrades(): Promise<boolean> {
+  return native.consumePendingShowTrades();
 }
 
 /** Trade history, persisted locally and never uploaded. */
