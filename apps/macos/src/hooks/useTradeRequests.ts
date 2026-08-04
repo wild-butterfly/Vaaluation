@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TradeRequest } from '@vaaluation/trade-whispers';
 import { parseTradeWhisper } from '@vaaluation/trade-whispers';
-import { onLogLines, startWatchingLog, stopWatchingLog } from '../native/VLTrade';
+import { onLogLines } from '../native/VLTrade';
 import { log } from '../native/VLLog';
 
 export interface TrackedRequest {
@@ -25,29 +25,16 @@ export function useTradeRequests(enabled: boolean) {
   const [error, setError] = useState<string | null>(null);
   const [watching, setWatching] = useState(false);
 
+  // Watching is owned natively and driven by the persisted setting, so this
+  // hook only listens. Starting or stopping here would mean whichever window
+  // unmounted first silently switched watching off for the other one too.
   useEffect(() => {
     if (!enabled) {
-      stopWatchingLog();
       setWatching(false);
       return;
     }
-
-    let cancelled = false;
-    startWatchingLog()
-      .then(() => {
-        if (!cancelled) {
-          setWatching(true);
-          setError(null);
-        }
-      })
-      .catch((cause: unknown) => {
-        if (!cancelled) {
-          setWatching(false);
-          setError(
-            cause instanceof Error ? cause.message : 'Could not watch the client log.',
-          );
-        }
-      });
+    setWatching(true);
+    setError(null);
 
     const unsubscribe = onLogLines((lines) => {
       const found: TrackedRequest[] = [];
@@ -65,11 +52,7 @@ export function useTradeRequests(enabled: boolean) {
       setRequests((current) => [...found.reverse(), ...current].slice(0, MAX_REQUESTS));
     });
 
-    return () => {
-      cancelled = true;
-      unsubscribe();
-      stopWatchingLog();
-    };
+    return unsubscribe;
   }, [enabled]);
 
   const markDone = useCallback((id: string) => {

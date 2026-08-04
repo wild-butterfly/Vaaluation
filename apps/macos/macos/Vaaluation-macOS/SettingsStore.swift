@@ -41,6 +41,22 @@ final class SettingsStore {
     return object[key] as? String
   }
 
+  /// Whether the user has opted into watching the client log.
+  var tradeWhispersEnabled: Bool {
+    boolField("tradeWhispersEnabled")
+  }
+
+  private func boolField(_ key: String) -> Bool {
+    guard
+      let json = settingsJSON,
+      let data = json.data(using: .utf8),
+      let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+    else {
+      return false
+    }
+    return object[key] as? Bool ?? false
+  }
+
   var onboardingCompleted: Bool {
     guard
       let json = settingsJSON,

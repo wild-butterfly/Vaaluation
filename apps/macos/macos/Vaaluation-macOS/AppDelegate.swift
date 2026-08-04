@@ -31,6 +31,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       )
     }
 
+    // The log watcher belongs to the app, not to a React view. Driving it
+    // from component lifecycle meant either window unmounting stopped it for
+    // both, so whispers silently went unwatched.
+    GameLogWatcher.shared.onLines = { lines in
+      VLEventsModule.emitLogLines(lines)
+    }
+    AppDelegate.syncLogWatcher()
+
     if !SettingsStore.shared.onboardingCompleted {
       showSettingsWindow(route: "onboarding")
     }
@@ -81,6 +89,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       overlay().toggle(pinned: false)
     default:
       break
+    }
+  }
+
+  /// Starts or stops log watching to match the persisted setting. Safe to
+  /// call repeatedly; starting an already-running watcher is a no-op.
+  static func syncLogWatcher() {
+    if SettingsStore.shared.tradeWhispersEnabled {
+      GameLogWatcher.shared.start()
+    } else {
+      GameLogWatcher.shared.stop()
     }
   }
 

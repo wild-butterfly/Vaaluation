@@ -31,6 +31,7 @@ final class VLSettingsModule: NSObject {
     // shortcuts work even when no React window is open.
     DispatchQueue.main.async {
       HotkeyCenter.shared.applyFromSettings()
+      AppDelegate.syncLogWatcher()
     }
     resolve(nil)
   }

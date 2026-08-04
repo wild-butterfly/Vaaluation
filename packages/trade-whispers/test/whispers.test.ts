@@ -176,3 +176,37 @@ describe('chat commands — one action each', () => {
     expect(describeRequest(bulk)).toBe('100 Chaos Orb for 10 Divine Orb');
   });
 });
+
+describe('real whisper captured from the game', () => {
+  // Copied verbatim from Client.txt during live play. The buyer's character
+  // name is the only thing altered.
+  const REAL =
+    '2026/08/04 13:45:59 3428931861 e63da844 [INFO Client 47430] @From ExampleBuyer: ' +
+    'Hi, I would like to buy your Limbsplit, Woodsplitter listed for 1 regal in Allflame ' +
+    '(stash tab "~price 1 regal"; position: left 11, top 1)';
+
+  it('parses an item name containing a comma', () => {
+    const request = parseTradeWhisper(REAL);
+    expect(request).toMatchObject({
+      kind: 'item',
+      direction: 'incoming',
+      character: 'ExampleBuyer',
+      itemName: 'Limbsplit, Woodsplitter',
+      price: { amount: 1, currency: 'regal' },
+      league: 'Allflame',
+    });
+  });
+
+  it('reads a stash tab name containing punctuation', () => {
+    const request = parseTradeWhisper(REAL);
+    if (request === null || request.kind !== 'item') throw new Error('failed to parse');
+    expect(request.stash).toEqual({ tab: '~price 1 regal', left: 11, top: 1 });
+  });
+
+  it('builds the invite for the real buyer', () => {
+    const request = parseTradeWhisper(REAL);
+    if (request === null) throw new Error('failed to parse');
+    expect(inviteCommand(request).text).toBe('/invite ExampleBuyer');
+    expect(describeRequest(request)).toBe('Limbsplit, Woodsplitter — 1 regal');
+  });
+});
