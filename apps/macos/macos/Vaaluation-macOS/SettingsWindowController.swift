@@ -19,6 +19,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     window.styleMask.insert(.fullSizeContentView)
     window.isMovableByWindowBackground = true
     window.appearance = NSAppearance(named: .darkAqua)
+    window.hasShadow = true
     window.isReleasedWhenClosed = false
     window.center()
     window.setFrameAutosaveName("VaaluationSettingsWindow")
@@ -37,7 +38,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     window.isOpaque = false
 
     let effect = NSVisualEffectView(frame: window.contentLayoutRect)
-    effect.material = .underWindowBackground
+    effect.material = .hudWindow
     effect.blendingMode = .behindWindow
     effect.state = .active
     effect.autoresizingMask = [.width, .height]

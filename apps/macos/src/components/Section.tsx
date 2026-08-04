@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, radii, spacing, typography } from '@vaaluation/ui';
+import { borders, colors, radii, spacing, surfaces, typography } from '@vaaluation/ui';
 
 export function Section({
   title,
@@ -28,10 +28,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   body: {
-    backgroundColor: colors.charcoal,
-    borderColor: colors.gold,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radii.md,
-    padding: spacing.lg,
+    backgroundColor: surfaces.card,
+    borderColor: surfaces.cardBorder,
+    borderWidth: 1,
+    borderTopColor: borders.rimLight,
+    borderRadius: radii.card,
+    padding: spacing.h1,
   },
 });

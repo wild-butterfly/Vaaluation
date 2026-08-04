@@ -24,7 +24,7 @@ import {
   toPricedListings,
   tradeSearchUrl,
 } from '@vaaluation/trade-client';
-import { colors, radii, spacing, typography } from '@vaaluation/ui';
+import { borders, colors, radii, spacing, surfaces, typography } from '@vaaluation/ui';
 import { useTheme } from '@vaaluation/ui';
 import { useSettings } from '../state/SettingsContext';
 import { useLeagues, defaultLeagueId } from '../hooks/useLeagues';
@@ -387,12 +387,14 @@ const styles = StyleSheet.create({
     fontSize: typography.sizeBody,
   },
   card: {
-    backgroundColor: colors.charcoal,
-    borderColor: colors.gold,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radii.md,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
+    backgroundColor: surfaces.card,
+    borderColor: surfaces.cardBorder,
+    borderWidth: 1,
+    borderRadius: radii.card,
+    padding: spacing.h1,
+    marginBottom: spacing.h1,
+    // Top rim light: the detail that makes a surface read as glass.
+    borderTopColor: borders.rimLight,
   },
   cardTitle: {
     color: colors.goldBright,
@@ -412,10 +414,10 @@ const styles = StyleSheet.create({
   },
   input: {
     minHeight: 120,
-    backgroundColor: colors.obsidian,
-    borderColor: colors.gold,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radii.sm,
+    backgroundColor: surfaces.sunkenStrong,
+    borderColor: borders.input,
+    borderWidth: 1,
+    borderRadius: radii.card,
     color: colors.textPrimary,
     fontSize: typography.sizeBody,
     padding: spacing.md,
@@ -427,16 +429,20 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   button: {
-    backgroundColor: colors.obsidian,
-    borderColor: colors.gold,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radii.sm,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderColor: borders.glass,
+    borderWidth: 1,
+    borderRadius: radii.field,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
   primaryButton: {
-    backgroundColor: colors.vaalRed,
-    borderColor: colors.vaalRedBright,
+    backgroundColor: '#b81527',
+    borderColor: 'rgba(232,116,128,0.35)',
+    shadowColor: '#9e1122',
+    shadowOpacity: 0.45,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
   },
   buttonText: {
     color: colors.textPrimary,

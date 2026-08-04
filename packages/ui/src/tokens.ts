@@ -115,8 +115,8 @@ export const surfaces = {
   hover: 'rgba(158,17,34,0.04)',
   hoverStrong: 'rgba(255,255,255,0.08)',
   /** Panel tint laid over the native blur. */
-  glassOverlay: 'rgba(18,12,14,0.6)',
-  glassWindow: 'rgba(17,11,13,0.62)',
+  glassOverlay: 'rgba(18,12,14,0.72)',
+  glassWindow: 'rgba(17,11,13,0.8)',
   /** Chip used for mod rows and whisper strips. */
   chip: 'rgba(255,255,255,0.045)',
   chipBorder: 'rgba(255,255,255,0.06)',

@@ -11,14 +11,15 @@
     "build:macos": "xcodebuild -workspace macos/Vaaluation.xcworkspace -scheme Vaaluation-macOS -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build"
   },
   "dependencies": {
+    "@vaaluation/item-parser": "*",
+    "@vaaluation/shared-types": "*",
+    "@vaaluation/trade-whispers": "*",
+    "@vaaluation/ui": "*",
     "react": "19.1.4",
     "react-native": "0.81.6",
-    "react-native-safe-area-context": "^5.5.2",
     "react-native-macos": "^0.81.0",
-    "@vaaluation/shared-types": "*",
-    "@vaaluation/ui": "*",
-    "@vaaluation/item-parser": "*",
-    "@vaaluation/trade-whispers": "*"
+    "react-native-safe-area-context": "^5.5.2",
+    "react-native-svg": "^15.15.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

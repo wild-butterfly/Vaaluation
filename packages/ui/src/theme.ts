@@ -9,7 +9,7 @@ import { THEMES, borders, semantic, surfaces, text } from './tokens';
  * the default theme — anything that must follow the user's chosen accent
  * should call `useTheme()` instead of reading from here.
  */
-const fallback = THEMES.coldSteel;
+const fallback = THEMES.vaalRed;
 
 export const colors = {
   obsidian: fallback.window,
@@ -17,13 +17,13 @@ export const colors = {
   charcoalHover: surfaces.hoverStrong,
   vaalRed: fallback.action,
   vaalRedBright: fallback.accent,
-  gold: borders.strong,
+  gold: 'rgba(255,255,255,0.09)',
   goldBright: fallback.accentText,
   textPrimary: text.primary,
   textSecondary: text.secondary,
   textDisabled: text.faint,
   success: semantic.up,
-  warning: '#d9b25f',
+  warning: semantic.down,
   danger: semantic.down,
   online: semantic.up,
   offline: text.disabled,
