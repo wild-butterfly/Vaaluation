@@ -21,6 +21,14 @@ Vaaluation talks only to official Path of Exile services:
 Every request carries a descriptive `User-Agent` identifying Vaaluation, as
 required by Grinding Gear Games' developer policy.
 
+## Currency icons
+
+The Currency page shows Path of Exile's own orb art, loaded on demand from
+Grinding Gear Games' content network (`web.poecdn.com`) using the image paths
+their trade API publishes. The art is theirs and is never redistributed with
+Vaaluation. These requests carry no identifying information beyond a normal
+image fetch.
+
 ## Clipboard
 
 - Vaaluation reads the clipboard only immediately after you press the

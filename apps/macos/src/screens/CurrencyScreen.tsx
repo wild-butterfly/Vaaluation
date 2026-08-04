@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -48,6 +49,24 @@ export function CurrencyScreen() {
 
   const [denomination, setDenomination] = useState('chaos');
   const [pickerOpen, setPickerOpen] = useState(false);
+  /**
+   * Icon URLs from GGG's own static catalogue. The art is theirs, so it is
+   * loaded from their CDN rather than bundled with the app.
+   */
+  const [icons, setIcons] = useState<Map<string, string>>(new Map());
+
+  useEffect(() => {
+    let cancelled = false;
+    getTradeClient()
+      .getCurrencyIcons()
+      .then((loaded) => {
+        if (!cancelled) setIcons(loaded);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [rows, setRows] = useState<RateRow[]>(
     TRACKED_CURRENCIES.filter((entry) => entry.id !== 'chaos').map((entry) => ({
       ...entry,
@@ -187,7 +206,15 @@ export function CurrencyScreen() {
 
       {shown.map((row) => (
         <View key={row.id} style={styles.row}>
-          <View style={styles.icon} />
+          {icons.get(row.id) !== undefined ? (
+            <Image
+              style={styles.icon}
+              source={{ uri: icons.get(row.id) as string }}
+              resizeMode="contain"
+            />
+          ) : (
+            <View style={styles.icon} />
+          )}
           <Text style={styles.currency} numberOfLines={1}>
             {row.label}
           </Text>
@@ -274,7 +301,7 @@ function makeStyles(theme: Theme) {
       width: 28,
       height: 28,
       borderRadius: 7,
-      backgroundColor: alpha(theme.accent, 0.18),
+      backgroundColor: 'rgba(255,255,255,0.05)',
       borderWidth: 1,
       borderColor: 'rgba(255,255,255,0.14)',
     },

@@ -12,6 +12,7 @@ import { StatIndex } from './stats';
 import { BaseTypeIndex, parseItemCatalog } from './baseTypes';
 import type { CurrencyRate, ExchangeOffer } from './exchange';
 import { parseExchangeResponse, summarizeRates } from './exchange';
+import { parseStaticIcons } from './icons';
 
 const BASE = 'https://www.pathofexile.com/api/trade';
 
@@ -64,6 +65,7 @@ export class TradeClient {
   private readonly cache = new Map<string, CacheEntry>();
   private statIndex: StatIndex | null = null;
   private baseTypeIndex: BaseTypeIndex | null = null;
+  private currencyIcons: Map<string, string> | null = null;
   private readonly now: () => number;
   private readonly cacheTtlMs: number;
 
@@ -194,6 +196,17 @@ export class TradeClient {
     const body = await this.request(`${BASE}/data/items`, undefined, this.searchPolicy);
     this.baseTypeIndex = new BaseTypeIndex(parseItemCatalog(body));
     return this.baseTypeIndex;
+  }
+
+  /**
+   * Currency icon URLs, keyed by the same ids used for exchange queries.
+   * Cached for the process: the catalog only changes between game patches.
+   */
+  async getCurrencyIcons(): Promise<Map<string, string>> {
+    if (this.currencyIcons !== null) return this.currencyIcons;
+    const body = await this.request(`${BASE}/data/static`, undefined, this.searchPolicy);
+    this.currencyIcons = parseStaticIcons(body);
+    return this.currencyIcons;
   }
 
   async search(league: string, query: TradeQuery): Promise<SearchResponse> {

@@ -148,6 +148,12 @@ Issues and pull requests are welcome. Two ground rules:
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Credits
+
+Currency artwork belongs to Grinding Gear Games and is loaded from their own
+content network rather than redistributed here. Fonts are IBM Plex, under the
+SIL Open Font License.
+
 ## License
 
 [MIT](LICENSE)

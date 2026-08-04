@@ -4,6 +4,8 @@ export { buildFilters, buildQuery, tradeSearchUrl } from './query';
 export type { QueryOptions, SelectableFilter } from './query';
 export { StatIndex, normalizeStatText, extractValues } from './stats';
 export { BaseTypeIndex, parseItemCatalog } from './baseTypes';
+export { parseStaticIcons, absoluteIconUrl } from './icons';
+export type { StaticEntry } from './icons';
 export {
   TRACKED_CURRENCIES,
   DENOMINATIONS,
