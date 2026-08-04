@@ -12,8 +12,22 @@ import {
 } from '@vaaluation/trade-whispers';
 import { colors, glass, radii, spacing, typography } from '@vaaluation/ui';
 import type { TrackedRequest } from '../hooks/useTradeRequests';
-import { sendChatCommand } from '../native/VLTrade';
+import { sendChatCommand, simulateWhisper } from '../native/VLTrade';
 import { openSystemSettings, requestAccessibility } from '../native/VLPermissions';
+
+/** A line in the game's own wording, for the test button below. */
+function sampleWhisperLine(): string {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const stamp =
+    `${now.getFullYear()}/${pad(now.getMonth() + 1)}/${pad(now.getDate())} ` +
+    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  return (
+    `${stamp} 1000000 abcdef12 [INFO Client 1000] @From TestBuyer: ` +
+    'Hi, I would like to buy your Limbsplit, Woodsplitter listed for 1 regal ' +
+    'in Allflame (stash tab "~price 1 regal"; position: left 11, top 1)'
+  );
+}
 
 function ageOf(iso: string): string {
   const then = Date.parse(iso);
@@ -118,9 +132,19 @@ export function TradeOverlay({
         )}
       </ScrollView>
 
-      <Pressable style={styles.hideout} onPress={() => run(hideoutCommand())}>
-        <Text style={styles.hideoutText}>Go to Hideout</Text>
-      </Pressable>
+      <View style={styles.footer}>
+        <Pressable style={styles.hideout} onPress={() => run(hideoutCommand())}>
+          <Text style={styles.hideoutText}>Go to Hideout</Text>
+        </Pressable>
+        <Pressable
+          style={styles.hideout}
+          onPress={() => {
+            simulateWhisper(sampleWhisperLine()).catch(() => {});
+          }}
+        >
+          <Text style={styles.hideoutText}>Test request</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -309,10 +333,13 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: typography.sizeCaption,
   },
-  hideout: {
+  footer: {
+    flexDirection: 'row',
+    gap: spacing.sm,
     margin: spacing.md,
     marginTop: 0,
-    alignSelf: 'flex-start',
+  },
+  hideout: {
     backgroundColor: glass.fill,
     borderColor: glass.hairline,
     borderWidth: StyleSheet.hairlineWidth,

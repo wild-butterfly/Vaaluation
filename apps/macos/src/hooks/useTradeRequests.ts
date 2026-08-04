@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TradeRequest } from '@vaaluation/trade-whispers';
-import { parseTradeWhisper } from '@vaaluation/trade-whispers';
+import { describeRequest, parseTradeWhisper } from '@vaaluation/trade-whispers';
 import { drainPendingLogLines, onLogLines } from '../native/VLTrade';
 import { log } from '../native/VLLog';
 
@@ -42,14 +42,22 @@ export function useTradeRequests(enabled: boolean) {
         const request = parseTradeWhisper(line);
         if (request === null) continue; // not a trade whisper — discarded
         found.push({
-          id: `${request.character}:${request.receivedAt}:${found.length}`,
+          // Derived from the whisper itself, so the same request arriving
+          // twice — live and again from the retained buffer — collapses into
+          // one entry instead of appearing duplicated.
+          id: `${request.character}:${request.receivedAt}:${describeRequest(request)}`,
           request,
           done: false,
         });
       }
       if (found.length === 0) return;
-      log('info', 'trade', `${found.length} trade whisper(s) received`);
-      setRequests((current) => [...found.reverse(), ...current].slice(0, MAX_REQUESTS));
+      setRequests((current) => {
+        const seen = new Set(current.map((entry) => entry.id));
+        const fresh = found.filter((entry) => !seen.has(entry.id));
+        if (fresh.length === 0) return current;
+        log('info', 'trade', `${fresh.length} trade whisper(s) received`);
+        return [...fresh.reverse(), ...current].slice(0, MAX_REQUESTS);
+      });
     };
 
     // Anything that arrived before this root was ready, first.

@@ -70,15 +70,13 @@ final class VLEventsModule: RCTEventEmitter {
   /// Raw client-log lines. JS keeps only recognized trade whispers and
   /// discards everything else, so ordinary chat never leaves native memory.
   static func emitLogLines(_ lines: [String]) {
-    guard let instance = shared, instance.hasListeners else {
-      // No React root yet — hold the lines so a whisper that arrives while
-      // the overlay is starting is not lost.
-      pendingLines.append(contentsOf: lines)
-      if pendingLines.count > maxPendingLines {
-        pendingLines.removeFirst(pendingLines.count - maxPendingLines)
-      }
-      return
+    // Always retained, whether or not anyone is listening right now: a window
+    // opened a moment later must still see what just arrived.
+    pendingLines.append(contentsOf: lines)
+    if pendingLines.count > maxPendingLines {
+      pendingLines.removeFirst(pendingLines.count - maxPendingLines)
     }
+    guard let instance = shared, instance.hasListeners else { return }
     instance.sendEvent(withName: "vl:log-lines", body: ["lines": lines])
   }
 
@@ -90,12 +88,11 @@ final class VLEventsModule: RCTEventEmitter {
     instance.sendEvent(withName: "vl:show-trades", body: [:])
   }
 
-  /// Returns and clears buffered log lines. React drains this when it is
-  /// ready, rather than relying on being subscribed before lines arrive.
+  /// Recent log lines, kept rather than consumed. Every React root gets the
+  /// same view, so a window opened after a line arrived still catches up;
+  /// duplicates are filtered by request identity on the JavaScript side.
   static func drainPendingLines() -> [String] {
-    let lines = pendingLines
-    pendingLines = []
-    return lines
+    return pendingLines
   }
 
   static func consumePendingShowTrades() -> Bool {

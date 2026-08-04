@@ -16,6 +16,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     statusItemController = StatusItemController(actions: self)
 
     LogStore.shared.append(level: "info", scope: "app", message: "Vaaluation launched")
+    // Recorded at every launch: without it, diagnosing a failed chat command
+    // means guessing whether macOS actually trusts this build.
+    LogStore.shared.append(
+      level: "info",
+      scope: "permissions",
+      message: "Accessibility: \(PermissionService.accessibilityStatus().rawValue)"
+    )
 
     // Global shortcuts come straight from persisted settings so they work
     // before (and without) any React window existing.
@@ -69,8 +76,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   func applicationDidBecomeActive(_ notification: Notification) {
     // Permission grants happen in System Settings; re-check whenever the user
     // comes back to us and let the React side update its UI.
+    let status = PermissionService.accessibilityStatus()
+    if status != lastLoggedAccessibility {
+      lastLoggedAccessibility = status
+      LogStore.shared.append(
+        level: "info",
+        scope: "permissions",
+        message: "Accessibility changed to: \(status.rawValue)"
+      )
+    }
     VLEventsModule.emitPermissions(PermissionService.statusDictionary())
   }
+
+  private var lastLoggedAccessibility: PermissionService.Status?
 
   private func handleHotkey(action: String) {
     VLEventsModule.emitHotkey(action: action)
