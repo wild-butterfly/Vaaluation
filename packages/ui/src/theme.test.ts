@@ -54,3 +54,24 @@ describe('theme contrast (WCAG AA)', () => {
     expect(contrastRatio(semantic.down, darkest)).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('accent text legibility', () => {
+  /**
+   * Accent-coloured text sits on near-black surfaces, where the brand red
+   * itself is unreadable. This guards the deeper tone from drifting back
+   * past the point of legibility.
+   */
+  it.each(themes)('$label accent text clears AA on the window', (theme) => {
+    expect(contrastRatio(theme.accentText, theme.window)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it.each(themes)('$label accent text clears AA on a glass card', (theme) => {
+    // Approximates the card fill once composited over the window.
+    expect(contrastRatio(theme.accentText, '#181516')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('the brand red itself is not used as text', () => {
+    // Documents why accentText exists at all.
+    expect(contrastRatio(THEMES.vaalRed.accent, THEMES.vaalRed.window)).toBeLessThan(3);
+  });
+});

@@ -33,7 +33,10 @@ export const THEMES: Record<ThemeName, Theme> = {
     name: 'vaalRed',
     label: 'Vaal Red',
     accent: '#9e1122',
-    accentText: '#e88a92',
+    // The handoff's #e88a92 reads pink. This is as deep a red as stays
+    // legible on the near-black surfaces: 5.2:1, where red.core manages
+    // only 2.4:1 and would be unreadable as text.
+    accentText: '#dd5560',
     action: '#b81527',
     actionText: '#ffffff',
     window: '#0c0a0b',
