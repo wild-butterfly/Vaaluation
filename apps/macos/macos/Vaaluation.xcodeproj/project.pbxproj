@@ -39,6 +39,7 @@
 		CD783F47466A13D0A29647B9 /* HotkeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC70A541D10377FE08621D35 /* HotkeyCenter.swift */; };
 		D30D99F41D40125C969CE038 /* VLHotkeysModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40204572A5C05583C813CC9A /* VLHotkeysModule.swift */; };
 		D4F677639FBA12578E379D39 /* libPods-Vaaluation-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7D9F64AC2C307672F54D7A /* libPods-Vaaluation-macOS.a */; };
+		D6F6862F1017F87A9153AB24 /* VLOverlayModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23A39678CAD18C9D736F0F7D /* VLOverlayModule.swift */; };
 		DF9500C81B596470B049AE4F /* KeyComboTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E85FCB98F12D4B6CD340B6 /* KeyComboTests.swift */; };
 		EAA2B5A8B506FB95DA66F9B7 /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DFEF41B75EFB2E10F1435B /* KeyCombo.swift */; };
 		EDD950BFF6A7E14D7A28B71D /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDB5C62CC3EEDF2B5846057 /* SettingsWindowController.swift */; };
@@ -49,6 +50,7 @@
 		0D11812BCC4AD3C4C98B555C /* Vaaluation-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Vaaluation-Bridging-Header.h"; sourceTree = "<group>"; };
 		0E4516344722C65BA9DBE6E9 /* ReactHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReactHost.swift; sourceTree = "<group>"; };
 		1B5B24F0A09AE81DEA0E4569 /* ChatSender.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatSender.swift; sourceTree = "<group>"; };
+		23A39678CAD18C9D736F0F7D /* VLOverlayModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLOverlayModule.swift; sourceTree = "<group>"; };
 		240305C6AA93FC8777D51691 /* LogStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LogStore.swift; sourceTree = "<group>"; };
 		2C3ECACCC8206E31AE00BA4E /* VLTradeModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VLTradeModule.swift; sourceTree = "<group>"; };
 		303936647C698B334F094289 /* VaaluationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VaaluationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,6 +161,7 @@
 				1B5B24F0A09AE81DEA0E4569 /* ChatSender.swift */,
 				2C3ECACCC8206E31AE00BA4E /* VLTradeModule.swift */,
 				ABED0C58E29B453BA9994135 /* Fonts */,
+				23A39678CAD18C9D736F0F7D /* VLOverlayModule.swift */,
 			);
 			path = "Vaaluation-macOS";
 			sourceTree = "<group>";
@@ -424,6 +427,7 @@
 				23B1BAC620311EB7F1A8DDCA /* GameLogWatcher.swift in Sources */,
 				92E695D35201919BFA6CA00B /* ChatSender.swift in Sources */,
 				B550BF618DC5430BEDF6B9CC /* VLTradeModule.swift in Sources */,
+				D6F6862F1017F87A9153AB24 /* VLOverlayModule.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

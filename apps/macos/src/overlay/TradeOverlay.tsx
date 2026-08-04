@@ -47,6 +47,7 @@ export function TradeOverlay({
   onEnable,
   onDone,
   onDismiss,
+  onContentHeight,
 }: {
   requests: readonly TrackedRequest[];
   enabled: boolean;
@@ -56,6 +57,7 @@ export function TradeOverlay({
   onEnable: () => void;
   onDone: (id: string) => void;
   onDismiss: (id: string) => void;
+  onContentHeight: (height: number) => void;
 }) {
   const [sendError, setSendError] = useState<string | null>(null);
   const [replyFor, setReplyFor] = useState<string | null>(null);
@@ -69,7 +71,10 @@ export function TradeOverlay({
 
   if (!enabled) {
     return (
-      <View style={styles.empty}>
+      <View
+        style={styles.empty}
+        onLayout={(event) => onContentHeight(event.nativeEvent.layout.height)}
+      >
         <Text style={styles.emptyText}>
           Vaaluation can list incoming buy requests here by watching Path of Exile's chat
           log. It reads from this moment onward, keeps only messages matching the game's
@@ -108,6 +113,7 @@ export function TradeOverlay({
         style={styles.list}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        onContentSizeChange={(_width, height) => onContentHeight(height)}
       >
         {requests.length === 0 ? (
           <Text style={styles.emptyText}>

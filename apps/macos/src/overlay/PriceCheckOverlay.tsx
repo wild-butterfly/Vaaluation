@@ -86,7 +86,11 @@ function subtitleOf(item: ParsedItem): string {
   return parts.join(' · ');
 }
 
-export function PriceCheckOverlay() {
+export function PriceCheckOverlay({
+  onContentHeight,
+}: {
+  onContentHeight: (height: number) => void;
+}) {
   const theme = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const { settings, update } = useSettings();
@@ -249,7 +253,15 @@ export function PriceCheckOverlay() {
 
       <View style={styles.divider} />
 
-      <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.body}
+        showsVerticalScrollIndicator={false}
+        onContentSizeChange={(_width, height) =>
+          // The header and histogram sit above the scroll area, so the panel
+          // needs room for them on top of whatever the mod list measures.
+          onContentHeight(height + (spread === null ? 90 : 210))
+        }
+      >
         {item === null ? (
           <Text style={styles.empty}>
             {parseError ?? 'Hover an item in Path of Exile and press Ctrl+D.'}
@@ -401,7 +413,7 @@ function makeStyles(theme: Theme) {
     scaleEnd: { fontFamily: fonts.mono, fontSize: scale.tiny, color: palette.dim },
     scaleMedian: { fontFamily: fonts.mono, fontSize: scale.tiny, color: theme.accent },
     divider: { height: 1, backgroundColor: borders.standard },
-    body: { flex: 1 },
+    body: { flexShrink: 1 },
     mods: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
     empty: {
       fontFamily: fonts.sans,

@@ -17,6 +17,7 @@ import { SettingsProvider, useSettings } from '../state/SettingsContext';
 import { useTradeRequests } from '../hooks/useTradeRequests';
 import { onItemCopied, onShowTrades } from '../native/VLEvents';
 import { consumePendingShowTrades } from '../native/VLTrade';
+import { setOverlayContentHeight } from '../native/VLOverlay';
 import { PriceCheckOverlay } from './PriceCheckOverlay';
 import { TradeOverlay } from './TradeOverlay';
 
@@ -53,6 +54,13 @@ function Shell() {
 
   const unread = Math.max(0, trades.requests.length - seenCount);
 
+  // Chrome the shell draws around whichever tab is showing: the tab strip
+  // plus the tab's own footer. Added to the content height the tab reports.
+  const CHROME_HEIGHT = 96;
+  const reportHeight = (contentHeight: number) => {
+    setOverlayContentHeight(contentHeight + CHROME_HEIGHT);
+  };
+
   return (
     <View style={styles.root}>
       <View style={styles.tabStrip}>
@@ -84,7 +92,7 @@ function Shell() {
 
       <View style={styles.body}>
         {tab === 'price' ? (
-          <PriceCheckOverlay />
+          <PriceCheckOverlay onContentHeight={reportHeight} />
         ) : (
           <TradeOverlay
             requests={trades.requests}
@@ -95,6 +103,7 @@ function Shell() {
             onEnable={() => update({ tradeWhispersEnabled: true })}
             onDone={trades.markDone}
             onDismiss={trades.dismiss}
+            onContentHeight={reportHeight}
           />
         )}
       </View>

@@ -82,6 +82,7 @@ final class OverlayWindowController: NSWindowController, NSWindowDelegate {
     panel.contentView = effect
     super.init(window: panel)
     panel.delegate = self
+    VLOverlayModule.controller = self
     panel.setFrameAutosaveName("VaaluationOverlayPanel")
   }
 
@@ -177,6 +178,18 @@ final class OverlayWindowController: NSWindowController, NSWindowDelegate {
         y: visible.maxY - size.height - margin
       )
     )
+  }
+
+  /// Grows or shrinks to fit the content, anchored at the top edge so the
+  /// panel never appears to jump when its contents change.
+  func resizeToContentHeight(_ height: CGFloat) {
+    guard let panel = window, panel.isVisible else { return }
+    let clamped = max(panel.minSize.height, min(height, panel.maxSize.height))
+    var frame = panel.frame
+    guard abs(frame.height - clamped) > 1 else { return }
+    frame.origin.y += frame.height - clamped
+    frame.size.height = clamped
+    panel.setFrame(frame, display: true, animate: false)
   }
 
   private func installMonitors() {

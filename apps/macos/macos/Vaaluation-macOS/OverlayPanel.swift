@@ -18,7 +18,7 @@ final class OverlayPanel: NSPanel {
     )
 
     isOpaque = false
-    minSize = NSSize(width: 340, height: 260)
+    minSize = NSSize(width: 340, height: 150)
     maxSize = NSSize(width: 900, height: 900)
     backgroundColor = .clear
     hasShadow = true

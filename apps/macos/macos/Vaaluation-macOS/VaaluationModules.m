@@ -60,6 +60,12 @@ RCT_EXTERN_METHOD(cancelCapture)
 
 @end
 
+@interface RCT_EXTERN_MODULE (VLOverlay, NSObject)
+
+RCT_EXTERN_METHOD(setContentHeight : (nonnull NSNumber *)height)
+
+@end
+
 @interface RCT_EXTERN_MODULE (VLTrade, NSObject)
 
 RCT_EXTERN_METHOD(startWatching : (RCTPromiseResolveBlock)resolve
