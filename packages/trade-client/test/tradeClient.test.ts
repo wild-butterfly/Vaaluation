@@ -267,6 +267,58 @@ describe('query building', () => {
     expect(selected[0]?.min).toBe(18);
   });
 
+  it('ranks by importance rather than by position on the item', () => {
+    // The failure this guards against: a wand whose gem level sits below two
+    // lesser modifiers used to lose its place to them, because selection
+    // stopped at the first three matches in item order.
+    const statIndex = new StatIndex([
+      {
+        label: 'Explicit',
+        entries: [
+          { id: 'explicit.mana', text: '+# to maximum Mana', type: 'explicit' },
+          { id: 'explicit.res', text: '+#% to Fire Resistance', type: 'explicit' },
+          { id: 'explicit.crit', text: '#% increased Critical Strike Chance', type: 'explicit' },
+          {
+            id: 'explicit.gem',
+            text: '+# to Level of all Lightning Spell Skill Gems',
+            type: 'explicit',
+          },
+        ],
+      },
+    ]);
+    const item = {
+      kind: 'equipment' as const,
+      rarity: 'rare' as const,
+      name: 'Wildslash',
+      baseType: 'Awl',
+      itemClass: 'Wand',
+      modifiers: [
+        { text: '+39 to maximum Mana' },
+        { text: '+21% to Fire Resistance' },
+        { text: '13% increased Critical Strike Chance' },
+        { text: '+1 to Level of all Lightning Spell Skill Gems' },
+      ],
+    } as unknown as Parameters<typeof buildFilters>[0];
+
+    const selected = buildFilters(item, statIndex).filter((filter) => filter.selected);
+    expect(selected.map((filter) => filter.label)).toContain(
+      '+1 to Level of all Lightning Spell Skill Gems',
+    );
+    // Mana is the weakest of the four and is the one that drops out.
+    expect(selected.map((filter) => filter.label)).not.toContain('+39 to maximum Mana');
+  });
+
+  it('leaves rows in the order the item prints them', () => {
+    // Ranking decides what is ticked, not what is shown where: the player
+    // reads the panel against the item, so the rows must line up with it.
+    const item = parseFixtureItem('rare-advanced-mod-descriptions.txt');
+    const filters = buildFilters(item, index);
+    const shown = filters.map((filter) => filter.label);
+    const onItem = item.kind === 'equipment' ? item.modifiers.map((mod) => mod.text) : [];
+
+    expect(shown).toEqual(onItem.filter((text) => shown.includes(text)));
+  });
+
   it('searches a unique by name and base type', () => {
     const item = parseFixtureItem('unique-belt.txt');
     const query = buildQuery(item, []);

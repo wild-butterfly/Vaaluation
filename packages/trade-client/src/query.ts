@@ -26,23 +26,49 @@ export interface SelectableFilter {
 /**
  * Rares roll many modifiers and searching all of them returns nothing, so
  * only a small, high-signal set is preselected. The user adjusts from there.
+ *
+ * Each rule carries a weight because ranking, not matching, is what decides
+ * the selection: an earlier version took the first three modifiers that
+ * matched any pattern, so a wand's "+1 to Level of all Lightning Spell Skill
+ * Gems" — the line the item is actually worth anything for — lost its place
+ * to whatever happened to be printed above it.
  */
-const PRESELECT_PATTERNS: readonly RegExp[] = [
-  /maximum Life/i,
-  /maximum Energy Shield/i,
-  /increased Physical Damage/i,
-  /increased Spell Damage/i,
-  /Attack Speed/i,
-  /Cast Speed/i,
-  /Critical Strike Multiplier/i,
-  /increased Movement Speed/i,
+interface PreselectRule {
+  readonly pattern: RegExp;
+  readonly weight: number;
+}
+
+const PRESELECT_RULES: readonly PreselectRule[] = [
+  // A gem level is worth more than the rest of an item put together.
+  { pattern: /to Level of all .*Skill Gems/i, weight: 100 },
+  { pattern: /to maximum Life/i, weight: 90 },
+  { pattern: /increased Physical Damage/i, weight: 82 },
+  { pattern: /increased Spell Damage/i, weight: 80 },
+  { pattern: /increased Elemental Damage with Attack Skills/i, weight: 78 },
+  { pattern: /to maximum Energy Shield/i, weight: 74 },
+  { pattern: /Critical Strike Multiplier/i, weight: 66 },
+  { pattern: /increased Attack Speed/i, weight: 62 },
+  { pattern: /increased Cast Speed/i, weight: 62 },
+  { pattern: /increased Movement Speed/i, weight: 60 },
+  { pattern: /Adds \d+ to \d+ .*Damage/i, weight: 52 },
+  // One line covering three resistances beats one covering a single one.
+  { pattern: /to all Elemental Resistances/i, weight: 50 },
+  { pattern: /to Chaos Resistance/i, weight: 44 },
+  { pattern: /to (Fire|Cold|Lightning) Resistance/i, weight: 40 },
+  { pattern: /increased Critical Strike Chance/i, weight: 34 },
+  { pattern: /increased Elemental Damage/i, weight: 32 },
+  { pattern: /to maximum Mana/i, weight: 24 },
 ];
 
 const MAX_PRESELECTED = 3;
 
-function shouldPreselect(modifier: Modifier, alreadySelected: number): boolean {
-  if (alreadySelected >= MAX_PRESELECTED) return false;
-  return PRESELECT_PATTERNS.some((pattern) => pattern.test(modifier.text));
+/** How strongly a modifier argues for being searched on. Zero means never. */
+function preselectWeight(modifier: Modifier): number {
+  let best = 0;
+  for (const rule of PRESELECT_RULES) {
+    if (rule.weight > best && rule.pattern.test(modifier.text)) best = rule.weight;
+  }
+  return best;
 }
 
 /**
@@ -53,30 +79,46 @@ export function buildFilters(item: ParsedItem, stats: StatIndex): SelectableFilt
   if (item.kind !== 'equipment' && item.kind !== 'map') return [];
 
   const preselectAllowed = item.rarity === 'rare' || item.rarity === 'magic';
-  const filters: SelectableFilter[] = [];
-  let selectedCount = 0;
+
+  const candidates: { key: string; statId: string; label: string; value: number | null;
+    weight: number }[] = [];
 
   item.modifiers.forEach((modifier, index) => {
     const match = stats.match(modifier);
     if (match === null) return;
-
-    const value = match.values[0] ?? null;
-    const selected = preselectAllowed && shouldPreselect(modifier, selectedCount);
-    if (selected) selectedCount += 1;
-
-    filters.push({
+    candidates.push({
       key: `${index}:${match.id}`,
       statId: match.id,
       label: modifier.text,
-      selected,
-      value,
-      // Default to "at least what this item rolled", the usual intent.
-      min: selected && value !== null ? value : null,
-      max: null,
+      value: match.values[0] ?? null,
+      weight: preselectAllowed ? preselectWeight(modifier) : 0,
     });
   });
 
-  return filters;
+  // Rank first, then pick: the strongest few modifiers get searched on
+  // regardless of where they sit on the item.
+  const chosen = new Set(
+    [...candidates]
+      .filter((candidate) => candidate.weight > 0)
+      .sort((a, b) => b.weight - a.weight)
+      .slice(0, MAX_PRESELECTED)
+      .map((candidate) => candidate.key),
+  );
+
+  // Rows stay in the item's own order, which is how the player reads them.
+  return candidates.map((candidate) => {
+    const selected = chosen.has(candidate.key);
+    return {
+      key: candidate.key,
+      statId: candidate.statId,
+      label: candidate.label,
+      selected,
+      value: candidate.value,
+      // Default to "at least what this item rolled", the usual intent.
+      min: selected && candidate.value !== null ? candidate.value : null,
+      max: null,
+    };
+  });
 }
 
 export interface QueryOptions {
