@@ -61,7 +61,9 @@ function Shell() {
 
   // Chrome the shell draws around whichever tab is showing: the tab strip
   // plus the tab's own footer. Added to the content height the tab reports.
-  const CHROME_HEIGHT = 96;
+  // Trimmed alongside the strip and footer padding — left at its old value it
+  // would leave a band of empty panel below the content.
+  const CHROME_HEIGHT = 74;
   const reportHeight = (contentHeight: number) => {
     setOverlayContentHeight(contentHeight + CHROME_HEIGHT);
   };
@@ -155,9 +157,9 @@ function makeStyles(theme: Theme) {
     tabStrip: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: spacing.md,
-      paddingHorizontal: spacing.xxl,
-      paddingVertical: 11,
+      gap: spacing.sm,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: 6,
       borderBottomWidth: 1,
       borderBottomColor: borders.hairline,
       // Header sheen, and the top rim light that reads as glass.
@@ -170,8 +172,8 @@ function makeStyles(theme: Theme) {
       alignItems: 'center',
       gap: spacing.sm,
       borderRadius: radii.keycap,
-      paddingHorizontal: spacing.xxl,
-      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: 3,
     },
     pillActive: {
       backgroundColor: alpha(theme.accent, 0.3),

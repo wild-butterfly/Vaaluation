@@ -19,10 +19,10 @@ final class OverlayPanel: NSPanel {
 
     isOpaque = false
     minSize = NSSize(width: 340, height: 150)
-    // Height is capped well below the width's allowance: the panel now shows
-    // the listings and the modifiers together, and left to grow freely a
+    // Height is capped well below the width's allowance: the panel shows the
+    // listings and the modifiers together, and left to grow freely a
     // modifier-heavy rare would cover the part of the game being played.
-    maxSize = NSSize(width: 900, height: 620)
+    maxSize = NSSize(width: 900, height: 520)
     backgroundColor = .clear
     hasShadow = true
     isMovableByWindowBackground = true

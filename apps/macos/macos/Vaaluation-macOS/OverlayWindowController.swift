@@ -2,7 +2,7 @@ import Cocoa
 
 /// Hosts the compact React Native overlay inside a blurred glass panel.
 final class OverlayWindowController: NSWindowController, NSWindowDelegate {
-  private static let defaultSize = NSSize(width: 396, height: 360)
+  private static let defaultSize = NSSize(width: 380, height: 320)
   private static let cornerRadius: CGFloat = 15
 
   /// Where a newly shown panel is placed.

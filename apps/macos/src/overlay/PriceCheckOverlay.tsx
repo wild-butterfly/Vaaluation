@@ -324,10 +324,11 @@ export function PriceCheckOverlay({
 
   return (
     <View style={styles.panel}>
-      {/* One measured container around everything. The height used to be a
-          hand-tuned constant added to the modifier list, which counted
-          neither the listing table nor the footer, so the panel opened too
-          short and the modifiers were squeezed out of view entirely. */}
+      {/* Measured rather than guessed: the height used to be a hand-tuned
+          constant added to the modifier list, which counted neither the
+          listing table nor the header. The footer stays outside, because the
+          shell adds its own allowance for it — measuring it here too made the
+          panel taller than its contents. */}
       <View
         onLayout={(event) => onContentHeight(event.nativeEvent.layout.height)}
       >
@@ -363,58 +364,6 @@ export function PriceCheckOverlay({
           </View>
         ) : null}
       </View>
-
-      {rows.length > 0 ? (
-        <View style={styles.table}>
-          <View style={styles.tableHead}>
-            <Text style={[styles.headCell, styles.colPrice]}>Price</Text>
-            <Text style={[styles.headCell, styles.colIlvl]}>iLvl</Text>
-            <Text style={[styles.headCell, styles.colAccount]}>Account</Text>
-            <Text style={[styles.headCell, styles.colAge]}>Listed</Text>
-          </View>
-          {/* Keyed by the search, so a new item starts at the top. Without
-              this the list kept the previous scroll position and opened part
-              way down, hiding the cheapest listings the table exists to
-              show — and making the headline median look wrong against them. */}
-          <ScrollView
-            key={state.status === 'done' ? state.queryId : 'idle'}
-            style={styles.tableBody}
-            nestedScrollEnabled
-          >
-            {rows.map((listing) => (
-              <View key={listing.id} style={styles.tableRow}>
-                <Text style={[styles.cellPrice, styles.colPrice]} numberOfLines={1}>
-                  {round(listing.amount)}
-                  <Text style={styles.cellUnit}> {shortCurrency(listing.currency)}</Text>
-                </Text>
-                <Text style={[styles.cell, styles.colIlvl]}>{listing.ilvl ?? '—'}</Text>
-                <View style={[styles.colAccount, styles.accountCell]}>
-                  {/* Presence decides whether a whisper gets answered, so it
-                      earns a place next to the name rather than a legend. */}
-                  <View
-                    style={[
-                      styles.presence,
-                      listing.presence === 'online'
-                        ? styles.presenceOnline
-                        : listing.presence === 'afk'
-                          ? styles.presenceAfk
-                          : styles.presenceOffline,
-                    ]}
-                  />
-                  <Text style={styles.cell} numberOfLines={1}>
-                    {listing.accountName}
-                  </Text>
-                </View>
-                <Text style={[styles.cellAge, styles.colAge]}>
-                  {listingAge(listing.indexed)}
-                </Text>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-      ) : null}
-
-      <View style={styles.divider} />
 
       <View style={styles.body}>
         {item === null ? (
@@ -480,6 +429,59 @@ export function PriceCheckOverlay({
           </View>
         )}
       </View>
+      <View style={styles.divider} />
+
+      {rows.length > 0 ? (
+        <View style={styles.table}>
+          <View style={styles.tableHead}>
+            <Text style={[styles.headCell, styles.colPrice]}>Price</Text>
+            <Text style={[styles.headCell, styles.colIlvl]}>iLvl</Text>
+            <Text style={[styles.headCell, styles.colAccount]}>Account</Text>
+            <Text style={[styles.headCell, styles.colAge]}>Listed</Text>
+          </View>
+          {/* Keyed by the search, so a new item starts at the top. Without
+              this the list kept the previous scroll position and opened part
+              way down, hiding the cheapest listings the table exists to
+              show — and making the headline median look wrong against them. */}
+          <ScrollView
+            key={state.status === 'done' ? state.queryId : 'idle'}
+            style={styles.tableBody}
+            nestedScrollEnabled
+          >
+            {rows.map((listing) => (
+              <View key={listing.id} style={styles.tableRow}>
+                <Text style={[styles.cellPrice, styles.colPrice]} numberOfLines={1}>
+                  {round(listing.amount)}
+                  <Text style={styles.cellUnit}> {shortCurrency(listing.currency)}</Text>
+                </Text>
+                <Text style={[styles.cell, styles.colIlvl]}>{listing.ilvl ?? '—'}</Text>
+                <View style={[styles.colAccount, styles.accountCell]}>
+                  {/* Presence decides whether a whisper gets answered, so it
+                      earns a place next to the name rather than a legend. */}
+                  <View
+                    style={[
+                      styles.presence,
+                      listing.presence === 'online'
+                        ? styles.presenceOnline
+                        : listing.presence === 'afk'
+                          ? styles.presenceAfk
+                          : styles.presenceOffline,
+                    ]}
+                  />
+                  <Text style={styles.cell} numberOfLines={1}>
+                    {listing.accountName}
+                  </Text>
+                </View>
+                <Text style={[styles.cellAge, styles.colAge]}>
+                  {listingAge(listing.indexed)}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      ) : null}
+
+      </View>
 
       <View style={styles.footer}>
         <Pressable
@@ -508,7 +510,6 @@ export function PriceCheckOverlay({
         </Pressable>
         <Text style={styles.hint}>esc · ⌥ pin</Text>
       </View>
-      </View>
     </View>
   );
 }
@@ -520,26 +521,26 @@ function makeStyles(theme: Theme) {
       flexDirection: 'row',
       alignItems: 'flex-start',
       justifyContent: 'space-between',
-      paddingHorizontal: spacing.h1,
-      paddingTop: spacing.h2,
-      paddingBottom: spacing.xxl,
-      gap: spacing.xl,
+      paddingHorizontal: spacing.xxl,
+      paddingTop: spacing.xl,
+      paddingBottom: spacing.lg,
+      gap: spacing.lg,
       position: 'relative',
       overflow: 'hidden',
     },
     bloom: {
       position: 'absolute',
-      top: -46,
-      right: -30,
-      width: 190,
-      height: 150,
-      borderRadius: 95,
+      top: -38,
+      right: -26,
+      width: 150,
+      height: 118,
+      borderRadius: 75,
       backgroundColor: 'rgba(207,31,45,0.16)',
     },
     headerText: { flex: 1 },
     itemName: {
       fontFamily: fonts.sans,
-      fontSize: 19,
+      fontSize: 16,
       fontWeight: '600',
       color: palette.primary,
       letterSpacing: -0.2,
@@ -549,14 +550,14 @@ function makeStyles(theme: Theme) {
     },
     itemMeta: {
       fontFamily: fonts.sans,
-      fontSize: 12.5,
+      fontSize: 11.5,
       color: palette.secondary,
-      marginTop: 3,
+      marginTop: 1,
     },
     priceBlock: { alignItems: 'flex-end' },
     price: {
       fontFamily: fonts.mono,
-      fontSize: scale.display,
+      fontSize: scale.xl,
       fontWeight: '600',
       color: '#ffffff',
       textShadowColor: 'rgba(207,31,45,0.55)',
@@ -582,11 +583,11 @@ function makeStyles(theme: Theme) {
       marginTop: 3,
       textAlign: 'right',
     },
-    table: { paddingHorizontal: spacing.h1, paddingBottom: spacing.xxl },
+    table: { paddingHorizontal: spacing.xxl, paddingBottom: spacing.lg },
     tableHead: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingBottom: spacing.sm,
+      paddingBottom: spacing.xs,
       borderBottomWidth: 1,
       borderBottomColor: borders.hairline,
     },
@@ -599,11 +600,11 @@ function makeStyles(theme: Theme) {
     },
     // Five rows before scrolling. The modifiers share the panel now, so the
     // table gives up a row rather than pushing them off the bottom.
-    tableBody: { maxHeight: 5 * 24 },
+    tableBody: { maxHeight: 5 * 21 },
     tableRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      height: 24,
+      height: 21,
     },
     colPrice: { width: 76 },
     colIlvl: { width: 34, textAlign: 'right' },
@@ -620,7 +621,7 @@ function makeStyles(theme: Theme) {
     presenceOffline: { backgroundColor: palette.disabled },
     divider: { height: 1, backgroundColor: borders.standard },
     body: {},
-    mods: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
+    mods: { paddingVertical: spacing.xs, paddingHorizontal: spacing.md },
     empty: {
       fontFamily: fonts.sans,
       fontSize: scale.ui,
@@ -628,22 +629,24 @@ function makeStyles(theme: Theme) {
       padding: spacing.h1,
       lineHeight: 19,
     },
+    // Compact on purpose: the modifiers share the panel with the listings
+    // now, and every point a row spends here is one the prices lose.
     modRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: spacing.md,
-      paddingHorizontal: spacing.lg,
-      paddingVertical: spacing.md,
-      borderRadius: radii.field,
+      gap: spacing.sm,
+      paddingHorizontal: spacing.md,
+      paddingVertical: 2,
+      borderRadius: radii.input,
       backgroundColor: surfaces.chip,
       borderWidth: 1,
       borderColor: surfaces.chipBorder,
-      marginBottom: 3,
+      marginBottom: 2,
     },
-    modHit: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+    modHit: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.md },
     checkbox: {
-      width: 14,
-      height: 14,
+      width: 12,
+      height: 12,
       borderRadius: radii.tag,
       borderWidth: 1,
       borderColor: borders.checkbox,
@@ -652,7 +655,7 @@ function makeStyles(theme: Theme) {
     modText: {
       flex: 1,
       fontFamily: fonts.sans,
-      fontSize: 12.5,
+      fontSize: 12,
       color: '#d6cbc4',
     },
     modTextOff: { color: palette.muted },
@@ -666,7 +669,7 @@ function makeStyles(theme: Theme) {
       fontFamily: fonts.mono,
       fontSize: scale.mono,
       paddingHorizontal: spacing.sm,
-      paddingVertical: 3,
+      paddingVertical: 1,
       textAlign: 'center',
     },
     inputDim: { backgroundColor: surfaces.sunken, borderColor: borders.inputDim },
@@ -688,9 +691,9 @@ function makeStyles(theme: Theme) {
     footer: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: spacing.lg,
+      gap: spacing.md,
       paddingHorizontal: spacing.xxl,
-      paddingVertical: spacing.xl,
+      paddingVertical: spacing.md,
       borderTopWidth: 1,
       borderTopColor: borders.hairline,
       backgroundColor: 'rgba(0,0,0,0.24)',
