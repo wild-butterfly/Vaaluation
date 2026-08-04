@@ -1,13 +1,12 @@
 /**
- * Design tokens for the Obsidian Console direction.
+ * Design tokens for the Vaal Red glass direction.
  *
- * Structure and type are identical across themes; only the surface tint,
- * accent, and action colour change. Everything accent-derived flows from
- * `Theme`, so switching the accent flips every screen at once.
+ * One palette: red is the brand, and every accent-derived value flows from
+ * `Theme`. The theme type is kept as a single-member union so the plumbing
+ * stays in place if a second palette is ever warranted.
  */
 
-export type ThemeName =
-  'vaalRed' | 'emberGold' | 'coldSteel' | 'verdantRot' | 'vaalViolet' | 'boneAsh';
+export type ThemeName = 'vaalRed';
 
 export interface Theme {
   readonly name: ThemeName;
@@ -40,65 +39,6 @@ export const THEMES: Record<ThemeName, Theme> = {
     window: '#0c0a0b',
     overlayTop: '#130e11',
     overlayBottom: '#0a0809',
-  },
-  emberGold: {
-    name: 'emberGold',
-    label: 'Ember Gold',
-    accent: '#d9b25f',
-    accentText: '#e7c880',
-    action: '#b03a3a',
-    actionText: '#ffffff',
-    window: '#0d0f13',
-    overlayTop: '#12141a',
-    overlayBottom: '#0d0f13',
-  },
-  coldSteel: {
-    name: 'coldSteel',
-    label: 'Cold Steel',
-    accent: '#8fb8d8',
-    accentText: '#a9cce6',
-    // Handoff specifies #3f78a3, which gives its dark label only 4.02:1.
-    // Lifted just enough to clear WCAG AA at 4.73:1.
-    action: '#4584b3',
-    actionText: '#0c1016',
-    window: '#0b0e13',
-    overlayTop: '#111620',
-    overlayBottom: '#0b0e13',
-  },
-  verdantRot: {
-    name: 'verdantRot',
-    label: 'Verdant Rot',
-    accent: '#9ec872',
-    accentText: '#b6d992',
-    action: '#4d7f47',
-    actionText: '#ffffff',
-    window: '#0a0e0b',
-    overlayTop: '#101610',
-    overlayBottom: '#0a0e0b',
-  },
-  vaalViolet: {
-    name: 'vaalViolet',
-    label: 'Vaal Violet',
-    accent: '#b48ad9',
-    accentText: '#c9a8e6',
-    action: '#7a4fa8',
-    actionText: '#ffffff',
-    window: '#0f0c15',
-    overlayTop: '#16111f',
-    overlayBottom: '#0f0c15',
-  },
-  boneAsh: {
-    name: 'boneAsh',
-    label: 'Bone Ash',
-    accent: '#d8d3c8',
-    accentText: '#e6e2da',
-    action: '#8a8378',
-    // Handoff specifies white here, which is only 3.75:1 on this swatch.
-    // The theme's own window colour as the label gives 5.11:1.
-    actionText: '#0f0f10',
-    window: '#0f0f10',
-    overlayTop: '#161618',
-    overlayBottom: '#0f0f10',
   },
 };
 

@@ -27,8 +27,7 @@ export type HotkeyConfig = {
 export type CopyModifiers = 'control-option' | 'control' | 'control-shift' | 'command';
 
 /** Accent themes from the design system. */
-export type ThemeSetting =
-  'vaalRed' | 'emberGold' | 'coldSteel' | 'verdantRot' | 'vaalViolet' | 'boneAsh';
+export type ThemeSetting = 'vaalRed';
 
 export interface AppSettings {
   /** Accent theme; switching it re-tints every screen. */

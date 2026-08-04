@@ -23,9 +23,9 @@ const themes = Object.values(THEMES);
 
 describe('theme contrast (WCAG AA)', () => {
   /**
-   * Checks the pairings the design actually uses. Each theme picks its own
-   * action text colour precisely so the button stays legible — Cold Steel
-   * uses dark text on its lighter blue, the others use white.
+   * Checks the pairings the design actually uses, including the semantic
+   * scale: price movement is olive and ember rather than green and red,
+   * because red is the brand accent.
    */
   it.each(themes)('$label action button text is legible', (theme) => {
     expect(contrastRatio(theme.actionText, theme.action)).toBeGreaterThanOrEqual(4.5);
@@ -49,7 +49,7 @@ describe('theme contrast (WCAG AA)', () => {
   });
 
   it('semantic colours are legible on the darkest surface', () => {
-    const darkest = THEMES.verdantRot.window;
+    const darkest = THEMES.vaalRed.window;
     expect(contrastRatio(semantic.up, darkest)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(semantic.down, darkest)).toBeGreaterThanOrEqual(3);
   });
