@@ -1,6 +1,6 @@
 export { TradeClient } from './client';
 export type { FetchLike, TradeClientOptions } from './client';
-export { buildFilters, buildQuery, tradeSearchUrl } from './query';
+export { buildFilters, buildQuery, relaxWeakest, tradeSearchUrl } from './query';
 export type { QueryOptions, SelectableFilter } from './query';
 export { StatIndex, normalizeStatText, extractValues } from './stats';
 export { BaseTypeIndex, parseItemCatalog } from './baseTypes';

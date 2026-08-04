@@ -21,6 +21,11 @@ export interface SelectableFilter {
   readonly value: number | null;
   readonly min: number | null;
   readonly max: number | null;
+  /**
+   * How strongly this modifier argued for being searched on. Carried through
+   * so a search that finds nothing can give up its weakest filter first.
+   */
+  readonly weight: number;
 }
 
 /**
@@ -117,6 +122,7 @@ export function buildFilters(item: ParsedItem, stats: StatIndex): SelectableFilt
       // Default to "at least what this item rolled", the usual intent.
       min: selected && candidate.value !== null ? candidate.value : null,
       max: null,
+      weight: candidate.weight,
     };
   });
 }
@@ -219,4 +225,29 @@ export function buildQuery(
 /** The official trade page for a completed search. */
 export function tradeSearchUrl(league: string, queryId: string): string {
   return `https://www.pathofexile.com/trade/search/${encodeURIComponent(league)}/${encodeURIComponent(queryId)}`;
+}
+
+/**
+ * Turns off the filter that argued least strongly for being there.
+ *
+ * A rare or magic item searched on three exact rolls routinely matches
+ * nothing — the item is one of a kind, which is the point of it. Rather than
+ * report no listings and leave the player to guess which checkbox to clear,
+ * the search gives up its weakest filter and asks again. Returns `null` when
+ * there is nothing left to relax.
+ */
+export function relaxWeakest(
+  filters: readonly SelectableFilter[],
+): SelectableFilter[] | null {
+  let weakest: SelectableFilter | null = null;
+  for (const filter of filters) {
+    if (!filter.selected) continue;
+    if (weakest === null || filter.weight < weakest.weight) weakest = filter;
+  }
+  if (weakest === null) return null;
+
+  const target = weakest;
+  return filters.map((filter) =>
+    filter.key === target.key ? { ...filter, selected: false, min: null } : filter,
+  );
 }

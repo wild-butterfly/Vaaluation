@@ -22,6 +22,7 @@ import {
   TradeError,
   buildFilters,
   buildQuery,
+  relaxWeakest,
   detectPriceWarnings,
   normalizeStatText,
   parseRules,
@@ -317,6 +318,29 @@ describe('query building', () => {
     const onItem = item.kind === 'equipment' ? item.modifiers.map((mod) => mod.text) : [];
 
     expect(shown).toEqual(onItem.filter((text) => shown.includes(text)));
+  });
+
+  it('gives up the weakest filter first when nothing matched', () => {
+    const filters = [
+      { key: 'a', statId: 's.a', label: 'gem level', selected: true, value: 1, min: 1, max: null, weight: 100 },
+      { key: 'b', statId: 's.b', label: 'mana', selected: true, value: 20, min: 20, max: null, weight: 24 },
+      { key: 'c', statId: 's.c', label: 'life', selected: true, value: 50, min: 50, max: null, weight: 90 },
+    ];
+
+    const once = relaxWeakest(filters);
+    expect(once?.find((f) => f.key === 'b')).toMatchObject({ selected: false, min: null });
+    // The gem level, which the item is worth anything for, survives longest.
+    const twice = relaxWeakest(once as never);
+    expect(twice?.find((f) => f.key === 'c')?.selected).toBe(false);
+    expect(twice?.find((f) => f.key === 'a')?.selected).toBe(true);
+  });
+
+  it('reports nothing left to relax once every filter is off', () => {
+    expect(
+      relaxWeakest([
+        { key: 'a', statId: 's.a', label: 'x', selected: false, value: null, min: null, max: null, weight: 10 },
+      ]),
+    ).toBeNull();
   });
 
   it('searches a unique by name and base type', () => {

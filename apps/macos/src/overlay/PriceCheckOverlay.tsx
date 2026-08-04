@@ -25,6 +25,7 @@ import {
   formatAmount,
   listingAge,
   quoteAlternatives,
+  relaxWeakest,
   toPricedListings,
   tradeSearchUrl,
 } from '@vaaluation/trade-client';
@@ -66,6 +67,12 @@ const round = formatAmount;
  * costs one batched exchange request rather than one per currency.
  */
 const QUOTE_CURRENCIES = ['divine', 'exalted'] as const;
+
+/**
+ * How many filters a fruitless search may give up before reporting nothing.
+ * Each attempt costs a request against a limit of five per ten seconds.
+ */
+const MAX_RELAXATIONS = 2;
 
 /**
  * Table-width currency names. A bare initial ("c", "d") was ambiguous once
@@ -185,10 +192,30 @@ export function PriceCheckOverlay({
       try {
         const client = getTradeClient();
         const baseTypes = await client.getBaseTypeIndex();
-        const search = await client.search(
+
+        // An item searched on three of its exact rolls routinely matches
+        // nothing, because the item is one of a kind — which is the point of
+        // it. Rather than report no listings and leave the player guessing
+        // which checkbox to clear, the search gives up its weakest filter and
+        // asks again. Bounded, because each attempt spends a request.
+        let applied = withFilters;
+        let search = await client.search(
           league,
-          buildQuery(item, withFilters, { baseTypes }),
+          buildQuery(item, applied, { baseTypes }),
         );
+        for (let relaxations = 0; search.total === 0 && relaxations < MAX_RELAXATIONS; ) {
+          const loosened = relaxWeakest(applied);
+          if (loosened === null) break;
+          applied = loosened;
+          relaxations += 1;
+          search = await client.search(
+            league,
+            buildQuery(item, applied, { baseTypes }),
+          );
+        }
+        // The checkboxes must show what was actually searched, or the panel
+        // would be reporting prices for a query it is not displaying.
+        if (applied !== withFilters) setFilters(applied);
         // Two pages: twenty listings give the table something to scroll.
         const first = await client.fetchListings(search.result.slice(0, 10), search.id);
         const second =
