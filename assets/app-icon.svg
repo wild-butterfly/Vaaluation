@@ -1,0 +1,36 @@
+<!-- Source of truth for the macOS app icon.
+     Geometry matches apps/macos/src/components/Mark.tsx exactly; only
+     the tile behind it is added, because the mark's eyes and mouth are
+     knocked out in the colour of whatever sits behind them and would be
+     transparent on their own. The tile follows Apple's macOS grid: an
+     824x824 rounded square, radius 185.4, centred on a 1024 canvas.
+
+     To regenerate the icon set, render this at 1024 and downscale:
+       sips -Z <size> icon-1024.png --out <target>.png
+     Sizes needed: 16, 32, 64, 128, 256, 512, 1024. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="body" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#cf1f2d"/>
+      <stop offset="58%" stop-color="#9e1122"/>
+      <stop offset="100%" stop-color="#4c0812"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#171015"/>
+      <stop offset="100%" stop-color="#0a0809"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tile: the squircle macOS expects, in the app's own near-black. -->
+  <rect x="100" y="100" width="824" height="824" rx="185.4" ry="185.4" fill="url(#tile)"/>
+  <rect x="100" y="100" width="824" height="824" rx="185.4" ry="185.4"
+        fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="3"/>
+
+  <!-- The mark, at the same geometry as the in-app one. -->
+  <g transform="translate(512 512) scale(9.2) translate(-32 -33)">
+    <path d="M32 5 C46 5 55 13 55 26 C55 39 47 49 40 55 C36 58.5 33.5 61 32 61 C30.5 61 28 58.5 24 55 C17 49 9 39 9 26 C9 13 18 5 32 5 Z" fill="url(#body)"/>
+    <path d="M15.5 21.5 L29.5 26 L26 36 L13.5 30.5 Z" fill="#100b0e"/>
+    <path d="M48.5 21.5 L34.5 26 L38 36 L50.5 30.5 Z" fill="#100b0e"/>
+    <path d="M25 42 L32 53 L39 42" stroke="#100b0e" stroke-width="6.5" stroke-linejoin="miter" fill="none"/>
+  </g>
+</svg>
