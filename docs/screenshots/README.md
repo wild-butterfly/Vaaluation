@@ -1,14 +1,17 @@
 # Screenshots
 
-The README expects two files here:
+The README links one file:
 
 | File | What it should show |
 | --- | --- |
 | `price-check.png` | The overlay over the game, mid price check: item name, the headline price, the ticked modifiers and the listing table. |
-| `trades.png` | The Trades tab with at least one buy request and its Invite / Trade / Thanks buttons. |
 
-A third, `settings.png`, can be linked from the Shortcuts section if you want
-to show the shortcut editor.
+Worth adding later, each needing its own line in the README:
+
+| File | What it should show |
+| --- | --- |
+| `trades.png` | The Trades tab with a buy request and its Invite / Trade / Thanks buttons. Needs a real one to arrive, so it waits. |
+| `settings.png` | The shortcut editor, if the Shortcuts section deserves a picture. |
 
 ## Taking them
 

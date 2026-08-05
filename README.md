@@ -11,13 +11,11 @@ Free, open source, no accounts, no telemetry, no paid tier.
 
 ---
 
-<!-- Screenshots: drop price-check.png and trades.png into docs/screenshots/
-     (see the guide there), then delete this comment and the one below to
-     publish them.
+<!-- Screenshot: save a price check over the game as
+     docs/screenshots/price-check.png (see the guide there), then delete this
+     line and the closing one to publish it.
 
-| Price check | Trade requests |
-| --- | --- |
-| ![Price check overlay](docs/screenshots/price-check.png) | ![Trade requests](docs/screenshots/trades.png) |
+![Vaaluation over Path of Exile, mid price check](docs/screenshots/price-check.png)
 
 -->
 
