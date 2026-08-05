@@ -69,10 +69,12 @@ const round = formatAmount;
 const QUOTE_CURRENCIES = ['divine', 'exalted'] as const;
 
 /**
- * How many filters a fruitless search may give up before reporting nothing.
- * Each attempt costs a request against a limit of five per ten seconds.
+ * How many steps a fruitless search may loosen itself by. Each step gives up
+ * one bound or one modifier, so four covers dropping every bound and then a
+ * modifier or two. Each attempt costs a request against a limit of five per
+ * ten seconds.
  */
-const MAX_RELAXATIONS = 2;
+const MAX_RELAXATIONS = 4;
 
 /**
  * Table-width currency names. A bare initial ("c", "d") was ambiguous once

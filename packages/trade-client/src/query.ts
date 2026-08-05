@@ -67,6 +67,33 @@ const PRESELECT_RULES: readonly PreselectRule[] = [
 
 const MAX_PRESELECTED = 3;
 
+/**
+ * Item classes that never carry the item's own defences or weapon stats, so
+ * their modifiers are the global forms. Inverted deliberately: the list of
+ * things that do carry local stats is every armour piece and every weapon
+ * type, which is long and grows with the game.
+ */
+const GLOBAL_ONLY_CLASSES = new Set([
+  'rings',
+  'amulets',
+  'belts',
+  'jewels',
+  'abyss jewels',
+  'cluster jewels',
+  'life flasks',
+  'mana flasks',
+  'hybrid flasks',
+  'utility flasks',
+  'charms',
+  'tinctures',
+]);
+
+/** Whether this item's modifiers should resolve to the "(Local)" stats. */
+function usesLocalStats(item: ParsedItem): boolean {
+  if (item.kind !== 'equipment') return false;
+  return !GLOBAL_ONLY_CLASSES.has(item.itemClass.trim().toLowerCase());
+}
+
 /** How strongly a modifier argues for being searched on. Zero means never. */
 function preselectWeight(modifier: Modifier): number {
   let best = 0;
@@ -84,12 +111,13 @@ export function buildFilters(item: ParsedItem, stats: StatIndex): SelectableFilt
   if (item.kind !== 'equipment' && item.kind !== 'map') return [];
 
   const preselectAllowed = item.rarity === 'rare' || item.rarity === 'magic';
+  const local = usesLocalStats(item);
 
   const candidates: { key: string; statId: string; label: string; value: number | null;
     weight: number }[] = [];
 
   item.modifiers.forEach((modifier, index) => {
-    const match = stats.match(modifier);
+    const match = stats.match(modifier, { local });
     if (match === null) return;
     candidates.push({
       key: `${index}:${match.id}`,
@@ -228,26 +256,41 @@ export function tradeSearchUrl(league: string, queryId: string): string {
 }
 
 /**
- * Turns off the filter that argued least strongly for being there.
+ * Loosens the search by one step, weakest modifier first.
  *
  * A rare or magic item searched on three exact rolls routinely matches
  * nothing — the item is one of a kind, which is the point of it. Rather than
  * report no listings and leave the player to guess which checkbox to clear,
- * the search gives up its weakest filter and asks again. Returns `null` when
- * there is nothing left to relax.
+ * the search relaxes itself and asks again.
+ *
+ * A bound is given up before the filter that carries it: "some fire
+ * resistance" still describes the item, while dropping the modifier outright
+ * stops describing it at all. Only once a filter has no bound left does it
+ * come off, so the search degrades toward a looser description of the same
+ * item rather than collapsing to the bare base type. Returns `null` when
+ * nothing is left to relax.
  */
 export function relaxWeakest(
   filters: readonly SelectableFilter[],
 ): SelectableFilter[] | null {
-  let weakest: SelectableFilter | null = null;
-  for (const filter of filters) {
-    if (!filter.selected) continue;
-    if (weakest === null || filter.weight < weakest.weight) weakest = filter;
+  const bounded = filters.filter(
+    (filter) => filter.selected && (filter.min !== null || filter.max !== null),
+  );
+  const pool = bounded.length > 0 ? bounded : filters.filter((f) => f.selected);
+  if (pool.length === 0) return null;
+
+  let weakest = pool[0] as SelectableFilter;
+  for (const filter of pool) {
+    if (filter.weight < weakest.weight) weakest = filter;
   }
-  if (weakest === null) return null;
 
   const target = weakest;
+  const dropBound = bounded.length > 0;
   return filters.map((filter) =>
-    filter.key === target.key ? { ...filter, selected: false, min: null } : filter,
+    filter.key === target.key
+      ? dropBound
+        ? { ...filter, min: null, max: null }
+        : { ...filter, selected: false }
+      : filter,
   );
 }

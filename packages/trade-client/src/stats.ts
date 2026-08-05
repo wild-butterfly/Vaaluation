@@ -65,8 +65,17 @@ export class StatIndex {
   /**
    * Finds the stat id for a modifier, preferring the catalog group that
    * matches the modifier's type and falling back to Explicit.
+   *
+   * `local` selects between the two forms the catalogue keeps for defences
+   * and weapon stats. The game prints both identically — a boot's line reads
+   * "33% increased Energy Shield" whether it is the boot's own energy shield
+   * or a jewel's global bonus — but the trade site separates them, suffixing
+   * the item's own with "(Local)". Without this the boot's line matched
+   * nothing at all and was dropped from the panel, while "increased Evasion
+   * Rating" silently matched the global stat and searched for the wrong
+   * thing.
    */
-  match(modifier: Modifier): StatMatch | null {
+  match(modifier: Modifier, options: { local?: boolean } = {}): StatMatch | null {
     const key = normalizeStatText(modifier.text);
     const values = extractValues(modifier.text);
 
@@ -75,9 +84,13 @@ export class StatIndex {
       (label): label is string => label !== undefined,
     );
 
-    const keys = [key, positiveForm(key)].filter(
+    const plain = [key, positiveForm(key)].filter(
       (candidate): candidate is string => candidate !== null,
     );
+    const keys =
+      options.local === true
+        ? [...plain.map((candidate) => `${candidate} (Local)`), ...plain]
+        : plain;
 
     for (const label of candidates) {
       const group = this.byGroup.get(label);

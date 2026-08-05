@@ -268,6 +268,63 @@ describe('query building', () => {
     expect(selected[0]?.min).toBe(18);
   });
 
+  it("resolves a boot's own defences to the local stats", () => {
+    // The trade catalogue keeps two entries with identical game text and
+    // separates them with a "(Local)" suffix. Matching the plain form dropped
+    // "increased Energy Shield" from the panel entirely and quietly pointed
+    // "increased Evasion Rating" at the global stat a jewel would grant.
+    const statIndex = new StatIndex([
+      {
+        label: 'Explicit',
+        entries: [
+          { id: 'explicit.es_local', text: '#% increased Energy Shield (Local)', type: 'explicit' },
+          { id: 'explicit.ev_global', text: '#% increased Evasion Rating', type: 'explicit' },
+          { id: 'explicit.ev_local', text: '#% increased Evasion Rating (Local)', type: 'explicit' },
+        ],
+      },
+    ]);
+    const boots = {
+      kind: 'equipment' as const,
+      rarity: 'rare' as const,
+      name: 'Dragon Tread',
+      baseType: 'Silk Slippers',
+      itemClass: 'Boots',
+      modifiers: [
+        { text: '33% increased Energy Shield' },
+        { text: '20% increased Evasion Rating' },
+      ],
+    } as unknown as Parameters<typeof buildFilters>[0];
+
+    expect(buildFilters(boots, statIndex).map((f) => f.statId)).toEqual([
+      'explicit.es_local',
+      'explicit.ev_local',
+    ]);
+  });
+
+  it('leaves jewellery on the global stats', () => {
+    const statIndex = new StatIndex([
+      {
+        label: 'Explicit',
+        entries: [
+          { id: 'explicit.ev_global', text: '#% increased Evasion Rating', type: 'explicit' },
+          { id: 'explicit.ev_local', text: '#% increased Evasion Rating (Local)', type: 'explicit' },
+        ],
+      },
+    ]);
+    const ring = {
+      kind: 'equipment' as const,
+      rarity: 'rare' as const,
+      name: 'Doom Loop',
+      baseType: 'Amethyst Ring',
+      itemClass: 'Rings',
+      modifiers: [{ text: '20% increased Evasion Rating' }],
+    } as unknown as Parameters<typeof buildFilters>[0];
+
+    expect(buildFilters(ring, statIndex).map((f) => f.statId)).toEqual([
+      'explicit.ev_global',
+    ]);
+  });
+
   it('ranks by importance rather than by position on the item', () => {
     // The failure this guards against: a wand whose gem level sits below two
     // lesser modifiers used to lose its place to them, because selection
@@ -320,19 +377,24 @@ describe('query building', () => {
     expect(shown).toEqual(onItem.filter((text) => shown.includes(text)));
   });
 
-  it('gives up the weakest filter first when nothing matched', () => {
+  it('gives up a bound before the modifier that carries it', () => {
     const filters = [
       { key: 'a', statId: 's.a', label: 'gem level', selected: true, value: 1, min: 1, max: null, weight: 100 },
       { key: 'b', statId: 's.b', label: 'mana', selected: true, value: 20, min: 20, max: null, weight: 24 },
-      { key: 'c', statId: 's.c', label: 'life', selected: true, value: 50, min: 50, max: null, weight: 90 },
     ];
 
-    const once = relaxWeakest(filters);
-    expect(once?.find((f) => f.key === 'b')).toMatchObject({ selected: false, min: null });
+    // "Some mana" still describes the item; no mana filter at all does not.
+    const once = relaxWeakest(filters) as typeof filters;
+    expect(once.find((f) => f.key === 'b')).toMatchObject({ selected: true, min: null });
+
+    // Every bound is spent before any modifier comes off.
+    const twice = relaxWeakest(once) as typeof filters;
+    expect(twice.find((f) => f.key === 'a')).toMatchObject({ selected: true, min: null });
+
+    const thrice = relaxWeakest(twice) as typeof filters;
+    expect(thrice.find((f) => f.key === 'b')?.selected).toBe(false);
     // The gem level, which the item is worth anything for, survives longest.
-    const twice = relaxWeakest(once as never);
-    expect(twice?.find((f) => f.key === 'c')?.selected).toBe(false);
-    expect(twice?.find((f) => f.key === 'a')?.selected).toBe(true);
+    expect(thrice.find((f) => f.key === 'a')?.selected).toBe(true);
   });
 
   it('reports nothing left to relax once every filter is off', () => {
