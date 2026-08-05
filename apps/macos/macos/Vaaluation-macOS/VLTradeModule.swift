@@ -166,26 +166,6 @@ final class VLTradeModule: NSObject {
     }
   }
 
-  /// Feeds a synthetic log line through the same path a real whisper takes.
-  /// Nothing is written to the game's log; this only injects the line
-  /// in-memory, so the whole flow can be exercised without a second player.
-  @objc(simulateWhisper:resolver:rejecter:)
-  func simulateWhisper(
-    _ line: String,
-    resolver resolve: @escaping RCTPromiseResolveBlock,
-    rejecter _: @escaping RCTPromiseRejectBlock
-  ) {
-    DispatchQueue.main.async {
-      LogStore.shared.append(
-        level: "info",
-        scope: "trade",
-        message: "Simulated trade whisper injected for testing"
-      )
-      GameLogWatcher.shared.onLines?([line])
-      resolve(nil)
-    }
-  }
-
   /// Sends exactly one chat command, in response to one user action.
   @objc(sendChatCommand:resolver:rejecter:)
   func sendChatCommand(

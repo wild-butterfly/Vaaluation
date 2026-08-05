@@ -2,7 +2,6 @@ import Cocoa
 
 protocol StatusItemActions: AnyObject {
   func openSettings()
-  func openTestParsing()
   func openLogs()
   func openAbout()
   func quit()
@@ -41,14 +40,6 @@ final class StatusItemController: NSObject {
     settingsItem.target = self
     menu.addItem(settingsItem)
 
-    let testItem = NSMenuItem(
-      title: "Test Clipboard Parsing…",
-      action: #selector(openTestParsing),
-      keyEquivalent: ""
-    )
-    testItem.target = self
-    menu.addItem(testItem)
-
     let logsItem = NSMenuItem(
       title: "View Logs…",
       action: #selector(openLogs),
@@ -81,7 +72,6 @@ final class StatusItemController: NSObject {
   }
 
   @objc private func openSettings() { actions?.openSettings() }
-  @objc private func openTestParsing() { actions?.openTestParsing() }
   @objc private func openLogs() { actions?.openLogs() }
   @objc private func openAbout() { actions?.openAbout() }
   @objc private func quit() { actions?.quit() }

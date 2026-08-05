@@ -21,23 +21,9 @@ import {
   typography,
 } from '@vaaluation/ui';
 import type { TrackedRequest } from '../hooks/useTradeRequests';
-import { sendChatCommand, simulateWhisper } from '../native/VLTrade';
+import { sendChatCommand } from '../native/VLTrade';
 import { openSystemSettings, requestAccessibility } from '../native/VLPermissions';
 import { usePermissions } from '../hooks/usePermissions';
-
-/** A line in the game's own wording, for the test button below. */
-function sampleWhisperLine(): string {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
-  const stamp =
-    `${now.getFullYear()}/${pad(now.getMonth() + 1)}/${pad(now.getDate())} ` +
-    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-  return (
-    `${stamp} 1000000 abcdef12 [INFO Client 1000] @From TestBuyer: ` +
-    'Hi, I would like to buy your Limbsplit, Woodsplitter listed for 1 regal ' +
-    'in Allflame (stash tab "~price 1 regal"; position: left 11, top 1)'
-  );
-}
 
 function ageOf(iso: string): string {
   const then = Date.parse(iso);
@@ -190,14 +176,6 @@ export function TradeOverlay({
       >
         <Pressable style={styles.hideout} onPress={() => run(hideoutCommand())}>
           <Text style={styles.hideoutText}>Go to Hideout</Text>
-        </Pressable>
-        <Pressable
-          style={styles.hideout}
-          onPress={() => {
-            simulateWhisper(sampleWhisperLine()).catch(() => {});
-          }}
-        >
-          <Text style={styles.hideoutText}>Test request</Text>
         </Pressable>
       </View>
     </View>

@@ -176,10 +176,6 @@ extension AppDelegate: StatusItemActions {
     showSettingsWindow(route: "settings")
   }
 
-  func openTestParsing() {
-    showSettingsWindow(route: "test-parsing")
-  }
-
   func openLogs() {
     showSettingsWindow(route: "logs")
   }

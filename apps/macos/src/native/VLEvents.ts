@@ -7,7 +7,6 @@ export type AppRoute =
   | 'currency'
   | 'history'
   | 'settings'
-  | 'test-parsing'
   | 'logs'
   | 'about';
 
@@ -18,7 +17,6 @@ const VALID_ROUTES: readonly AppRoute[] = [
   'currency',
   'history',
   'settings',
-  'test-parsing',
   'logs',
   'about',
 ];

@@ -5,7 +5,6 @@ interface VLTradeNative {
   stopWatching(): void;
   isWatching(): Promise<boolean>;
   sendChatCommand(command: string): Promise<void>;
-  simulateWhisper(line: string): Promise<void>;
   drainPendingLines(): Promise<string[]>;
   consumePendingShowTrades(): Promise<boolean>;
   loadHistory(): Promise<string | null>;
@@ -36,14 +35,6 @@ export function isWatchingLog(): Promise<boolean> {
  */
 export function sendChatCommand(command: string): Promise<void> {
   return native.sendChatCommand(command);
-}
-
-/**
- * Injects a synthetic whisper through the same path a real one takes, for
- * testing without a second player. Writes nothing to the game's log.
- */
-export function simulateWhisper(line: string): Promise<void> {
-  return native.simulateWhisper(line);
 }
 
 /**

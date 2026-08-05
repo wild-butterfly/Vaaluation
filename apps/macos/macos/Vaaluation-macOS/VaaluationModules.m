@@ -86,10 +86,6 @@ RCT_EXTERN_METHOD(sendChatCommand : (NSString *)command
                   resolver : (RCTPromiseResolveBlock)resolve
                   rejecter : (RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(simulateWhisper : (NSString *)line
-                  resolver : (RCTPromiseResolveBlock)resolve
-                  rejecter : (RCTPromiseRejectBlock)reject)
-
 RCT_EXTERN_METHOD(drainPendingLines : (RCTPromiseResolveBlock)resolve
                   rejecter : (RCTPromiseRejectBlock)reject)
 

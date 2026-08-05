@@ -27,7 +27,6 @@ import { SettingsScreen } from './screens/SettingsScreen';
 import { TradeScreen } from './screens/TradeScreen';
 import { CurrencyScreen } from './screens/CurrencyScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
-import { TestParsingScreen } from './screens/TestParsingScreen';
 
 interface NavItem {
   readonly route: AppRoute;
@@ -41,7 +40,6 @@ const NAV_ITEMS: readonly NavItem[] = [
   { route: 'trade', label: 'Trades', glyph: '⇄', key: '⌥2' },
   { route: 'currency', label: 'Currency', glyph: '◆', key: '◆3' },
   { route: 'history', label: 'History', glyph: '↺', key: '↺4' },
-  { route: 'test-parsing', label: 'Test Parsing', glyph: '⌕', key: '' },
   { route: 'settings', label: 'Settings', glyph: '⚙', key: '' },
   { route: 'logs', label: 'Logs', glyph: '≡', key: '' },
   { route: 'about', label: 'About', glyph: '◍', key: '' },
@@ -135,7 +133,6 @@ function Shell({ initialRoute }: { initialRoute: AppRoute }) {
         {route === 'currency' ? <CurrencyScreen /> : null}
         {route === 'history' ? <HistoryScreen /> : null}
         {route === 'settings' ? <SettingsScreen /> : null}
-        {route === 'test-parsing' ? <TestParsingScreen /> : null}
         {route === 'logs' ? <LogsScreen /> : null}
         {route === 'about' ? <AboutScreen /> : null}
       </View>
