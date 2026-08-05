@@ -11,11 +11,12 @@ Free, open source, no accounts, no telemetry, no paid tier.
 
 ---
 
-<!-- Screenshot: save a price check over the game as
-     docs/screenshots/price-check.png (see the guide there), then delete this
-     line and the closing one to publish it.
+<!-- Screenshots: save the two captures into docs/screenshots/ (see the guide
+     there), then delete this line and the closing one to publish them.
 
-![Vaaluation over Path of Exile, mid price check](docs/screenshots/price-check.png)
+| Price check | Trade requests |
+| --- | --- |
+| ![A price check over the game](docs/screenshots/price-check.png) | ![An incoming buy request](docs/screenshots/trades.png) |
 
 -->
 

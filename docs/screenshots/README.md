@@ -1,17 +1,13 @@
 # Screenshots
 
-The README links one file:
+The README links two files:
 
 | File | What it should show |
 | --- | --- |
 | `price-check.png` | The overlay over the game, mid price check: item name, the headline price, the ticked modifiers and the listing table. |
+| `trades.png` | The Trades tab with a buy request and its Invite / Trade / Thanks buttons. |
 
-Worth adding later, each needing its own line in the README:
-
-| File | What it should show |
-| --- | --- |
-| `trades.png` | The Trades tab with a buy request and its Invite / Trade / Thanks buttons. Needs a real one to arrive, so it waits. |
-| `settings.png` | The shortcut editor, if the Shortcuts section deserves a picture. |
+A third, `settings.png`, could illustrate the Shortcuts section later.
 
 ## Taking them
 
@@ -19,9 +15,15 @@ Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd>, then <kbd>Space</kbd>, and
 click the overlay panel to capture just the window with its shadow. For a shot
 that includes the game behind it, drag a region instead.
 
-Crop out anything you would rather not publish — your character name, your
-account handle, and the seller names in the listing table are all visible in a
-full-width capture.
+## Cover the names first
+
+Both captures carry other people's account names — the sellers in the listing
+table, and whoever sent the buy request. Those are real players who have not
+agreed to appear in this project's front page, and being visible on the trade
+site is not the same as being published here. Blur them, or crop the column
+out; the table still reads without it.
+
+Your own character name and account handle are worth a look too.
 
 ## A note on the game's art
 
