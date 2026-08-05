@@ -387,7 +387,14 @@ export function PriceCheckOverlay({
                 >
                   <View style={[styles.checkbox, filter.selected && styles.checkboxOn]} />
                   <Text
-                    style={[styles.modText, !filter.selected && styles.modTextOff]}
+                    style={[
+                      styles.modText,
+                      // The item's own totals are a different kind of search
+                      // from its modifiers, so they read as headings rather
+                      // than as another roll.
+                      filter.kind === 'property' && styles.propText,
+                      !filter.selected && styles.modTextOff,
+                    ]}
                     numberOfLines={1}
                   >
                     {filter.label}
@@ -670,6 +677,7 @@ function makeStyles(theme: Theme) {
       color: '#d6cbc4',
     },
     modTextOff: { color: palette.muted },
+    propText: { fontFamily: fonts.mono, fontSize: 11.5, letterSpacing: 0.2 },
     input: {
       width: 44,
       borderRadius: radii.input,

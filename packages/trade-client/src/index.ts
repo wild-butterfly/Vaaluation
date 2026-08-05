@@ -1,7 +1,7 @@
 export { TradeClient } from './client';
 export type { FetchLike, TradeClientOptions } from './client';
 export { buildFilters, buildQuery, relaxWeakest, tradeSearchUrl } from './query';
-export type { QueryOptions, SelectableFilter } from './query';
+export type { PropertyFilterId, QueryOptions, SelectableFilter } from './query';
 export { StatIndex, normalizeStatText, extractValues } from './stats';
 export { BaseTypeIndex, parseItemCatalog } from './baseTypes';
 export { parseStaticIcons, absoluteIconUrl } from './icons';

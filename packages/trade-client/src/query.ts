@@ -1,4 +1,4 @@
-import type { Modifier, ParsedItem } from '@vaaluation/shared-types';
+import type { ItemProperties, Modifier, ParsedItem } from '@vaaluation/shared-types';
 import type { StatFilter, TradeQuery } from './types';
 import { TradeError } from './types';
 import type { StatIndex } from './stats';
@@ -11,9 +11,33 @@ import type { BaseTypeIndex } from './baseTypes';
  * to the user before anything is sent.
  */
 
+/**
+ * Trade-site filters that search an item's printed totals rather than the
+ * rolls behind them. Keys are the API's own; every one was verified against
+ * the live search before being listed here.
+ */
+export type PropertyFilterId =
+  | 'ar'
+  | 'ev'
+  | 'es'
+  | 'ward'
+  | 'block'
+  | 'pdps'
+  | 'edps'
+  | 'dps'
+  | 'aps'
+  | 'crit';
+
 export interface SelectableFilter {
   /** Stable key for UI selection. */
   readonly key: string;
+  /**
+   * Which search this row drives: a modifier on the item, or one of the
+   * item's own totals under the trade site's Armour and Weapon filters.
+   */
+  readonly kind: 'stat' | 'property';
+  /** Set for `kind: 'property'`; the API's filter key. */
+  readonly property?: PropertyFilterId;
   readonly statId: string;
   /** Human-readable text as shown on the item. */
   readonly label: string;
@@ -88,6 +112,59 @@ const GLOBAL_ONLY_CLASSES = new Set([
   'tinctures',
 ]);
 
+/**
+ * The item's totals, in the order a player reads them off the tooltip. Only
+ * those the item actually prints become rows.
+ */
+const PROPERTY_ROWS: ReadonlyArray<{
+  id: PropertyFilterId;
+  label: string;
+  read: (properties: ItemProperties) => number | undefined;
+}> = [
+  { id: 'ar', label: 'Armour', read: (p) => p.armour },
+  { id: 'ev', label: 'Evasion Rating', read: (p) => p.evasion },
+  { id: 'es', label: 'Energy Shield', read: (p) => p.energyShield },
+  { id: 'ward', label: 'Ward', read: (p) => p.ward },
+  { id: 'block', label: 'Chance to Block', read: (p) => p.block },
+  { id: 'pdps', label: 'Physical DPS', read: (p) => p.physicalDps },
+  { id: 'edps', label: 'Elemental DPS', read: (p) => p.elementalDps },
+  { id: 'dps', label: 'Total DPS', read: (p) => p.totalDps },
+  { id: 'aps', label: 'Attacks per Second', read: (p) => p.attacksPerSecond },
+  { id: 'crit', label: 'Critical Strike Chance', read: (p) => p.criticalChance },
+];
+
+/**
+ * Rows for the item's own totals.
+ *
+ * They start unticked with their value already filled in, because the choice
+ * belongs to the player: "boots with at least 44 energy shield" is usually
+ * the more useful search, but only they know whether they are pricing the
+ * defence or the rolls. Ticking one is a single click either way.
+ */
+function propertyFilters(item: ParsedItem): SelectableFilter[] {
+  if (item.kind !== 'equipment') return [];
+  const properties = item.properties ?? {};
+  return PROPERTY_ROWS.flatMap((row) => {
+    const value = row.read(properties);
+    if (value === undefined || value <= 0) return [];
+    return [
+      {
+        key: `property:${row.id}`,
+        kind: 'property' as const,
+        property: row.id,
+        statId: '',
+        label: row.label,
+        selected: false,
+        value,
+        min: value,
+        max: null,
+        // Never preselected, so ranking never has to consider them.
+        weight: 0,
+      },
+    ];
+  });
+}
+
 /** Whether this item's modifiers should resolve to the "(Local)" stats. */
 function usesLocalStats(item: ParsedItem): boolean {
   if (item.kind !== 'equipment') return false;
@@ -138,8 +215,9 @@ export function buildFilters(item: ParsedItem, stats: StatIndex): SelectableFilt
       .map((candidate) => candidate.key),
   );
 
-  // Rows stay in the item's own order, which is how the player reads them.
-  return candidates.map((candidate) => {
+  // The item's own totals come first, matching the tooltip: the game prints
+  // armour and energy shield above the modifiers that produced them.
+  return [...propertyFilters(item), ...candidates.map((candidate) => {
     const selected = chosen.has(candidate.key);
     return {
       key: candidate.key,
@@ -151,8 +229,9 @@ export function buildFilters(item: ParsedItem, stats: StatIndex): SelectableFilt
       min: selected && candidate.value !== null ? candidate.value : null,
       max: null,
       weight: candidate.weight,
+      kind: 'stat' as const,
     };
-  });
+  })];
 }
 
 export interface QueryOptions {
@@ -193,7 +272,7 @@ export function buildQuery(
   const baseTypes = options.baseTypes;
   const onlineOnly = options.onlineOnly ?? true;
   const stats: StatFilter[] = filters
-    .filter((filter) => filter.selected)
+    .filter((filter) => filter.selected && filter.kind !== 'property')
     .map((filter) => {
       const value: { min?: number; max?: number } = {};
       if (filter.min !== null) value.min = filter.min;
@@ -206,6 +285,7 @@ export function buildQuery(
   const base = {
     status: { option: onlineOnly ? ('online' as const) : ('any' as const) },
     stats: [{ type: 'and' as const, filters: stats }],
+    ...propertyQuery(filters),
   };
 
   switch (item.kind) {
@@ -294,3 +374,31 @@ export function relaxWeakest(
       : filter,
   );
 }
+
+/** The `armour_filters` and `weapon_filters` groups a query needs, if any. */
+function propertyQuery(
+  filters: readonly SelectableFilter[],
+): { filters?: Record<string, unknown> } {
+  const armour: Record<string, { min?: number; max?: number }> = {};
+  const weapon: Record<string, { min?: number; max?: number }> = {};
+
+  for (const filter of filters) {
+    if (!filter.selected || filter.kind !== 'property' || filter.property === undefined) {
+      continue;
+    }
+    const bound: { min?: number; max?: number } = {};
+    if (filter.min !== null) bound.min = filter.min;
+    if (filter.max !== null) bound.max = filter.max;
+    if (Object.keys(bound).length === 0) continue;
+
+    const group = ARMOUR_PROPERTIES.has(filter.property) ? armour : weapon;
+    group[filter.property] = bound;
+  }
+
+  const groups: Record<string, unknown> = {};
+  if (Object.keys(armour).length > 0) groups.armour_filters = { filters: armour };
+  if (Object.keys(weapon).length > 0) groups.weapon_filters = { filters: weapon };
+  return Object.keys(groups).length > 0 ? { filters: groups } : {};
+}
+
+const ARMOUR_PROPERTIES = new Set<PropertyFilterId>(['ar', 'ev', 'es', 'ward', 'block']);

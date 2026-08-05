@@ -31,7 +31,7 @@ import {
   toPricedListings,
   tradeSearchUrl,
 } from '../src';
-import type { FetchLike } from '../src';
+import type { FetchLike, SelectableFilter } from '../src';
 
 function fixture(name: string): unknown {
   return JSON.parse(readFileSync(join(__dirname, 'fixtures', name), 'utf8'));
@@ -235,6 +235,11 @@ describe('stat mapping', () => {
   });
 });
 
+/** Modifier rows only; the item's own totals are asserted separately. */
+function statRows(filters: readonly SelectableFilter[]) {
+  return filters.filter((filter) => filter.kind === 'stat');
+}
+
 describe('query building', () => {
   const index = new StatIndex([
     {
@@ -259,7 +264,7 @@ describe('query building', () => {
 
   it('preselects only a few high-signal modifiers for a rare', () => {
     const item = parseFixtureItem('rare-advanced-mod-descriptions.txt');
-    const filters = buildFilters(item, index);
+    const filters = statRows(buildFilters(item, index));
     const selected = filters.filter((filter) => filter.selected);
     expect(selected.length).toBeGreaterThan(0);
     expect(selected.length).toBeLessThanOrEqual(3);
@@ -295,7 +300,7 @@ describe('query building', () => {
       ],
     } as unknown as Parameters<typeof buildFilters>[0];
 
-    expect(buildFilters(boots, statIndex).map((f) => f.statId)).toEqual([
+    expect(statRows(buildFilters(boots, statIndex)).map((f) => f.statId)).toEqual([
       'explicit.es_local',
       'explicit.ev_local',
     ]);
@@ -320,7 +325,7 @@ describe('query building', () => {
       modifiers: [{ text: '20% increased Evasion Rating' }],
     } as unknown as Parameters<typeof buildFilters>[0];
 
-    expect(buildFilters(ring, statIndex).map((f) => f.statId)).toEqual([
+    expect(statRows(buildFilters(ring, statIndex)).map((f) => f.statId)).toEqual([
       'explicit.ev_global',
     ]);
   });
@@ -358,7 +363,7 @@ describe('query building', () => {
       ],
     } as unknown as Parameters<typeof buildFilters>[0];
 
-    const selected = buildFilters(item, statIndex).filter((filter) => filter.selected);
+    const selected = statRows(buildFilters(item, statIndex)).filter((f) => f.selected);
     expect(selected.map((filter) => filter.label)).toContain(
       '+1 to Level of all Lightning Spell Skill Gems',
     );
@@ -370,7 +375,7 @@ describe('query building', () => {
     // Ranking decides what is ticked, not what is shown where: the player
     // reads the panel against the item, so the rows must line up with it.
     const item = parseFixtureItem('rare-advanced-mod-descriptions.txt');
-    const filters = buildFilters(item, index);
+    const filters = statRows(buildFilters(item, index));
     const shown = filters.map((filter) => filter.label);
     const onItem = item.kind === 'equipment' ? item.modifiers.map((mod) => mod.text) : [];
 
@@ -379,8 +384,8 @@ describe('query building', () => {
 
   it('gives up a bound before the modifier that carries it', () => {
     const filters = [
-      { key: 'a', statId: 's.a', label: 'gem level', selected: true, value: 1, min: 1, max: null, weight: 100 },
-      { key: 'b', statId: 's.b', label: 'mana', selected: true, value: 20, min: 20, max: null, weight: 24 },
+      { kind: 'stat' as const, key: 'a', statId: 's.a', label: 'gem level', selected: true, value: 1, min: 1, max: null, weight: 100 },
+      { kind: 'stat' as const, key: 'b', statId: 's.b', label: 'mana', selected: true, value: 20, min: 20, max: null, weight: 24 },
     ];
 
     // "Some mana" still describes the item; no mana filter at all does not.
@@ -400,9 +405,43 @@ describe('query building', () => {
   it('reports nothing left to relax once every filter is off', () => {
     expect(
       relaxWeakest([
-        { key: 'a', statId: 's.a', label: 'x', selected: false, value: null, min: null, max: null, weight: 10 },
+        { kind: 'stat' as const, key: 'a', statId: 's.a', label: 'x', selected: false, value: null, min: null, max: null, weight: 10 },
       ]),
     ).toBeNull();
+  });
+
+  it("offers the item's own totals, unticked and prefilled", () => {
+    const boots = parseFixtureItem('rare-advanced-mod-descriptions.txt');
+    const rows = buildFilters(boots, index).filter((f) => f.kind === 'property');
+
+    const armour = rows.find((row) => row.property === 'ar');
+    expect(armour).toMatchObject({ label: 'Armour', selected: false, min: 66 });
+    // Only totals the item actually prints become rows.
+    expect(rows.some((row) => row.property === 'pdps')).toBe(false);
+  });
+
+  it("sends a ticked total under the trade site's own filter group", () => {
+    const boots = parseFixtureItem('rare-advanced-mod-descriptions.txt');
+    const filters = buildFilters(boots, index).map((filter) =>
+      filter.property === 'ar' ? { ...filter, selected: true, min: 240 } : filter,
+    );
+
+    const query = buildQuery(boots, filters) as unknown as {
+      query: { filters?: { armour_filters?: { filters: Record<string, unknown> } } };
+    };
+    expect(query.query.filters?.armour_filters?.filters).toEqual({ ar: { min: 240 } });
+  });
+
+  it('keeps a total out of the modifier list it does not belong in', () => {
+    const boots = parseFixtureItem('rare-advanced-mod-descriptions.txt');
+    const filters = buildFilters(boots, index).map((filter) =>
+      filter.property === 'ar' ? { ...filter, selected: true } : filter,
+    );
+    // A property has no stat id, so sending it among the stat filters would
+    // have the API search for an empty modifier.
+    expect(buildQuery(boots, filters).query.stats[0]?.filters).not.toContainEqual(
+      expect.objectContaining({ id: '' }),
+    );
   });
 
   it('searches a unique by name and base type', () => {

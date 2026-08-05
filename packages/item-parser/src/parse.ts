@@ -1,4 +1,5 @@
 import type {
+  ItemProperties,
   CurrencyItem,
   DivinationCardItem,
   EquipmentItem,
@@ -15,6 +16,8 @@ import type {
   Sockets,
 } from '@vaaluation/shared-types';
 import {
+  averageDamage,
+  parseDecimal,
   parseInteger,
   parseKeyValue,
   parsePercent,
@@ -151,6 +154,15 @@ function parseHeader(header: readonly string[]): HeaderInfo | null {
 
 interface ScanState {
   itemLevel?: number | undefined;
+  armour?: number | undefined;
+  evasion?: number | undefined;
+  energyShield?: number | undefined;
+  ward?: number | undefined;
+  block?: number | undefined;
+  attacksPerSecond?: number | undefined;
+  criticalChance?: number | undefined;
+  physicalAverage?: number | undefined;
+  elementalAverage?: number | undefined;
   quality?: number | undefined;
   mapTier?: number | undefined;
   gemLevel?: number | undefined;
@@ -261,6 +273,33 @@ function scanSections(
             break;
           case 'Sockets':
             state.sockets = parseSocketsValue(kv.value);
+            break;
+          case 'Armour':
+            state.armour = parseInteger(kv.value) ?? undefined;
+            break;
+          case 'Evasion Rating':
+            state.evasion = parseInteger(kv.value) ?? undefined;
+            break;
+          case 'Energy Shield':
+            state.energyShield = parseInteger(kv.value) ?? undefined;
+            break;
+          case 'Ward':
+            state.ward = parseInteger(kv.value) ?? undefined;
+            break;
+          case 'Chance to Block':
+            state.block = parseDecimal(kv.value) ?? undefined;
+            break;
+          case 'Attacks per Second':
+            state.attacksPerSecond = parseDecimal(kv.value) ?? undefined;
+            break;
+          case 'Critical Strike Chance':
+            state.criticalChance = parseDecimal(kv.value) ?? undefined;
+            break;
+          case 'Physical Damage':
+            state.physicalAverage = averageDamage(kv.value) ?? undefined;
+            break;
+          case 'Elemental Damage':
+            state.elementalAverage = averageDamage(kv.value) ?? undefined;
             break;
           default:
             if (options.collectMapProperties) {
@@ -431,6 +470,7 @@ function buildItem(
 
   const equipment: EquipmentItem = {
     kind: 'equipment',
+    properties: itemProperties(state),
     itemClass: header.itemClass,
     rawText,
     rarity,
@@ -449,4 +489,53 @@ function buildItem(
     unknownLines: state.unknownLines,
   };
   return equipment;
+}
+
+/**
+ * Collects the totals printed at the top of an item, deriving the DPS figures
+ * the trade site filters on. DPS is not printed by the game — it is the mean
+ * of the damage ranges times the attack rate — so it is computed here rather
+ * than left to every caller.
+ */
+function itemProperties(state: {
+  armour?: number | undefined;
+  evasion?: number | undefined;
+  energyShield?: number | undefined;
+  ward?: number | undefined;
+  block?: number | undefined;
+  attacksPerSecond?: number | undefined;
+  criticalChance?: number | undefined;
+  physicalAverage?: number | undefined;
+  elementalAverage?: number | undefined;
+}): ItemProperties {
+  const round = (value: number) => Math.round(value * 10) / 10;
+  const aps = state.attacksPerSecond;
+
+  const physicalDps =
+    aps !== undefined && state.physicalAverage !== undefined
+      ? round(state.physicalAverage * aps)
+      : undefined;
+  const elementalDps =
+    aps !== undefined && state.elementalAverage !== undefined
+      ? round(state.elementalAverage * aps)
+      : undefined;
+  const totalDps =
+    physicalDps !== undefined || elementalDps !== undefined
+      ? round((physicalDps ?? 0) + (elementalDps ?? 0))
+      : undefined;
+
+  return {
+    ...(state.armour !== undefined ? { armour: state.armour } : {}),
+    ...(state.evasion !== undefined ? { evasion: state.evasion } : {}),
+    ...(state.energyShield !== undefined ? { energyShield: state.energyShield } : {}),
+    ...(state.ward !== undefined ? { ward: state.ward } : {}),
+    ...(state.block !== undefined ? { block: state.block } : {}),
+    ...(aps !== undefined ? { attacksPerSecond: aps } : {}),
+    ...(state.criticalChance !== undefined
+      ? { criticalChance: state.criticalChance }
+      : {}),
+    ...(physicalDps !== undefined ? { physicalDps } : {}),
+    ...(elementalDps !== undefined ? { elementalDps } : {}),
+    ...(totalDps !== undefined ? { totalDps } : {}),
+  };
 }

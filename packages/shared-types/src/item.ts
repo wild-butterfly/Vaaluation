@@ -97,6 +97,30 @@ export interface GemItem extends ItemBase {
   readonly requirements?: Requirements;
 }
 
+/**
+ * The item's own totals, as printed at the top of its tooltip.
+ *
+ * These are what the trade site's Armour and Weapon filters search on, and
+ * they are usually the more useful question: "boots with at least 44 energy
+ * shield" describes what a buyer wants far better than "+13 to maximum
+ * energy shield", which is only one of the rolls that produced it.
+ */
+export interface ItemProperties {
+  readonly armour?: number;
+  readonly evasion?: number;
+  readonly energyShield?: number;
+  readonly ward?: number;
+  /** Chance to block, as a percentage. */
+  readonly block?: number;
+  readonly attacksPerSecond?: number;
+  /** Critical strike chance, as a percentage. */
+  readonly criticalChance?: number;
+  /** Damage per second, derived from the ranges and attack speed. */
+  readonly physicalDps?: number;
+  readonly elementalDps?: number;
+  readonly totalDps?: number;
+}
+
 export interface EquipmentItem extends ItemBase {
   readonly kind: 'equipment';
   readonly rarity: ItemRarity;
@@ -113,6 +137,7 @@ export interface EquipmentItem extends ItemBase {
   readonly influences: readonly Influence[];
   readonly fractured: boolean;
   readonly modifiers: readonly Modifier[];
+  readonly properties: ItemProperties;
 }
 
 export interface MapItem extends ItemBase {

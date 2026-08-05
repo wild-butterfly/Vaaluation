@@ -82,3 +82,26 @@ export function parseInteger(value: string): number | null {
   if (match === null) return null;
   return Number(match[1]);
 }
+
+/** "1.75" → 1.75; "8.50%" → 8.5; "66 (augmented)" → 66 */
+export function parseDecimal(value: string): number | null {
+  const match = /^\+?(\d+(?:\.\d+)?)/.exec(value.trim());
+  if (match === null) return null;
+  return Number(match[1]);
+}
+
+/**
+ * Mean damage across every range on the line.
+ *
+ * Weapons print one range per damage type on the elemental line ("2-27, 3-5"),
+ * and the trade site's DPS filters compare the total, so the midpoints are
+ * summed rather than averaged against each other.
+ */
+export function averageDamage(value: string): number | null {
+  const ranges = [...value.matchAll(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/g)];
+  if (ranges.length === 0) return null;
+  return ranges.reduce(
+    (total, range) => total + (Number(range[1]) + Number(range[2])) / 2,
+    0,
+  );
+}

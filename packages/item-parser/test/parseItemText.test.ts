@@ -179,7 +179,11 @@ describe('parseItemText — equipment', () => {
       },
     });
     if (item.kind !== 'equipment') throw new Error('unreachable');
-    expect(item.unknownLines).toContain('Armour: 240');
+    // Armour used to land among the unrecognised lines. It is now read as
+    // the item's own total, which is what the trade site's armour filter
+    // searches on.
+    expect(item.properties.armour).toBe(240);
+    expect(item.unknownLines).not.toContain('Armour: 240');
   });
 
   it('parses a rare jewel', () => {
