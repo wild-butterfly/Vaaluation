@@ -11,6 +11,16 @@ Free, open source, no accounts, no telemetry, no paid tier.
 
 ---
 
+<!-- Screenshots: drop price-check.png and trades.png into docs/screenshots/
+     (see the guide there), then delete this comment and the one below to
+     publish them.
+
+| Price check | Trade requests |
+| --- | --- |
+| ![Price check overlay](docs/screenshots/price-check.png) | ![Trade requests](docs/screenshots/trades.png) |
+
+-->
+
 ## Why this exists
 
 The established price-check tools target Windows and Linux; macOS support tends
@@ -21,12 +31,18 @@ overlay panel, and Carbon global hotkeys that work.
 ## What it does
 
 - **Price check** — hover an item, press <kbd>Ctrl</kbd>+<kbd>D</kbd>. Vaaluation
-  copies the item, parses it, searches the official trade site, and shows
-  comparable listings with a price distribution.
+  copies the item, parses it, and searches the official trade site without
+  waiting to be told: the panel opens with the answer, not with a form.
+- **Modifiers that matter** — the item's strongest few are ticked for you, gem
+  levels ahead of resistances, and you can search the item's own totals instead
+  — "boots with at least 44 energy shield" rather than the rolls behind it. A
+  search that matches nothing loosens itself until it finds comparables.
+- **Real listings** — price, item level, seller, and how long ago each went up,
+  cheapest first, each in the currency its seller chose.
 - **Trade requests** — optionally watches the game's chat log for buy requests
   and lists them with one-press Invite, Trade, Thanks and Kick.
-- **Currency rates** — median asking rates for the common orbs, quotable in
-  Chaos, Divine, Exalted or Alchemy.
+- **Currency rates** — asking rates for twenty-six orbs, quotable in Chaos,
+  Divine, Exalted, Annulment, Regal, Vaal or Alchemy.
 - **Trade history** — a local record of the requests you marked done.
 
 ## Requirements
@@ -82,12 +98,12 @@ main window.
 
 ## Shortcuts
 
-| Action                      | Default                                        |
-| --------------------------- | ---------------------------------------------- |
-| Price check                | <kbd>Ctrl</kbd>+<kbd>D</kbd>                   |
-| Price check, keep open     | <kbd>Ctrl</kbd>+<kbd>Option</kbd>+<kbd>D</kbd> |
-| Show or hide the panel     | <kbd>Shift</kbd>+<kbd>Space</kbd>              |
-| Close the panel            | <kbd>Esc</kbd>                                 |
+| Action                 | Default                                        |
+| ---------------------- | ---------------------------------------------- |
+| Price check            | <kbd>Ctrl</kbd>+<kbd>D</kbd>                   |
+| Price check, keep open | <kbd>Ctrl</kbd>+<kbd>Option</kbd>+<kbd>D</kbd> |
+| Show or hide the panel | <kbd>Shift</kbd>+<kbd>Space</kbd>              |
+| Close the panel        | <kbd>Esc</kbd>                                 |
 
 The plain price check closes as soon as you click elsewhere; "keep open" stays
 until you dismiss it, which is what you want when you mean to adjust the
