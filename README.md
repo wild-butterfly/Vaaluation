@@ -11,14 +11,9 @@ Free, open source, no accounts, no telemetry, no paid tier.
 
 ---
 
-<!-- Screenshots: save the two captures into docs/screenshots/ (see the guide
-     there), then delete this line and the closing one to publish them.
-
 | Price check | Trade requests |
 | --- | --- |
 | ![A price check over the game](docs/screenshots/price-check.png) | ![An incoming buy request](docs/screenshots/trades.png) |
-
--->
 
 ## Why this exists
 

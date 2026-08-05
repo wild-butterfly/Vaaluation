@@ -15,15 +15,15 @@ Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd>, then <kbd>Space</kbd>, and
 click the overlay panel to capture just the window with its shadow. For a shot
 that includes the game behind it, drag a region instead.
 
-## Cover the names first
+## The names are covered, and must stay covered
 
-Both captures carry other people's account names — the sellers in the listing
-table, and whoever sent the buy request. Those are real players who have not
-agreed to appear in this project's front page, and being visible on the trade
-site is not the same as being published here. Blur them, or crop the column
-out; the table still reads without it.
+Both captures carried other people's account names — the sellers in the
+listing table, and whoever sent the buy request. Those are real players who
+did not agree to appear on this project's front page, and being visible on
+the trade site is not the same as being published here, so the names are
+pixellated in the committed files.
 
-Your own character name and account handle are worth a look too.
+If you replace either screenshot, redact it the same way before committing.
 
 ## A note on the game's art
 
