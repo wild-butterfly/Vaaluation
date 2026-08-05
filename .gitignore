@@ -34,3 +34,6 @@ npm-debug.log*
 # Environment
 .env
 .env.local
+
+# Release artefacts: built, signed and uploaded, never committed.
+/dist/

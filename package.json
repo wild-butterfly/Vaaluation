@@ -14,7 +14,8 @@
     "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "app:install": "bash scripts/build-local-app.sh"
+    "app:install": "bash scripts/build-local-app.sh",
+    "release": "bash scripts/release.sh"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",

@@ -47,8 +47,15 @@ overlay panel, and Carbon global hotkeys that work.
 
 ## Install
 
-No signed release is published yet, so build it yourself. It is one command
-after the prerequisites.
+Download the latest zip from
+[Releases](https://github.com/wild-butterfly/Vaaluation/releases), unzip it,
+and drag `Vaaluation.app` to Applications. The build is signed and notarized
+by Apple, so it opens by double-clicking with no security warnings.
+
+Then [grant Accessibility](#grant-accessibility) — Vaaluation needs it to send
+the item-copy keystroke to the game.
+
+### Or build it yourself
 
 **Prerequisites**
 
