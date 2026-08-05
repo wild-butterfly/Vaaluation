@@ -4,6 +4,7 @@ interface VLOverlayNative {
   setContentHeight(height: number): void;
   hide(): void;
   beginDrag(): void;
+  setPinned(pinned: boolean): void;
 }
 
 const native = NativeModules.VLOverlay as VLOverlayNative;
@@ -19,6 +20,15 @@ export function setOverlayContentHeight(height: number): void {
 /** Closes the overlay, same as pressing Escape. */
 export function hideOverlay(): void {
   native.hide();
+}
+
+/**
+ * Keeps the panel on screen through clicks elsewhere, or lets it dismiss
+ * again. A trade takes several deliberate clicks, so the panel has to be able
+ * to stay put without price-checking again to get there.
+ */
+export function setOverlayPinned(pinned: boolean): void {
+  native.setPinned(pinned);
 }
 
 /**

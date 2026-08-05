@@ -21,6 +21,7 @@ import {
   beginOverlayDrag,
   hideOverlay,
   setOverlayContentHeight,
+  setOverlayPinned,
 } from '../native/VLOverlay';
 import { Mark } from '../components/Mark';
 import { PriceCheckOverlay } from './PriceCheckOverlay';
@@ -34,6 +35,12 @@ function Shell() {
   const { settings, update } = useSettings();
   const [tab, setTab] = useState<Tab>('price');
   const [seenCount, setSeenCount] = useState(0);
+  /**
+   * Whether clicks elsewhere leave the panel alone. The footer used to
+   * advertise "⌥ pin" while nothing listened for the key, so this is a
+   * control the user can actually press.
+   */
+  const [pinned, setPinned] = useState(false);
 
   const trades = useTradeRequests(settings.tradeWhispersEnabled);
 
@@ -105,6 +112,18 @@ function Shell() {
         <Text style={styles.league} numberOfLines={1}>
           {settings.leagueId ?? '—'}
         </Text>
+        <Pressable
+          style={[styles.close, pinned && styles.pinOn]}
+          onPress={() => {
+            const next = !pinned;
+            setPinned(next);
+            setOverlayPinned(next);
+          }}
+        >
+          <Text style={[styles.closeText, pinned && styles.pinOnText]}>
+            {pinned ? '●' : '○'}
+          </Text>
+        </Pressable>
         <Pressable style={styles.close} onPress={hideOverlay}>
           <Text style={styles.closeText}>✕</Text>
         </Pressable>
@@ -219,6 +238,8 @@ function makeStyles(theme: Theme) {
       fontSize: scale.caption,
       color: palette.muted,
     },
+    pinOn: { backgroundColor: alpha(theme.accent, 0.3) },
+    pinOnText: { color: '#ffdde1' },
     league: {
       marginLeft: 'auto',
       marginRight: spacing.md,

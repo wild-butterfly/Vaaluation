@@ -534,7 +534,7 @@ export function PriceCheckOverlay({
         >
           <Text style={styles.ghostText}>Trade site</Text>
         </Pressable>
-        <Text style={styles.hint}>esc · ⌥ pin</Text>
+        <Text style={styles.hint}>esc closes</Text>
       </View>
       </View>
     </View>

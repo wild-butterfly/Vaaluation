@@ -68,6 +68,8 @@ RCT_EXTERN_METHOD(hide)
 
 RCT_EXTERN_METHOD(beginDrag)
 
+RCT_EXTERN_METHOD(setPinned : (nonnull NSNumber *)pinned)
+
 @end
 
 @interface RCT_EXTERN_MODULE (VLTrade, NSObject)

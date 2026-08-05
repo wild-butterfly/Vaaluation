@@ -90,11 +90,18 @@ export function TradeOverlay({
         style={styles.empty}
         onLayout={(event) => onContentHeight(event.nativeEvent.layout.height)}
       >
-        <Text style={styles.emptyText}>
-          Vaaluation can list incoming buy requests here by watching Path of Exile's chat
-          log. It reads from this moment onward, keeps only messages matching the game's
-          trade-whisper wording, and discards all other chat. Nothing is uploaded. No
-          change is needed in the game's own options.
+        <View style={styles.waitingRow}>
+          <View style={[styles.live, styles.liveOff]} />
+          <Text style={styles.waitingLabel}>Not watching</Text>
+        </View>
+        <Text style={styles.waitingText}>
+          Buy requests can be listed here, with one press to invite, trade and thank the
+          buyer.
+        </Text>
+        <Text style={styles.fineprint}>
+          Vaaluation reads the game's chat log from the moment you switch this on, keeps
+          only lines matching its trade-whisper wording, and discards the rest. Nothing
+          is uploaded, and the game's own options need no change.
         </Text>
         <Pressable style={styles.enable} onPress={onEnable}>
           <Text style={styles.enableText}>Watch for trade whispers</Text>
@@ -150,10 +157,16 @@ export function TradeOverlay({
         onContentSizeChange={(_width, height) => onContentHeight(height + footerHeight)}
       >
         {requests.length === 0 ? (
-          <Text style={styles.emptyText}>
-            No trade whispers yet. They appear the moment someone messages you about a
-            listing.
-          </Text>
+          <View style={styles.waiting}>
+            <View style={styles.waitingRow}>
+              <View style={styles.live} />
+              <Text style={styles.waitingLabel}>Watching chat</Text>
+            </View>
+            <Text style={styles.waitingText}>
+              Buy requests appear here the moment someone messages you about a listing,
+              with one press to invite, trade and thank them.
+            </Text>
+          </View>
         ) : (
           requests.map((entry) => (
             <Row
@@ -282,13 +295,46 @@ const styles = StyleSheet.create({
   },
   empty: {
     flex: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.xl,
+    gap: spacing.sm,
+  },
+  liveOff: { backgroundColor: palette.disabled },
+  // The privacy note earns its place but not the reader's first attention.
+  fineprint: {
+    fontFamily: fonts.sans,
+    color: palette.faint,
+    fontSize: 11,
+    lineHeight: 15,
   },
   emptyText: {
-    color: colors.textSecondary,
-    fontSize: typography.sizeCaption,
-    lineHeight: 16,
+    fontFamily: fonts.sans,
+    color: palette.secondary,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  // The empty state carries most of this tab's first impression, so it says
+  // what the app is doing right now before explaining what will happen.
+  waiting: { paddingHorizontal: spacing.sm, paddingVertical: spacing.md, gap: spacing.sm },
+  waitingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  live: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: semantic.up,
+  },
+  waitingLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: palette.dim,
+  },
+  waitingText: {
+    fontFamily: fonts.sans,
+    color: palette.secondary,
+    fontSize: 12,
+    lineHeight: 17,
   },
   errorRow: {
     flexDirection: 'row',
@@ -408,17 +454,20 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    gap: spacing.sm,
-    margin: spacing.md,
-    marginTop: 0,
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.06)',
   },
   hideout: {
-    backgroundColor: glass.fill,
-    borderColor: glass.hairline,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radii.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 3,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderColor: 'rgba(255,255,255,0.13)',
+    borderWidth: 1,
+    borderRadius: radii.field,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: 5,
   },
   enable: {
     marginTop: spacing.md,
@@ -436,7 +485,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   hideoutText: {
-    color: colors.textPrimary,
-    fontSize: typography.sizeCaption,
+    fontFamily: fonts.sans,
+    fontSize: 12.5,
+    color: '#e2d8d2',
   },
 });

@@ -28,6 +28,18 @@ final class VLOverlayModule: NSObject {
     }
   }
 
+  /// Pins or unpins the open panel.
+  ///
+  /// Pinning was only reachable by price-checking with the persistent
+  /// shortcut, so a panel already on screen could not be kept there — the
+  /// footer advertised a pin the app had no way to apply.
+  @objc(setPinned:)
+  func setPinned(_ pinned: NSNumber) {
+    DispatchQueue.main.async {
+      VLOverlayModule.controller?.setPinned(pinned.boolValue)
+    }
+  }
+
   /// Starts dragging the panel from the current mouse-down.
   ///
   /// The panel is `isMovableByWindowBackground`, but the React root view sits
