@@ -24,7 +24,6 @@ import {
   distribution,
   formatAmount,
   listingAge,
-  quoteAlternatives,
   relaxWeakest,
   toPricedListings,
   tradeSearchUrl,
@@ -62,11 +61,15 @@ type SearchState =
 const round = formatAmount;
 
 /**
- * Currencies a price is worth restating in, and how often those rates are
- * refreshed. Kept to two so the extra line stays a glance, and so the lookup
- * costs one batched exchange request rather than one per currency.
+ * The only currency a chaos price is worth restating in.
+ *
+ * Exalted used to be here and made things worse: at roughly two chaos it
+ * turned "5 chaos" into "2.5 exalted", which is the same price said less
+ * clearly, and left two numbers on screen for one figure. Divine is worth
+ * hundreds of chaos, so it is the one currency that genuinely shortens a
+ * large price.
  */
-const QUOTE_CURRENCIES = ['divine', 'exalted'] as const;
+const QUOTE_CURRENCIES = ['divine'] as const;
 
 /**
  * How many steps a fruitless search may loosen itself by. Each step gives up
@@ -308,20 +311,21 @@ export function PriceCheckOverlay({
     return best;
   }, [spread, chaosRates]);
 
-  /** The same price in every other currency worth naming it in. */
+  /** The price the panel leads with, and its plain-language qualifier. */
+  const listingCount = state.status === 'done' ? state.total : 0;
+
+  /**
+   * The chaos figure, shown only when the headline has moved off it. Two
+   * numbers for one price is a cost, so it is paid only where it buys
+   * something: a divine price is worth checking against chaos, whereas
+   * repeating a chaos price in another currency just doubles the reading.
+   */
   const alternatives = useMemo(
     () =>
-      spread !== null && spread.currency === 'chaos'
-        ? [
-            ...(display.currency === 'chaos'
-              ? []
-              : [{ amount: spread.median, currency: 'chaos' }]),
-            ...quoteAlternatives(spread.median, chaosRates).filter(
-              (quote) => quote.currency !== display.currency,
-            ),
-          ]
+      spread !== null && spread.currency === 'chaos' && display.currency !== 'chaos'
+        ? [{ amount: spread.median, currency: 'chaos' }]
         : [],
-    [spread, chaosRates, display],
+    [spread, display],
   );
 
   return (
@@ -359,8 +363,12 @@ export function PriceCheckOverlay({
                   .join(' · ')}
               </Text>
             ) : null}
+            {/* "Median" is exact but reads as jargon. This says the same
+                thing in words, and stays honest about it being a middle
+                rather than an average — a lone divine listing among chaos
+                ones would drag a mean somewhere nobody is selling. */}
             <Text style={styles.priceMeta}>
-              median · {state.status === 'done' ? state.total : 0} live listings
+              middle of {listingCount} listing{listingCount === 1 ? '' : 's'}
             </Text>
           </View>
         ) : null}
