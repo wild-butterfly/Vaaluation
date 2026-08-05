@@ -363,12 +363,15 @@ export function PriceCheckOverlay({
                   .join(' · ')}
               </Text>
             ) : null}
-            {/* "Median" is exact but reads as jargon. This says the same
-                thing in words, and stays honest about it being a middle
-                rather than an average — a lone divine listing among chaos
-                ones would drag a mean somewhere nobody is selling. */}
+            {/* "Median" is exact but reads as jargon, and "middle of" was
+                clumsy. "Typical" says what the number is for without
+                claiming to value the item — the trade site lists what
+                sellers ask, not what anything sold for, so the panel never
+                recommends a price. The figure stays a median: these listings
+                run 1 to 11 chaos beside a divine, and a mean would answer
+                with a price nobody is asking. */}
             <Text style={styles.priceMeta}>
-              middle of {listingCount} listing{listingCount === 1 ? '' : 's'}
+              typical · {listingCount} listing{listingCount === 1 ? '' : 's'}
             </Text>
           </View>
         ) : null}
