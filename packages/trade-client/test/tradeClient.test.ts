@@ -872,6 +872,33 @@ describe('batched currency fetching', () => {
   });
 });
 
+describe('the headline price', () => {
+  const listing = (amount: number, currency = 'chaos') => ({
+    id: `l${amount}${currency}`,
+    amount,
+    currency,
+    accountName: 'x',
+    presence: 'online' as const,
+    indexed: '2026-01-01T00:00:00Z',
+  });
+
+  it('never invents a price between two real ones', () => {
+    // Orbs do not divide, so averaging the two middle listings produced
+    // "3.5 chaos" — a figure nobody could pay.
+    const summary = summarize([listing(1), listing(2), listing(5), listing(6)]);
+    expect(summary?.median).toBe(2);
+    expect(Number.isInteger(summary?.median)).toBe(true);
+  });
+
+  it('takes the middle listing outright when there is one', () => {
+    expect(summarize([listing(1), listing(4), listing(9)])?.median).toBe(4);
+  });
+
+  it('reports the same figure through the distribution', () => {
+    expect(distribution([listing(1), listing(2), listing(5), listing(6)])?.median).toBe(2);
+  });
+});
+
 describe('price distribution', () => {
   const listing = (amount: number, currency = 'chaos') => ({
     id: `l${amount}${currency}`,

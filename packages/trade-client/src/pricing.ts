@@ -76,19 +76,32 @@ export function summarize(listings: readonly PricedListing[]): PriceSummary | nu
     .sort((a, b) => a - b);
 
   if (amounts.length === 0) return null;
-  const mid = Math.floor(amounts.length / 2);
-  const median =
-    amounts.length % 2 === 0
-      ? ((amounts[mid - 1] as number) + (amounts[mid] as number)) / 2
-      : (amounts[mid] as number);
 
   return {
     currency,
     count: amounts.length,
     min: amounts[0] as number,
-    median,
+    median: middlePrice(amounts),
     max: amounts[amounts.length - 1] as number,
   };
+}
+
+/**
+ * The middle asking price: with an even number of listings, the cheaper of
+ * the two in the middle rather than the average of them.
+ *
+ * Averaging produced prices nobody was asking — eleven listings running 1, 2
+ * and 5 chaos were summarised as "3.5 chaos", a figure that cannot be paid in
+ * a game whose orbs do not divide. Taking a side keeps the headline a price
+ * some seller has actually named, and the cheaper side is the one a buyer
+ * can act on.
+ */
+function middlePrice(sorted: readonly number[]): number {
+  if (sorted.length === 0) return 0;
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0
+    ? (sorted[mid - 1] as number)
+    : (sorted[mid] as number);
 }
 
 export interface PriceWarning {
@@ -202,7 +215,7 @@ export function distribution(
     buckets[index] = (buckets[index] ?? 0) + 1;
   }
 
-  const median = percentile(amounts, 0.5);
+  const median = middlePrice(amounts);
   const medianBucket =
     span === 0
       ? 0
