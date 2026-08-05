@@ -59,13 +59,13 @@ function Shell() {
 
   const unread = Math.max(0, trades.requests.length - seenCount);
 
-  // Chrome the shell draws around whichever tab is showing: the tab strip
-  // plus the tab's own footer. Added to the content height the tab reports.
-  // Trimmed alongside the strip and footer padding — left at its old value it
-  // would leave a band of empty panel below the content.
-  const CHROME_HEIGHT = 74;
+  // The only chrome the shell itself draws is the tab strip, and it is
+  // measured rather than assumed: a hand-written total went stale every time
+  // a padding changed, most recently leaving the footer buttons clipped in
+  // half. Each tab reports its own full height, footer included.
+  const [stripHeight, setStripHeight] = useState(36);
   const reportHeight = (contentHeight: number) => {
-    setOverlayContentHeight(contentHeight + CHROME_HEIGHT);
+    setOverlayContentHeight(contentHeight + stripHeight);
   };
 
   return (
@@ -76,6 +76,7 @@ function Shell() {
           between them starts a drag. */}
       <View
         style={styles.tabStrip}
+        onLayout={(event) => setStripHeight(event.nativeEvent.layout.height)}
         onStartShouldSetResponder={() => true}
         onResponderGrant={beginOverlayDrag}
       >

@@ -326,9 +326,8 @@ export function PriceCheckOverlay({
     <View style={styles.panel}>
       {/* Measured rather than guessed: the height used to be a hand-tuned
           constant added to the modifier list, which counted neither the
-          listing table nor the header. The footer stays outside, because the
-          shell adds its own allowance for it — measuring it here too made the
-          panel taller than its contents. */}
+          listing table nor the header. Everything the tab draws is inside,
+          footer included, so the shell only has to add its own strip. */}
       <View
         onLayout={(event) => onContentHeight(event.nativeEvent.layout.height)}
       >
@@ -431,7 +430,11 @@ export function PriceCheckOverlay({
       </View>
       <View style={styles.divider} />
 
-      {rows.length > 0 ? (
+      {/* The table keeps its place while the search is in flight. Rendering
+          it only once rows existed meant the panel first opened as a
+          modifiers-only page and then grew, which read as two screens for
+          one keypress. */}
+      {rows.length > 0 || state.status === 'searching' ? (
         <View style={styles.table}>
           <View style={styles.tableHead}>
             <Text style={[styles.headCell, styles.colPrice]}>Price</Text>
@@ -448,6 +451,11 @@ export function PriceCheckOverlay({
             style={styles.tableBody}
             nestedScrollEnabled
           >
+            {rows.length === 0 ? (
+              <View style={styles.tablePending}>
+                <ActivityIndicator size="small" color={palette.faint} />
+              </View>
+            ) : null}
             {rows.map((listing) => (
               <View key={listing.id} style={styles.tableRow}>
                 <Text style={[styles.cellPrice, styles.colPrice]} numberOfLines={1}>
@@ -481,8 +489,6 @@ export function PriceCheckOverlay({
         </View>
       ) : null}
 
-      </View>
-
       <View style={styles.footer}>
         <Pressable
           style={[styles.search, item === null && styles.disabled]}
@@ -509,6 +515,7 @@ export function PriceCheckOverlay({
           <Text style={styles.ghostText}>Trade site</Text>
         </Pressable>
         <Text style={styles.hint}>esc · ⌥ pin</Text>
+      </View>
       </View>
     </View>
   );
@@ -601,6 +608,8 @@ function makeStyles(theme: Theme) {
     // Five rows before scrolling. The modifiers share the panel now, so the
     // table gives up a row rather than pushing them off the bottom.
     tableBody: { maxHeight: 5 * 21 },
+    // Holds the table open at a steady size while the search runs.
+    tablePending: { height: 5 * 21, alignItems: 'center', justifyContent: 'center' },
     tableRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -703,9 +712,9 @@ function makeStyles(theme: Theme) {
       borderRadius: radii.field,
       borderWidth: 1,
       borderColor: 'rgba(232,116,128,0.35)',
-      paddingHorizontal: spacing.h4,
-      paddingVertical: 9,
-      minWidth: 84,
+      paddingHorizontal: spacing.h2,
+      paddingVertical: 5,
+      minWidth: 72,
       alignItems: 'center',
       shadowColor: theme.accent,
       shadowOpacity: 0.45,
@@ -723,10 +732,10 @@ function makeStyles(theme: Theme) {
       borderWidth: 1,
       borderColor: 'rgba(255,255,255,0.13)',
       borderRadius: radii.field,
-      paddingHorizontal: spacing.h1,
-      paddingVertical: 9,
+      paddingHorizontal: spacing.xxl,
+      paddingVertical: 5,
     },
-    ghostText: { fontFamily: fonts.sans, fontSize: scale.bodyTight, color: '#e2d8d2' },
+    ghostText: { fontFamily: fonts.sans, fontSize: scale.small, color: '#e2d8d2' },
     disabled: { opacity: 0.45 },
     hint: {
       marginLeft: 'auto',

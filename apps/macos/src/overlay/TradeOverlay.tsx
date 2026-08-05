@@ -71,6 +71,11 @@ export function TradeOverlay({
   const needsPermission = status !== null && status.accessibility !== 'granted';
   const [sendError, setSendError] = useState<string | null>(null);
   const [replyFor, setReplyFor] = useState<string | null>(null);
+  /**
+   * The footer is part of what this tab occupies, so it reports its own
+   * height rather than leaving the shell to assume one.
+   */
+  const [footerHeight, setFooterHeight] = useState(40);
 
   const run = useCallback((command: { text: string }) => {
     setSendError(null);
@@ -142,7 +147,7 @@ export function TradeOverlay({
         style={styles.list}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        onContentSizeChange={(_width, height) => onContentHeight(height)}
+        onContentSizeChange={(_width, height) => onContentHeight(height + footerHeight)}
       >
         {requests.length === 0 ? (
           <Text style={styles.emptyText}>
@@ -166,7 +171,10 @@ export function TradeOverlay({
         )}
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View
+        style={styles.footer}
+        onLayout={(event) => setFooterHeight(event.nativeEvent.layout.height)}
+      >
         <Pressable style={styles.hideout} onPress={() => run(hideoutCommand())}>
           <Text style={styles.hideoutText}>Go to Hideout</Text>
         </Pressable>
