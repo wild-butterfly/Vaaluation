@@ -150,8 +150,11 @@ export function SettingsScreen() {
                     onPress={() => record(action)}
                     disabled={recording !== null}
                   >
+                    {/* "Record" described the mechanism rather than the
+                        intent, and readers had to work out that it was how a
+                        shortcut gets rebound at all. */}
                     <Text style={styles.smallButtonText}>
-                      {recording === action ? 'Recording' : 'Record'}
+                      {recording === action ? 'Listening…' : 'Change'}
                     </Text>
                   </Pressable>
                   <Pressable
@@ -168,8 +171,9 @@ export function SettingsScreen() {
           );
         })}
         <Text style={styles.hint}>
-          Shortcuts must include at least one modifier (⌃⌥⇧⌘). Press Escape while
-          recording to cancel.
+          Press Change, then hold the keys you want. Every shortcut needs at least one
+          modifier (⌃⌥⇧⌘), so a bare letter cannot swallow your typing. Escape leaves
+          the shortcut as it was.
         </Text>
       </Section>
 
