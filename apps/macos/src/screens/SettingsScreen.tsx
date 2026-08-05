@@ -35,10 +35,26 @@ function formatCombo(combo: KeyCombo | null): string {
   return parts.join('');
 }
 
-const HOTKEY_LABELS: Record<HotkeyAction, string> = {
-  priceCheck: 'Price check',
-  priceCheckPersistent: 'Price check (persistent overlay)',
-  toggleOverlay: 'Show/hide overlay',
+/**
+ * Plain names, each with a line saying what it does.
+ *
+ * "Persistent overlay" described the implementation rather than the
+ * difference a user would feel, so the two price checks could not be told
+ * apart from their labels at all.
+ */
+const HOTKEY_LABELS: Record<HotkeyAction, { title: string; detail: string }> = {
+  priceCheck: {
+    title: 'Price check',
+    detail: 'Hover an item and press. The panel closes when you click elsewhere.',
+  },
+  priceCheckPersistent: {
+    title: 'Price check, keep open',
+    detail: 'The same, but the panel stays until you close it with Escape or ✕.',
+  },
+  toggleOverlay: {
+    title: 'Show or hide the panel',
+    detail: 'Brings the last result back without checking the item again.',
+  },
 };
 
 const HOTKEY_ACTIONS = Object.keys(HOTKEY_LABELS) as HotkeyAction[];
@@ -138,7 +154,10 @@ export function SettingsScreen() {
           return (
             <View key={action} style={styles.hotkeyBlock}>
               <View style={styles.row}>
-                <Text style={styles.label}>{HOTKEY_LABELS[action]}</Text>
+                <View style={styles.hotkeyText}>
+                  <Text style={styles.label}>{HOTKEY_LABELS[action].title}</Text>
+                  <Text style={styles.hotkeyDetail}>{HOTKEY_LABELS[action].detail}</Text>
+                </View>
                 <View style={styles.hotkeyControls}>
                   <Text style={styles.combo}>
                     {recording === action
@@ -313,6 +332,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: spacing.xs,
+  },
+  hotkeyText: { flex: 1, paddingRight: spacing.md },
+  hotkeyDetail: {
+    color: colors.textSecondary,
+    fontSize: typography.sizeCaption,
+    marginTop: 1,
   },
   labelBlock: {
     flex: 1,

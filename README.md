@@ -84,10 +84,14 @@ main window.
 
 | Action                      | Default                                        |
 | --------------------------- | ---------------------------------------------- |
-| Price check                 | <kbd>Ctrl</kbd>+<kbd>D</kbd>                   |
-| Price check, pinned overlay | <kbd>Ctrl</kbd>+<kbd>Option</kbd>+<kbd>D</kbd> |
-| Show/hide overlay           | <kbd>Shift</kbd>+<kbd>Space</kbd>              |
-| Close the overlay           | <kbd>Esc</kbd>                                 |
+| Price check                | <kbd>Ctrl</kbd>+<kbd>D</kbd>                   |
+| Price check, keep open     | <kbd>Ctrl</kbd>+<kbd>Option</kbd>+<kbd>D</kbd> |
+| Show or hide the panel     | <kbd>Shift</kbd>+<kbd>Space</kbd>              |
+| Close the panel            | <kbd>Esc</kbd>                                 |
+
+The plain price check closes as soon as you click elsewhere; "keep open" stays
+until you dismiss it, which is what you want when you mean to adjust the
+filters or open the trade site.
 
 All rebindable in Settings.
 
