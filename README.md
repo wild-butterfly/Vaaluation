@@ -2,7 +2,7 @@
 
 # Vaaluation
 
-**The native Path of Exile price checker and trade overlay for macOS**
+**A Path of Exile price checker and trade overlay purpose-built for macOS**
 
 Hover an item. Press <kbd>Ctrl</kbd>+<kbd>D</kbd>. See comparable listings
 without leaving the game.
