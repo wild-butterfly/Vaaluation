@@ -47,6 +47,8 @@ Developer ID certificate and notarized by Apple.
 
 ![Vaaluation showing comparable listings for an item in Path of Exile](./docs/screenshots/price-check.png)
 
+_Vaaluation 0.1.1 running in Path of Exile on macOS._
+
 ### Trade requests
 
 <img src="./docs/screenshots/trades.png" alt="Vaaluation showing an incoming Path of Exile trade request" width="876">
