@@ -131,6 +131,17 @@ export function PriceCheckOverlay({
   const [parseError, setParseError] = useState<string | null>(null);
   const [filters, setFilters] = useState<SelectableFilter[]>([]);
   const [state, setState] = useState<SearchState>({ status: 'idle' });
+  const [scrollContentHeight, setScrollContentHeight] = useState(0);
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  // Ask the native panel for the natural height, while keeping the footer
+  // outside the scrolling region. If the panel reaches its native height
+  // cap, only the results scroll; the primary actions remain fully visible.
+  useEffect(() => {
+    if (scrollContentHeight > 0 && footerHeight > 0) {
+      onContentHeight(scrollContentHeight + footerHeight);
+    }
+  }, [footerHeight, onContentHeight, scrollContentHeight]);
 
   const league = settings.leagueId ?? defaultLeagueId(leagues);
 
@@ -327,11 +338,16 @@ export function PriceCheckOverlay({
 
   return (
     <View style={styles.panel}>
-      {/* Measured rather than guessed: the height used to be a hand-tuned
-          constant added to the modifier list, which counted neither the
-          listing table nor the header. Everything the tab draws is inside,
-          footer included, so the shell only has to add its own strip. */}
-      <View onLayout={(event) => onContentHeight(event.nativeEvent.layout.height)}>
+      {/* Measure the complete scrollable region and the fixed footer
+          separately. The native panel may cap the requested height; keeping
+          the actions outside this scroller prevents that cap from clipping
+          the buttons on modifier-heavy items. */}
+      <ScrollView
+        style={styles.contentScroller}
+        contentContainerStyle={styles.content}
+        onContentSizeChange={(_width, height) => setScrollContentHeight(height)}
+        nestedScrollEnabled
+      >
         <View style={styles.header}>
           {/* Crimson bloom behind the numeral — the panel's one piece of glow. */}
           <View style={styles.bloom} pointerEvents="none" />
@@ -511,34 +527,37 @@ export function PriceCheckOverlay({
             </ScrollView>
           </View>
         ) : null}
+      </ScrollView>
 
-        <View style={styles.footer}>
-          <Pressable
-            style={[styles.search, item === null && styles.disabled]}
-            onPress={() => {
-              void runSearch();
-            }}
-            disabled={item === null || state.status === 'searching'}
-          >
-            {state.status === 'searching' ? (
-              <ActivityIndicator size="small" color={theme.actionText} />
-            ) : (
-              <Text style={styles.searchText}>Search</Text>
-            )}
-          </Pressable>
-          <Pressable
-            style={[styles.ghost, state.status !== 'done' && styles.disabled]}
-            onPress={() => {
-              if (state.status === 'done' && league !== null) {
-                void Linking.openURL(tradeSearchUrl(league, state.queryId));
-              }
-            }}
-            disabled={state.status !== 'done'}
-          >
-            <Text style={styles.ghostText}>Trade site</Text>
-          </Pressable>
-          <Text style={styles.hint}>esc closes</Text>
-        </View>
+      <View
+        style={styles.footer}
+        onLayout={(event) => setFooterHeight(event.nativeEvent.layout.height)}
+      >
+        <Pressable
+          style={[styles.search, item === null && styles.disabled]}
+          onPress={() => {
+            void runSearch();
+          }}
+          disabled={item === null || state.status === 'searching'}
+        >
+          {state.status === 'searching' ? (
+            <ActivityIndicator size="small" color={theme.actionText} />
+          ) : (
+            <Text style={styles.searchText}>Search</Text>
+          )}
+        </Pressable>
+        <Pressable
+          style={[styles.ghost, state.status !== 'done' && styles.disabled]}
+          onPress={() => {
+            if (state.status === 'done' && league !== null) {
+              void Linking.openURL(tradeSearchUrl(league, state.queryId));
+            }
+          }}
+          disabled={state.status !== 'done'}
+        >
+          <Text style={styles.ghostText}>Trade site</Text>
+        </Pressable>
+        <Text style={styles.hint}>esc closes</Text>
       </View>
     </View>
   );
@@ -547,6 +566,8 @@ export function PriceCheckOverlay({
 function makeStyles(theme: Theme) {
   return StyleSheet.create({
     panel: { flex: 1 },
+    contentScroller: { flex: 1 },
+    content: { flexGrow: 1 },
     header: {
       flexDirection: 'row',
       alignItems: 'flex-start',
@@ -727,6 +748,7 @@ function makeStyles(theme: Theme) {
       lineHeight: 16,
     },
     footer: {
+      flexShrink: 0,
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.md,
