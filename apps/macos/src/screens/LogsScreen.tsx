@@ -69,9 +69,9 @@ export function LogsScreen() {
         <View style={styles.headerText}>
           <Text style={styles.heading}>Logs</Text>
           <Text style={styles.hint}>
-            A record of what Vaaluation did, kept on this Mac. Useful when a shortcut
-            does not fire or a price check comes back empty — and worth attaching to a
-            bug report.
+            A record of what Vaaluation did, kept on this Mac. Useful when a shortcut does
+            not fire or a price check comes back empty — and worth attaching to a bug
+            report.
           </Text>
         </View>
       </View>

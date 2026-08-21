@@ -191,8 +191,8 @@ export function SettingsScreen() {
         })}
         <Text style={styles.hint}>
           Press Change, then hold the keys you want. Every shortcut needs at least one
-          modifier (⌃⌥⇧⌘), so a bare letter cannot swallow your typing. Escape leaves
-          the shortcut as it was.
+          modifier (⌃⌥⇧⌘), so a bare letter cannot swallow your typing. Escape leaves the
+          shortcut as it was.
         </Text>
       </Section>
 

@@ -2,10 +2,10 @@
 
 The README links two files:
 
-| File | What it should show |
-| --- | --- |
+| File              | What it should show                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `price-check.png` | The overlay over the game, mid price check: item name, the headline price, the ticked modifiers and the listing table. |
-| `trades.png` | The Trades tab with a buy request and its Invite / Trade / Thanks buttons. |
+| `trades.png`      | The Trades tab with a buy request and its Invite / Trade / Thanks buttons.                                             |
 
 A third, `settings.png`, could illustrate the Shortcuts section later.
 

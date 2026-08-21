@@ -99,9 +99,7 @@ export function summarize(listings: readonly PricedListing[]): PriceSummary | nu
 function middlePrice(sorted: readonly number[]): number {
   if (sorted.length === 0) return 0;
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? (sorted[mid - 1] as number)
-    : (sorted[mid] as number);
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] as number) : (sorted[mid] as number);
 }
 
 export interface PriceWarning {
@@ -261,7 +259,6 @@ export function listingAge(indexed: string, now: number = Date.now()): string {
 
   return `${Math.round(months / 12)}y`;
 }
-
 
 export interface PriceQuote {
   readonly amount: number;

@@ -86,8 +86,8 @@ export function TradeOverlay({
         </Text>
         <Text style={styles.fineprint}>
           Vaaluation reads the game's chat log from the moment you switch this on, keeps
-          only lines matching its trade-whisper wording, and discards the rest. Nothing
-          is uploaded, and the game's own options need no change.
+          only lines matching its trade-whisper wording, and discards the rest. Nothing is
+          uploaded, and the game's own options need no change.
         </Text>
         <Pressable style={styles.enable} onPress={onEnable}>
           <Text style={styles.enableText}>Watch for trade whispers</Text>
@@ -293,7 +293,11 @@ const styles = StyleSheet.create({
   },
   // The empty state carries most of this tab's first impression, so it says
   // what the app is doing right now before explaining what will happen.
-  waiting: { paddingHorizontal: spacing.sm, paddingVertical: spacing.md, gap: spacing.sm },
+  waiting: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
+  },
   waitingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   live: {
     width: 6,

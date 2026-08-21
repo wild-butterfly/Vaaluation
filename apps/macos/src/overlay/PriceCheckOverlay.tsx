@@ -208,15 +208,12 @@ export function PriceCheckOverlay({
           league,
           buildQuery(item, applied, { baseTypes }),
         );
-        for (let relaxations = 0; search.total === 0 && relaxations < MAX_RELAXATIONS; ) {
+        for (let relaxations = 0; search.total === 0 && relaxations < MAX_RELAXATIONS;) {
           const loosened = relaxWeakest(applied);
           if (loosened === null) break;
           applied = loosened;
           relaxations += 1;
-          search = await client.search(
-            league,
-            buildQuery(item, applied, { baseTypes }),
-          );
+          search = await client.search(league, buildQuery(item, applied, { baseTypes }));
         }
         // The checkboxes must show what was actually searched, or the panel
         // would be reporting prices for a query it is not displaying.
@@ -334,208 +331,214 @@ export function PriceCheckOverlay({
           constant added to the modifier list, which counted neither the
           listing table nor the header. Everything the tab draws is inside,
           footer included, so the shell only has to add its own strip. */}
-      <View
-        onLayout={(event) => onContentHeight(event.nativeEvent.layout.height)}
-      >
-      <View style={styles.header}>
-        {/* Crimson bloom behind the numeral — the panel's one piece of glow. */}
-        <View style={styles.bloom} pointerEvents="none" />
-        <View style={styles.headerText}>
-          <Text style={styles.itemName} numberOfLines={1}>
-            {item === null ? 'Vaaluation' : nameOf(item)}
-          </Text>
-          {item !== null ? (
-            <Text style={styles.itemMeta} numberOfLines={1}>
-              {subtitleOf(item)}
+      <View onLayout={(event) => onContentHeight(event.nativeEvent.layout.height)}>
+        <View style={styles.header}>
+          {/* Crimson bloom behind the numeral — the panel's one piece of glow. */}
+          <View style={styles.bloom} pointerEvents="none" />
+          <View style={styles.headerText}>
+            <Text style={styles.itemName} numberOfLines={1}>
+              {item === null ? 'Vaaluation' : nameOf(item)}
             </Text>
-          ) : null}
-        </View>
-        {spread !== null ? (
-          <View style={styles.priceBlock}>
-            <Text style={styles.price}>
-              {round(spread.median / display.rate)}
-              <Text style={styles.priceUnit}> {display.currency}</Text>
-            </Text>
-            {alternatives.length > 0 ? (
-              <Text style={styles.priceAlt} numberOfLines={1}>
-                {alternatives
-                  .map((quote) => `${round(quote.amount)} ${shortCurrency(quote.currency)}`)
-                  .join(' · ')}
+            {item !== null ? (
+              <Text style={styles.itemMeta} numberOfLines={1}>
+                {subtitleOf(item)}
               </Text>
             ) : null}
-            {/* "Median" is exact but reads as jargon, and "middle of" was
+          </View>
+          {spread !== null ? (
+            <View style={styles.priceBlock}>
+              <Text style={styles.price}>
+                {round(spread.median / display.rate)}
+                <Text style={styles.priceUnit}> {display.currency}</Text>
+              </Text>
+              {alternatives.length > 0 ? (
+                <Text style={styles.priceAlt} numberOfLines={1}>
+                  {alternatives
+                    .map(
+                      (quote) =>
+                        `${round(quote.amount)} ${shortCurrency(quote.currency)}`,
+                    )
+                    .join(' · ')}
+                </Text>
+              ) : null}
+              {/* "Median" is exact but reads as jargon, and "middle of" was
                 clumsy. "Typical" says what the number is for without
                 claiming to value the item — the trade site lists what
                 sellers ask, not what anything sold for, so the panel never
                 recommends a price. The figure stays a median: these listings
                 run 1 to 11 chaos beside a divine, and a mean would answer
                 with a price nobody is asking. */}
-            <Text style={styles.priceMeta}>
-              typical · {listingCount} listing{listingCount === 1 ? '' : 's'}
-            </Text>
-          </View>
-        ) : null}
-      </View>
-
-      <View style={styles.body}>
-        {item === null ? (
-          <Text style={styles.empty}>
-            {parseError ?? 'Hover an item in Path of Exile and press Ctrl+D.'}
-          </Text>
-        ) : (
-          <View style={styles.mods}>
-            {filters.map((filter) => (
-              <View key={filter.key} style={styles.modRow}>
-                <Pressable
-                  style={styles.modHit}
-                  onPress={() =>
-                    setFilters((current) =>
-                      current.map((f) =>
-                        f.key === filter.key ? { ...f, selected: !f.selected } : f,
-                      ),
-                    )
-                  }
-                >
-                  <View style={[styles.checkbox, filter.selected && styles.checkboxOn]} />
-                  <Text
-                    style={[
-                      styles.modText,
-                      // The item's own totals are a different kind of search
-                      // from its modifiers, so they read as headings rather
-                      // than as another roll.
-                      filter.kind === 'property' && styles.propText,
-                      !filter.selected && styles.modTextOff,
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {filter.label}
-                  </Text>
-                </Pressable>
-                <TextInput
-                  style={styles.input}
-                  value={filter.min === null ? '' : String(filter.min)}
-                  onChangeText={(raw) => setBound(filter.key, 'min', raw)}
-                  placeholder="min"
-                  placeholderTextColor={palette.faint}
-                />
-                <TextInput
-                  style={[styles.input, styles.inputDim]}
-                  value={filter.max === null ? '' : String(filter.max)}
-                  onChangeText={(raw) => setBound(filter.key, 'max', raw)}
-                  placeholder="max"
-                  placeholderTextColor={palette.faint}
-                />
-              </View>
-            ))}
-
-            {state.status === 'error' ? (
-              <Text style={styles.error}>{state.message}</Text>
-            ) : null}
-
-            {state.status === 'done'
-              ? state.warnings.map((warning, index) => (
-                  <Text key={index} style={styles.warning}>
-                    {warning.message}
-                  </Text>
-                ))
-              : null}
-
-            {state.status === 'done' && state.listings.length === 0 ? (
-              <Text style={styles.empty}>
-                No priced listings matched. Try deselecting a modifier.
+              <Text style={styles.priceMeta}>
+                typical · {listingCount} listing{listingCount === 1 ? '' : 's'}
               </Text>
-            ) : null}
-          </View>
-        )}
-      </View>
-      <View style={styles.divider} />
+            </View>
+          ) : null}
+        </View>
 
-      {/* The table keeps its place while the search is in flight. Rendering
+        <View style={styles.body}>
+          {item === null ? (
+            <Text style={styles.empty}>
+              {parseError ?? 'Hover an item in Path of Exile and press Ctrl+D.'}
+            </Text>
+          ) : (
+            <View style={styles.mods}>
+              {filters.map((filter) => (
+                <View key={filter.key} style={styles.modRow}>
+                  <Pressable
+                    style={styles.modHit}
+                    onPress={() =>
+                      setFilters((current) =>
+                        current.map((f) =>
+                          f.key === filter.key ? { ...f, selected: !f.selected } : f,
+                        ),
+                      )
+                    }
+                  >
+                    <View
+                      style={[styles.checkbox, filter.selected && styles.checkboxOn]}
+                    />
+                    <Text
+                      style={[
+                        styles.modText,
+                        // The item's own totals are a different kind of search
+                        // from its modifiers, so they read as headings rather
+                        // than as another roll.
+                        filter.kind === 'property' && styles.propText,
+                        !filter.selected && styles.modTextOff,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {filter.label}
+                    </Text>
+                  </Pressable>
+                  <TextInput
+                    style={styles.input}
+                    value={filter.min === null ? '' : String(filter.min)}
+                    onChangeText={(raw) => setBound(filter.key, 'min', raw)}
+                    placeholder="min"
+                    placeholderTextColor={palette.faint}
+                  />
+                  <TextInput
+                    style={[styles.input, styles.inputDim]}
+                    value={filter.max === null ? '' : String(filter.max)}
+                    onChangeText={(raw) => setBound(filter.key, 'max', raw)}
+                    placeholder="max"
+                    placeholderTextColor={palette.faint}
+                  />
+                </View>
+              ))}
+
+              {state.status === 'error' ? (
+                <Text style={styles.error}>{state.message}</Text>
+              ) : null}
+
+              {state.status === 'done'
+                ? state.warnings.map((warning, index) => (
+                    <Text key={index} style={styles.warning}>
+                      {warning.message}
+                    </Text>
+                  ))
+                : null}
+
+              {state.status === 'done' && state.listings.length === 0 ? (
+                <Text style={styles.empty}>
+                  No priced listings matched. Try deselecting a modifier.
+                </Text>
+              ) : null}
+            </View>
+          )}
+        </View>
+        <View style={styles.divider} />
+
+        {/* The table keeps its place while the search is in flight. Rendering
           it only once rows existed meant the panel first opened as a
           modifiers-only page and then grew, which read as two screens for
           one keypress. */}
-      {rows.length > 0 || state.status === 'searching' ? (
-        <View style={styles.table}>
-          <View style={styles.tableHead}>
-            <Text style={[styles.headCell, styles.colPrice]}>Price</Text>
-            <Text style={[styles.headCell, styles.colIlvl]}>iLvl</Text>
-            <Text style={[styles.headCell, styles.colAccount]}>Account</Text>
-            <Text style={[styles.headCell, styles.colAge]}>Listed</Text>
-          </View>
-          {/* Keyed by the search, so a new item starts at the top. Without
+        {rows.length > 0 || state.status === 'searching' ? (
+          <View style={styles.table}>
+            <View style={styles.tableHead}>
+              <Text style={[styles.headCell, styles.colPrice]}>Price</Text>
+              <Text style={[styles.headCell, styles.colIlvl]}>iLvl</Text>
+              <Text style={[styles.headCell, styles.colAccount]}>Account</Text>
+              <Text style={[styles.headCell, styles.colAge]}>Listed</Text>
+            </View>
+            {/* Keyed by the search, so a new item starts at the top. Without
               this the list kept the previous scroll position and opened part
               way down, hiding the cheapest listings the table exists to
               show — and making the headline median look wrong against them. */}
-          <ScrollView
-            key={state.status === 'done' ? state.queryId : 'idle'}
-            style={styles.tableBody}
-            nestedScrollEnabled
-          >
-            {rows.length === 0 ? (
-              <View style={styles.tablePending}>
-                <ActivityIndicator size="small" color={palette.faint} />
-              </View>
-            ) : null}
-            {rows.map((listing) => (
-              <View key={listing.id} style={styles.tableRow}>
-                <Text style={[styles.cellPrice, styles.colPrice]} numberOfLines={1}>
-                  {round(listing.amount)}
-                  <Text style={styles.cellUnit}> {shortCurrency(listing.currency)}</Text>
-                </Text>
-                <Text style={[styles.cell, styles.colIlvl]}>{listing.ilvl ?? '—'}</Text>
-                <View style={[styles.colAccount, styles.accountCell]}>
-                  {/* Presence decides whether a whisper gets answered, so it
+            <ScrollView
+              key={state.status === 'done' ? state.queryId : 'idle'}
+              style={styles.tableBody}
+              nestedScrollEnabled
+            >
+              {rows.length === 0 ? (
+                <View style={styles.tablePending}>
+                  <ActivityIndicator size="small" color={palette.faint} />
+                </View>
+              ) : null}
+              {rows.map((listing) => (
+                <View key={listing.id} style={styles.tableRow}>
+                  <Text style={[styles.cellPrice, styles.colPrice]} numberOfLines={1}>
+                    {round(listing.amount)}
+                    <Text style={styles.cellUnit}>
+                      {' '}
+                      {shortCurrency(listing.currency)}
+                    </Text>
+                  </Text>
+                  <Text style={[styles.cell, styles.colIlvl]}>{listing.ilvl ?? '—'}</Text>
+                  <View style={[styles.colAccount, styles.accountCell]}>
+                    {/* Presence decides whether a whisper gets answered, so it
                       earns a place next to the name rather than a legend. */}
-                  <View
-                    style={[
-                      styles.presence,
-                      listing.presence === 'online'
-                        ? styles.presenceOnline
-                        : listing.presence === 'afk'
-                          ? styles.presenceAfk
-                          : styles.presenceOffline,
-                    ]}
-                  />
-                  <Text style={styles.cell} numberOfLines={1}>
-                    {listing.accountName}
+                    <View
+                      style={[
+                        styles.presence,
+                        listing.presence === 'online'
+                          ? styles.presenceOnline
+                          : listing.presence === 'afk'
+                            ? styles.presenceAfk
+                            : styles.presenceOffline,
+                      ]}
+                    />
+                    <Text style={styles.cell} numberOfLines={1}>
+                      {listing.accountName}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cellAge, styles.colAge]}>
+                    {listingAge(listing.indexed)}
                   </Text>
                 </View>
-                <Text style={[styles.cellAge, styles.colAge]}>
-                  {listingAge(listing.indexed)}
-                </Text>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-      ) : null}
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
 
-      <View style={styles.footer}>
-        <Pressable
-          style={[styles.search, item === null && styles.disabled]}
-          onPress={() => {
-            void runSearch();
-          }}
-          disabled={item === null || state.status === 'searching'}
-        >
-          {state.status === 'searching' ? (
-            <ActivityIndicator size="small" color={theme.actionText} />
-          ) : (
-            <Text style={styles.searchText}>Search</Text>
-          )}
-        </Pressable>
-        <Pressable
-          style={[styles.ghost, state.status !== 'done' && styles.disabled]}
-          onPress={() => {
-            if (state.status === 'done' && league !== null) {
-              void Linking.openURL(tradeSearchUrl(league, state.queryId));
-            }
-          }}
-          disabled={state.status !== 'done'}
-        >
-          <Text style={styles.ghostText}>Trade site</Text>
-        </Pressable>
-        <Text style={styles.hint}>esc closes</Text>
-      </View>
+        <View style={styles.footer}>
+          <Pressable
+            style={[styles.search, item === null && styles.disabled]}
+            onPress={() => {
+              void runSearch();
+            }}
+            disabled={item === null || state.status === 'searching'}
+          >
+            {state.status === 'searching' ? (
+              <ActivityIndicator size="small" color={theme.actionText} />
+            ) : (
+              <Text style={styles.searchText}>Search</Text>
+            )}
+          </Pressable>
+          <Pressable
+            style={[styles.ghost, state.status !== 'done' && styles.disabled]}
+            onPress={() => {
+              if (state.status === 'done' && league !== null) {
+                void Linking.openURL(tradeSearchUrl(league, state.queryId));
+              }
+            }}
+            disabled={state.status !== 'done'}
+          >
+            <Text style={styles.ghostText}>Trade site</Text>
+          </Pressable>
+          <Text style={styles.hint}>esc closes</Text>
+        </View>
       </View>
     </View>
   );
@@ -640,7 +643,12 @@ function makeStyles(theme: Theme) {
     colAccount: { flex: 1, paddingLeft: spacing.xl },
     colAge: { width: 46, textAlign: 'right' },
     accountCell: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-    cell: { fontFamily: fonts.sans, fontSize: 11.5, color: palette.secondary, flexShrink: 1 },
+    cell: {
+      fontFamily: fonts.sans,
+      fontSize: 11.5,
+      color: palette.secondary,
+      flexShrink: 1,
+    },
     cellPrice: { fontFamily: fonts.mono, fontSize: 12, color: palette.primary },
     cellUnit: { color: palette.dim, fontSize: 10.5 },
     cellAge: { fontFamily: fonts.mono, fontSize: 10.5, color: palette.dim },

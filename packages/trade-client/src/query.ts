@@ -17,16 +17,7 @@ import type { BaseTypeIndex } from './baseTypes';
  * the live search before being listed here.
  */
 export type PropertyFilterId =
-  | 'ar'
-  | 'ev'
-  | 'es'
-  | 'ward'
-  | 'block'
-  | 'pdps'
-  | 'edps'
-  | 'dps'
-  | 'aps'
-  | 'crit';
+  'ar' | 'ev' | 'es' | 'ward' | 'block' | 'pdps' | 'edps' | 'dps' | 'aps' | 'crit';
 
 export interface SelectableFilter {
   /** Stable key for UI selection. */
@@ -190,8 +181,13 @@ export function buildFilters(item: ParsedItem, stats: StatIndex): SelectableFilt
   const preselectAllowed = item.rarity === 'rare' || item.rarity === 'magic';
   const local = usesLocalStats(item);
 
-  const candidates: { key: string; statId: string; label: string; value: number | null;
-    weight: number }[] = [];
+  const candidates: {
+    key: string;
+    statId: string;
+    label: string;
+    value: number | null;
+    weight: number;
+  }[] = [];
 
   item.modifiers.forEach((modifier, index) => {
     const match = stats.match(modifier, { local });
@@ -217,21 +213,24 @@ export function buildFilters(item: ParsedItem, stats: StatIndex): SelectableFilt
 
   // The item's own totals come first, matching the tooltip: the game prints
   // armour and energy shield above the modifiers that produced them.
-  return [...propertyFilters(item), ...candidates.map((candidate) => {
-    const selected = chosen.has(candidate.key);
-    return {
-      key: candidate.key,
-      statId: candidate.statId,
-      label: candidate.label,
-      selected,
-      value: candidate.value,
-      // Default to "at least what this item rolled", the usual intent.
-      min: selected && candidate.value !== null ? candidate.value : null,
-      max: null,
-      weight: candidate.weight,
-      kind: 'stat' as const,
-    };
-  })];
+  return [
+    ...propertyFilters(item),
+    ...candidates.map((candidate) => {
+      const selected = chosen.has(candidate.key);
+      return {
+        key: candidate.key,
+        statId: candidate.statId,
+        label: candidate.label,
+        selected,
+        value: candidate.value,
+        // Default to "at least what this item rolled", the usual intent.
+        min: selected && candidate.value !== null ? candidate.value : null,
+        max: null,
+        weight: candidate.weight,
+        kind: 'stat' as const,
+      };
+    }),
+  ];
 }
 
 export interface QueryOptions {
@@ -376,9 +375,9 @@ export function relaxWeakest(
 }
 
 /** The `armour_filters` and `weapon_filters` groups a query needs, if any. */
-function propertyQuery(
-  filters: readonly SelectableFilter[],
-): { filters?: Record<string, unknown> } {
+function propertyQuery(filters: readonly SelectableFilter[]): {
+  filters?: Record<string, unknown>;
+} {
   const armour: Record<string, { min?: number; max?: number }> = {};
   const weapon: Record<string, { min?: number; max?: number }> = {};
 

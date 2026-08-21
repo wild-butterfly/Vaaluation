@@ -34,7 +34,8 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Install pods
-        run: pod install --project-directory=apps/macos/macos
+        working-directory: apps/macos
+        run: pod install --project-directory=macos
       - name: Build (Debug, unsigned)
         run: |
           xcodebuild -workspace apps/macos/macos/Vaaluation.xcworkspace \

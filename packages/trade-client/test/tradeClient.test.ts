@@ -282,9 +282,21 @@ describe('query building', () => {
       {
         label: 'Explicit',
         entries: [
-          { id: 'explicit.es_local', text: '#% increased Energy Shield (Local)', type: 'explicit' },
-          { id: 'explicit.ev_global', text: '#% increased Evasion Rating', type: 'explicit' },
-          { id: 'explicit.ev_local', text: '#% increased Evasion Rating (Local)', type: 'explicit' },
+          {
+            id: 'explicit.es_local',
+            text: '#% increased Energy Shield (Local)',
+            type: 'explicit',
+          },
+          {
+            id: 'explicit.ev_global',
+            text: '#% increased Evasion Rating',
+            type: 'explicit',
+          },
+          {
+            id: 'explicit.ev_local',
+            text: '#% increased Evasion Rating (Local)',
+            type: 'explicit',
+          },
         ],
       },
     ]);
@@ -311,8 +323,16 @@ describe('query building', () => {
       {
         label: 'Explicit',
         entries: [
-          { id: 'explicit.ev_global', text: '#% increased Evasion Rating', type: 'explicit' },
-          { id: 'explicit.ev_local', text: '#% increased Evasion Rating (Local)', type: 'explicit' },
+          {
+            id: 'explicit.ev_global',
+            text: '#% increased Evasion Rating',
+            type: 'explicit',
+          },
+          {
+            id: 'explicit.ev_local',
+            text: '#% increased Evasion Rating (Local)',
+            type: 'explicit',
+          },
         ],
       },
     ]);
@@ -340,7 +360,11 @@ describe('query building', () => {
         entries: [
           { id: 'explicit.mana', text: '+# to maximum Mana', type: 'explicit' },
           { id: 'explicit.res', text: '+#% to Fire Resistance', type: 'explicit' },
-          { id: 'explicit.crit', text: '#% increased Critical Strike Chance', type: 'explicit' },
+          {
+            id: 'explicit.crit',
+            text: '#% increased Critical Strike Chance',
+            type: 'explicit',
+          },
           {
             id: 'explicit.gem',
             text: '+# to Level of all Lightning Spell Skill Gems',
@@ -384,8 +408,28 @@ describe('query building', () => {
 
   it('gives up a bound before the modifier that carries it', () => {
     const filters = [
-      { kind: 'stat' as const, key: 'a', statId: 's.a', label: 'gem level', selected: true, value: 1, min: 1, max: null, weight: 100 },
-      { kind: 'stat' as const, key: 'b', statId: 's.b', label: 'mana', selected: true, value: 20, min: 20, max: null, weight: 24 },
+      {
+        kind: 'stat' as const,
+        key: 'a',
+        statId: 's.a',
+        label: 'gem level',
+        selected: true,
+        value: 1,
+        min: 1,
+        max: null,
+        weight: 100,
+      },
+      {
+        kind: 'stat' as const,
+        key: 'b',
+        statId: 's.b',
+        label: 'mana',
+        selected: true,
+        value: 20,
+        min: 20,
+        max: null,
+        weight: 24,
+      },
     ];
 
     // "Some mana" still describes the item; no mana filter at all does not.
@@ -405,7 +449,17 @@ describe('query building', () => {
   it('reports nothing left to relax once every filter is off', () => {
     expect(
       relaxWeakest([
-        { kind: 'stat' as const, key: 'a', statId: 's.a', label: 'x', selected: false, value: null, min: null, max: null, weight: 10 },
+        {
+          kind: 'stat' as const,
+          key: 'a',
+          statId: 's.a',
+          label: 'x',
+          selected: false,
+          value: null,
+          min: null,
+          max: null,
+          weight: 10,
+        },
       ]),
     ).toBeNull();
   });
@@ -733,9 +787,33 @@ describe('listing table', () => {
     // reorder it, or a divine listing would be shuffled away from the place
     // the trade site put it.
     const results = [
-      { id: 'a', listing: { price: { amount: 1, currency: 'chaos' }, account: { name: 'x' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
-      { id: 'b', listing: { price: { amount: 1, currency: 'divine' }, account: { name: 'y' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
-      { id: 'c', listing: { price: { amount: 2, currency: 'chaos' }, account: { name: 'z' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
+      {
+        id: 'a',
+        listing: {
+          price: { amount: 1, currency: 'chaos' },
+          account: { name: 'x' },
+          indexed: '2026-01-01T00:00:00Z',
+        },
+        item: {},
+      },
+      {
+        id: 'b',
+        listing: {
+          price: { amount: 1, currency: 'divine' },
+          account: { name: 'y' },
+          indexed: '2026-01-01T00:00:00Z',
+        },
+        item: {},
+      },
+      {
+        id: 'c',
+        listing: {
+          price: { amount: 2, currency: 'chaos' },
+          account: { name: 'z' },
+          indexed: '2026-01-01T00:00:00Z',
+        },
+        item: {},
+      },
     ] as unknown as Parameters<typeof toPricedListings>[0];
 
     expect(toPricedListings(results).map((row) => row.id)).toEqual(['a', 'b', 'c']);
@@ -743,9 +821,29 @@ describe('listing table', () => {
 
   it('skips a listing with no price without disturbing the rest', () => {
     const results = [
-      { id: 'a', listing: { price: { amount: 1, currency: 'chaos' }, account: { name: 'x' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
-      { id: 'b', listing: { account: { name: 'y' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
-      { id: 'c', listing: { price: { amount: 2, currency: 'chaos' }, account: { name: 'z' }, indexed: '2026-01-01T00:00:00Z' }, item: {} },
+      {
+        id: 'a',
+        listing: {
+          price: { amount: 1, currency: 'chaos' },
+          account: { name: 'x' },
+          indexed: '2026-01-01T00:00:00Z',
+        },
+        item: {},
+      },
+      {
+        id: 'b',
+        listing: { account: { name: 'y' }, indexed: '2026-01-01T00:00:00Z' },
+        item: {},
+      },
+      {
+        id: 'c',
+        listing: {
+          price: { amount: 2, currency: 'chaos' },
+          account: { name: 'z' },
+          indexed: '2026-01-01T00:00:00Z',
+        },
+        item: {},
+      },
     ] as unknown as Parameters<typeof toPricedListings>[0];
 
     expect(toPricedListings(results).map((row) => row.id)).toEqual(['a', 'c']);
@@ -895,7 +993,9 @@ describe('the headline price', () => {
   });
 
   it('reports the same figure through the distribution', () => {
-    expect(distribution([listing(1), listing(2), listing(5), listing(6)])?.median).toBe(2);
+    expect(distribution([listing(1), listing(2), listing(5), listing(6)])?.median).toBe(
+      2,
+    );
   });
 });
 
