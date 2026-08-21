@@ -1,7 +1,7 @@
 import { TradeClient } from '@vaaluation/trade-client';
 import type { FetchLike } from '@vaaluation/trade-client';
 
-export const APP_VERSION = '0.1.0';
+export const APP_VERSION = '0.1.1';
 export const PROJECT_URL = 'https://github.com/wild-butterfly/Vaaluation';
 
 /**

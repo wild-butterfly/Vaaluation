@@ -1,7 +1,7 @@
 {
   "name": "vaaluation-monorepo",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vaaluation \u2014 an open-source item price-check overlay for Path of Exile on macOS.",
   "license": "MIT",
   "workspaces": [
