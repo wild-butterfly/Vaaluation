@@ -2,22 +2,44 @@
 
 # Vaaluation
 
-**Native Path of Exile price checking for macOS**
+**The native Path of Exile price checker and trade overlay for macOS**
+
+Hover an item. Press <kbd>Ctrl</kbd>+<kbd>D</kbd>. See comparable listings
+without leaving the game.
 
 [![CI](https://github.com/wild-butterfly/Vaaluation/actions/workflows/ci.yml/badge.svg)](https://github.com/wild-butterfly/Vaaluation/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![macOS 14+](https://img.shields.io/badge/macOS-14%2B-black?logo=apple)
 
+### [Download Vaaluation for macOS](https://github.com/wild-butterfly/Vaaluation/releases/latest)
+
+[Installation](#install) · [Features](#features) · [Shortcuts](#shortcuts) · [Privacy](docs/PRIVACY.md) · [Report an issue](https://github.com/wild-butterfly/Vaaluation/issues/new/choose)
+
 </div>
 
-Item price checking for **Path of Exile** on macOS. Hover an item, press a
-shortcut, see what comparable items are actually listed for — without leaving
-the game.
+Vaaluation is a free, open-source **Path of Exile price checker for macOS**.
+It combines fast item valuation, official trade listings, currency rates and
+incoming trade-request tools in a native menu-bar app.
 
-Free, open source, no accounts, no telemetry, no paid tier.
+**Signed and notarized by Apple · No accounts · No telemetry · No paid tier**
 
 > This product isn't affiliated with or endorsed by Grinding Gear Games in any
 > way.
+
+## Download
+
+### [Download the latest signed and notarized release →](https://github.com/wild-butterfly/Vaaluation/releases/latest)
+
+Vaaluation supports **macOS 14 Sonoma or later**. Releases are signed with a
+Developer ID certificate and notarized by Apple.
+
+### Install
+
+1. Download the ZIP from the latest GitHub release.
+2. Unzip it and drag `Vaaluation.app` into **Applications**.
+3. Launch Vaaluation and [grant Accessibility permission](#grant-accessibility).
+4. Open Path of Exile in **Windowed** or **Windowed Fullscreen** mode.
+5. Hover an inventory item and press <kbd>Ctrl</kbd>+<kbd>D</kbd>.
 
 ## See it in action
 
@@ -36,7 +58,7 @@ to be partial, with global shortcuts that never fire. Vaaluation is built
 natively for macOS — a menu-bar app with an AppKit shell, a real non-activating
 overlay panel, and Carbon global hotkeys that work.
 
-## What it does
+## Features
 
 - **Price check** — hover an item, press <kbd>Ctrl</kbd>+<kbd>D</kbd>. Vaaluation
   copies the item, parses it, and searches the official trade site without
@@ -58,16 +80,6 @@ overlay panel, and Carbon global hotkeys that work.
 - macOS 14 Sonoma or later
 - Path of Exile (macOS client), in **Windowed** or **Windowed Fullscreen**
 - The English game client — the parser reads the game's English item text
-
-## Download
-
-Vaaluation releases are signed with a Developer ID certificate and notarized
-by Apple. The latest version is always available here:
-
-### [Download the latest release](https://github.com/wild-butterfly/Vaaluation/releases/latest)
-
-After downloading, unzip the archive, drag `Vaaluation.app` to Applications,
-and [grant Accessibility](#grant-accessibility).
 
 ## Build it yourself
 
