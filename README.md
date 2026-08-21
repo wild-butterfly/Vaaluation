@@ -1,4 +1,14 @@
+<div align="center">
+
 # Vaaluation
+
+**Native Path of Exile price checking for macOS**
+
+[![CI](https://github.com/wild-butterfly/Vaaluation/actions/workflows/ci.yml/badge.svg)](https://github.com/wild-butterfly/Vaaluation/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![macOS 14+](https://img.shields.io/badge/macOS-14%2B-black?logo=apple)
+
+</div>
 
 Item price checking for **Path of Exile** on macOS. Hover an item, press a
 shortcut, see what comparable items are actually listed for — without leaving
@@ -9,11 +19,15 @@ Free, open source, no accounts, no telemetry, no paid tier.
 > This product isn't affiliated with or endorsed by Grinding Gear Games in any
 > way.
 
----
+## See it in action
 
-| Price check | Trade requests |
-| --- | --- |
-| ![A price check over the game](docs/screenshots/price-check.png) | ![An incoming buy request](docs/screenshots/trades.png) |
+### Price check
+
+![Vaaluation showing comparable listings for an item in Path of Exile](./docs/screenshots/price-check.png)
+
+### Trade requests
+
+<img src="./docs/screenshots/trades.png" alt="Vaaluation showing an incoming Path of Exile trade request" width="876">
 
 ## Why this exists
 
@@ -45,17 +59,17 @@ overlay panel, and Carbon global hotkeys that work.
 - Path of Exile (macOS client), in **Windowed** or **Windowed Fullscreen**
 - The English game client — the parser reads the game's English item text
 
-## Install
+## Download
 
-Download the latest zip from
-[Releases](https://github.com/wild-butterfly/Vaaluation/releases), unzip it,
-and drag `Vaaluation.app` to Applications. The build is signed and notarized
-by Apple, so it opens by double-clicking with no security warnings.
+Vaaluation releases are signed with a Developer ID certificate and notarized
+by Apple. The latest version is always available here:
 
-Then [grant Accessibility](#grant-accessibility) — Vaaluation needs it to send
-the item-copy keystroke to the game.
+### [Download the latest release](https://github.com/wild-butterfly/Vaaluation/releases/latest)
 
-### Or build it yourself
+After downloading, unzip the archive, drag `Vaaluation.app` to Applications,
+and [grant Accessibility](#grant-accessibility).
+
+## Build it yourself
 
 **Prerequisites**
 
