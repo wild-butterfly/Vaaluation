@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wild-butterfly.github.io/Vaaluation/sitemap.xml
