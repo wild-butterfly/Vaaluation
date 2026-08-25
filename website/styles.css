@@ -282,14 +282,58 @@ h2 {
 }
 .split {
   display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 6rem;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 0.9fr);
+  gap: clamp(3rem, 6vw, 6rem);
   align-items: center;
 }
+
+.trade-preview {
+  width: min(100%, 620px);
+  margin: 0;
+  justify-self: end;
+}
+
+.trade-preview-frame {
+  position: relative;
+  padding: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(199, 24, 48, 0.2), transparent 34%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.018));
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.42),
+    inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.trade-preview-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.15rem 0.35rem 0.75rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.trade-preview figcaption {
+  max-width: 34rem;
+  margin: 0.9rem auto 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
 .secondary-shot {
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.38);
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
 }
 .steps {
   list-style: none;
@@ -410,6 +454,10 @@ footer {
   .split {
     grid-template-columns: 1fr;
     gap: 3rem;
+  }
+
+  .trade-preview {
+    justify-self: center;
   }
   .install-panel {
     grid-template-columns: 1fr;
