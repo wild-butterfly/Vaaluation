@@ -43,6 +43,12 @@ Developer ID certificate and notarized by Apple.
 4. Open Path of Exile in **Windowed** or **Windowed Fullscreen** mode.
 5. Hover an inventory item and press <kbd>Ctrl</kbd>+<kbd>D</kbd>.
 
+## Mac guides
+
+- [Install Vaaluation](https://wild-butterfly.github.io/Vaaluation/guides/install/)
+- [Check Path of Exile item prices](https://wild-butterfly.github.io/Vaaluation/guides/price-check/)
+- [Troubleshoot shortcuts, permissions and searches](https://wild-butterfly.github.io/Vaaluation/guides/troubleshooting/)
+
 ## See it in action
 
 ### Price check
@@ -140,7 +146,8 @@ The plain price check closes as soon as you click elsewhere; "keep open" stays
 until you dismiss it, which is what you want when you mean to adjust the
 filters or open the trade site.
 
-All rebindable in Settings.
+All rebindable in Settings. Shortcuts are active only while Path of Exile is
+the foreground app, so typing in other apps does not open Vaaluation.
 
 ## How it works, and what it never does
 

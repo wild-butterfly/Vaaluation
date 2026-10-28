@@ -529,3 +529,120 @@ footer {
     transition: none;
   }
 }
+
+/* Shared guide layouts keep the documentation readable on desktop and mobile. */
+[id] {
+  scroll-margin-top: 6rem;
+}
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 5px;
+}
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.guide-grid .card {
+  min-height: auto;
+}
+.guide-grid .card h3,
+.guide-grid .card h2 {
+  margin-top: 0;
+  margin-bottom: 0.6rem;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  letter-spacing: normal;
+}
+.guide-grid a {
+  text-decoration-color: var(--gold);
+  text-underline-offset: 0.25em;
+}
+.guide-index-link {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+.guide {
+  max-width: 900px;
+  padding-block: 2rem 6rem;
+}
+.breadcrumbs {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-bottom: 3rem;
+}
+.guide-heading {
+  margin-bottom: 2.5rem;
+}
+.guide h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1.1;
+}
+.guide h2 {
+  font-size: clamp(1.65rem, 3vw, 2.2rem);
+  line-height: 1.2;
+}
+.guide article > section {
+  margin-block: 3rem;
+}
+.guide article > section p,
+.guide article > section li,
+.guide dd {
+  color: var(--muted);
+}
+.guide li + li {
+  margin-top: 0.65rem;
+}
+.guide a {
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--gold);
+}
+.guide strong,
+.guide dt {
+  color: var(--text);
+}
+.guide dt {
+  margin-top: 1rem;
+  font-weight: 700;
+}
+.guide dd {
+  margin-left: 0;
+}
+.guide-toc,
+.related-guides {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: var(--surface);
+}
+.guide-toc ul,
+.related-guides ul {
+  margin-bottom: 0;
+  padding-left: 1.3rem;
+}
+.guide-shot {
+  margin: 2rem 0;
+}
+.guide-shot img {
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.guide-shot figcaption {
+  color: var(--muted);
+  font-size: 0.86rem;
+  margin-top: 0.7rem;
+}
+@media (max-width: 680px) {
+  .guide-grid {
+    grid-template-columns: 1fr;
+  }
+  .guide {
+    padding-bottom: 4rem;
+  }
+  .footer-links {
+    flex-wrap: wrap;
+  }
+}

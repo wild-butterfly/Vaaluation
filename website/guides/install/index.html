@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Install Vaaluation on Mac | Vaaluation</title>
+    <meta
+      name="description"
+      content="Install the free Vaaluation PoE price checker on macOS, enable Accessibility permission, and run your first in-game item price check."
+    />
+    <meta name="author" content="wild-butterfly" />
+    <meta
+      name="google-site-verification"
+      content="2EwRL0ML-hXd7nE0qeoocyJdXS6FfZHdXkP7_79-Cck"
+    />
+    <meta name="theme-color" content="#110d10" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link
+      rel="canonical"
+      href="https://wild-butterfly.github.io/Vaaluation/guides/install/"
+    />
+    <link rel="icon" href="../../assets/app-icon.png" type="image/png" />
+    <link rel="stylesheet" href="../../styles.css" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Vaaluation" />
+    <meta property="og:title" content="Install Vaaluation on Mac | Vaaluation" />
+    <meta
+      property="og:description"
+      content="Install the free Vaaluation PoE price checker on macOS, enable Accessibility permission, and run your first in-game item price check."
+    />
+    <meta
+      property="og:url"
+      content="https://wild-butterfly.github.io/Vaaluation/guides/install/"
+    />
+    <meta
+      property="og:image"
+      content="https://wild-butterfly.github.io/Vaaluation/assets/social-preview.jpg"
+    />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta
+      property="og:image:alt"
+      content="Vaaluation Path of Exile price checker running on macOS"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Install Vaaluation on Mac | Vaaluation" />
+    <meta
+      name="twitter:description"
+      content="Install the free Vaaluation PoE price checker on macOS, enable Accessibility permission, and run your first in-game item price check."
+    />
+    <meta
+      name="twitter:image"
+      content="https://wild-butterfly.github.io/Vaaluation/assets/social-preview.jpg"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://wild-butterfly.github.io/Vaaluation/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": "https://wild-butterfly.github.io/Vaaluation/guides/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Install Vaaluation on Mac",
+            "item": "https://wild-butterfly.github.io/Vaaluation/guides/install/"
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Main navigation">
+        <a class="brand" href="../../" aria-label="Vaaluation home">
+          <img src="../../assets/app-icon.png" alt="" width="42" height="42" />
+          <span>Vaaluation</span>
+        </a>
+        <button
+          class="menu-button"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-links"
+        >
+          Menu
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../../#features">Features</a>
+          <a href="../../#how-it-works">How it works</a>
+          <a href="../../#install">Install</a>
+          <a href="../">Guides</a>
+          <a href="https://github.com/wild-butterfly/Vaaluation">GitHub</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main" class="shell guide">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="../../">Home</a> / <a href="../">Guides</a> /
+        <span>Install Vaaluation on Mac</span>
+      </nav>
+      <article>
+        <header class="guide-heading">
+          <p class="eyebrow">Vaaluation guide</p>
+          <h1>Install Vaaluation on Mac</h1>
+          <p class="lede">
+            Set up the app, grant its one required permission, and check your first item.
+          </p>
+        </header>
+        <nav class="guide-toc" aria-label="On this page">
+          <strong>On this page</strong>
+          <ul>
+            <li><a href="#requirements">Before you install</a></li>
+            <li><a href="#download">Download and install</a></li>
+            <li><a href="#accessibility">Enable Accessibility permission</a></li>
+            <li><a href="#first-check">Run your first price check</a></li>
+            <li><a href="#next">If something does not work</a></li>
+          </ul>
+        </nav>
+        <section id="requirements">
+          <h2>Before you install</h2>
+          <p>
+            You need macOS 14 Sonoma or later and the English Path of Exile 1 client. Use
+            <strong>Windowed</strong> or <strong>Windowed Fullscreen</strong> mode in the
+            game. The current release targets PoE 1; PoE 2 support is not advertised.
+          </p>
+        </section>
+        <section id="download">
+          <h2>Download and install</h2>
+          <ol>
+            <li>
+              Open the
+              <a href="https://github.com/wild-butterfly/Vaaluation/releases/latest"
+                >latest GitHub release</a
+              >
+              and download the application ZIP from its Assets section.
+            </li>
+            <li>
+              Unzip the download, then drag <code>Vaaluation.app</code> into
+              <strong>Applications</strong>.
+            </li>
+            <li>
+              Launch Vaaluation from Applications. It runs as a menu-bar app, so look in
+              the macOS menu bar rather than the Dock.
+            </li>
+          </ol>
+          <p>
+            Published releases are signed with an Apple Developer ID certificate and
+            notarized by Apple. You do not need Xcode or Node.js to use a release
+            download.
+          </p>
+        </section>
+        <section id="accessibility">
+          <h2>Enable Accessibility permission</h2>
+          <p>
+            Vaaluation needs Accessibility permission to send the item-copy keystroke to
+            Path of Exile when you press the price-check shortcut.
+          </p>
+          <ol>
+            <li>
+              Open
+              <strong>System Settings → Privacy &amp; Security → Accessibility</strong>.
+            </li>
+            <li>
+              Add <code>/Applications/Vaaluation.app</code> if it is not listed, and
+              switch its permission on.
+            </li>
+            <li>Quit and reopen Vaaluation so it re-reads the permission.</li>
+          </ol>
+          <p>The app does not require Screen Recording or Input Monitoring permission.</p>
+        </section>
+        <section id="first-check">
+          <h2>Run your first price check</h2>
+          <ol>
+            <li>
+              Open the English Path of Exile client in Windowed or Windowed Fullscreen
+              mode.
+            </li>
+            <li>Hover over an item in your inventory.</li>
+            <li>
+              Press <kbd>Ctrl</kbd> + <kbd>D</kbd> to see comparable trade listings.
+            </li>
+            <li>Check that the selected league matches your character’s league.</li>
+          </ol>
+          <p>
+            Use <kbd>Ctrl</kbd> + <kbd>Option</kbd> + <kbd>D</kbd> to keep the overlay
+            open while adjusting filters. Read the
+            <a href="../price-check/">item price-checking guide</a> for help interpreting
+            results.
+          </p>
+        </section>
+        <section id="next">
+          <h2>If something does not work</h2>
+          <p>
+            Start with the <a href="../troubleshooting/">troubleshooting guide</a> for
+            missing windows, shortcuts, permissions and empty searches. For source builds,
+            follow the
+            <a href="https://github.com/wild-butterfly/Vaaluation#build-it-yourself"
+              >repository build instructions</a
+            >.
+          </p>
+        </section>
+      </article>
+      <aside class="related-guides" aria-label="Related guides">
+        <h2>More guides</h2>
+        <ul>
+          <li><a href="../price-check/">How to check PoE item prices on Mac</a></li>
+          <li><a href="../troubleshooting/">Vaaluation troubleshooting on macOS</a></li>
+        </ul>
+      </aside>
+    </main>
+    <footer>
+      <div class="shell footer-inner">
+        <div>
+          <a class="brand" href="../../">
+            <img src="../../assets/app-icon.png" alt="" width="34" height="34" />
+            <span>Vaaluation</span>
+          </a>
+          <p>Path of Exile price checking for macOS.</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/wild-butterfly/Vaaluation/releases/latest"
+            >Download</a
+          >
+          <a href="../">Guides</a>
+          <a href="https://github.com/wild-butterfly/Vaaluation/issues">Support</a>
+          <a href="https://github.com/wild-butterfly/Vaaluation">Source</a>
+        </div>
+      </div>
+      <p class="disclaimer shell">
+        Vaaluation is not affiliated with or endorsed by Grinding Gear Games. Path of
+        Exile is a trademark of Grinding Gear Games.
+      </p>
+    </footer>
+    <script src="../../script.js"></script>
+  </body>
+</html>
